@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:toolbar="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#00ffffff">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark"
+            toolbar:navigationIcon="@drawable/abc_ic_ab_back_mtrl_am_alpha"
+            toolbar:title="漫画详情"
+            toolbar:titleTextAppearance="?android:attr/textAppearanceMedium"
+            toolbar:titleTextColor="@android:color/white" />
+    </android.support.design.widget.AppBarLayout>
+
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="60dp"
+        android:visibility="gone" />
+
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/sl_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/rl_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
+
+            <!--高斯模糊图片-->
+            <ImageView
+                android:id="@+id/iv_blur"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:scaleType="centerCrop" />
+
+            <RelativeLayout
+                android:id="@+id/rl_cover"
+                android:layout_width="120dp"
+                android:layout_height="160dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="90dp"
+                android:background="@drawable/bg_cover"
+                android:padding="3dp">
+
+                <ImageView
+                    android:id="@+id/iv_cover"
+                    android:layout_width="120dp"
+                    android:layout_height="160dp"
+                    android:scaleType="centerCrop" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/tv_comic_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/rl_cover"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="10dp"
+                android:layout_toRightOf="@id/rl_cover"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                tools:text="漫画名" />
+
+            <TextView
+                android:id="@+id/tv_comic_author"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@id/tv_comic_name"
+                android:layout_below="@id/tv_comic_name"
+                android:layout_marginTop="5dp"
+                android:textColor="@android:color/white" />
+
+            <TextView
+                android:id="@+id/tv_comic_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@id/tv_comic_name"
+                android:layout_below="@id/tv_comic_author"
+                android:layout_marginTop="5dp"
+                android:textColor="@android:color/white"
+                tools:text="连载中" />
+
+            <TextView
+                android:id="@+id/tv_comic_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@id/tv_comic_name"
+                android:layout_below="@id/tv_comic_status"
+                android:layout_marginTop="5dp"
+                android:textColor="@android:color/white"
+                tools:text="国漫" />
+
+            <ImageView
+                android:id="@+id/iv_fav"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/iv_blur"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="10dp"
+                android:layout_toRightOf="@id/rl_cover"
+                android:clickable="true"
+                android:src="@drawable/select_collect" />
+
+            <ImageView
+                android:id="@+id/iv_download"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/iv_fav"
+                android:layout_marginLeft="30dp"
+                android:layout_toRightOf="@id/iv_fav"
+                android:clickable="true"
+                android:src="@drawable/ic_download" />
+
+            <!--<ImageView
+                android:id="@+id/iv_sort"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/iv_fav"
+                android:layout_marginLeft="30dp"
+                android:layout_toRightOf="@id/iv_download"
+                android:clickable="true"
+                android:src="@drawable/ic_front" />-->
+
+            <ImageView
+                android:id="@+id/iv_share"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/iv_fav"
+                android:layout_marginLeft="30dp"
+                android:layout_toRightOf="@id/iv_download"
+                android:clickable="true"
+                android:src="@drawable/ic_share_pressed" />
+
+            <TextView
+                android:id="@+id/tv_comic_desc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/rl_cover"
+                android:layout_margin="8dp"
+                android:ellipsize="end"
+                android:maxLines="4"
+                tools:text="漫画描述" />
+
+            <TextView
+                android:id="@+id/tv_select"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_comic_desc"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="5dp"
+                android:textColor="@android:color/black"
+                tools:text="共0话" />
+
+            <TextView
+                android:id="@+id/tv_newest_chapter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/tv_select"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="8dp"
+                android:textColor="@android:color/black"
+                tools:text="最后更新于" />
+
+            <!--TODO 大于50做分页-->
+            <com.tongming.manga.cusview.CusGridView
+                android:id="@+id/gv_chapter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_select"
+                android:layout_margin="8dp"
+                android:horizontalSpacing="10dp"
+                android:numColumns="4"
+                android:verticalSpacing="10dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/gv_chapter"
+                android:layout_marginBottom="15dp" />
+        </RelativeLayout>
+    </android.support.v4.widget.NestedScrollView>
+</RelativeLayout>

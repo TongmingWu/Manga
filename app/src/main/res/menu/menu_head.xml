@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/menu_index"
+            android:title="首页"
+            android:checked="true"
+            android:icon="@drawable/ic_home_grey_500_18dp"/>
+        <item
+            android:id="@+id/menu_local"
+            android:icon="@drawable/ic_drawer_local_manga"
+            android:title="本地漫画" />
+        <item
+            android:id="@+id/menu_history"
+            android:icon="@drawable/ic_drawer_history"
+            android:title="历史记录" />
+        <item
+            android:id="@+id/menu_collected"
+            android:icon="@drawable/ic_collected"
+            android:title="我的收藏" />
+        <item
+            android:id="@+id/menu_download"
+            android:icon="@drawable/ic_drawer_download"
+            android:title="下载管理" />
+        <item
+            android:id="@+id/menu_setting"
+            android:icon="@drawable/ic_drawer_setting"
+            android:title="设置" />
+    </group>
+</menu>

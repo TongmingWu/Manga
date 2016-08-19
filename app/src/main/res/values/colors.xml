@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#ff960c</color>
+    <color name="colorPrimaryDark">#ff960c</color>
+    <color name="colorAccent">#ff960c</color>
+    <color name="pageBar">#7e31271a</color>
+    <color name="appbar">#00ff960c</color>
+</resources>

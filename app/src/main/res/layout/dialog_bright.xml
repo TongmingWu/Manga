@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_bright"
+    android:layout_width="wrap_content"
+    android:layout_height="60dp">
+
+
+    <android.support.v7.widget.AppCompatSeekBar
+        android:id="@+id/sb_bright"
+        android:layout_width="240dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:max="256"
+        android:maxHeight="8dp"
+        android:minHeight="8dp"
+        android:progressDrawable="@drawable/progressbar"
+        android:thumb="@drawable/thumb_bg" />
+
+    <ImageView
+        android:id="@+id/iv_bright"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="8dp"
+        android:layout_toRightOf="@id/sb_bright"
+        android:src="@drawable/ic_brightness_auto_amber_400_18dp" />
+
+    <android.support.v7.widget.AppCompatCheckBox
+        android:id="@+id/cb_auto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/sb_bright"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
+        android:text="系统亮度"
+        android:textColor="@android:color/black"
+        android:theme="@style/AppTheme" />
+</RelativeLayout>
