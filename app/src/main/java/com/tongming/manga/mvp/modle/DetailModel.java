@@ -60,6 +60,7 @@ public class DetailModel implements IDetailModel {
                         onGetDataListener.onFail(throwable);
                     }
                 });
+        //git
         /*return DBManager.getInstance().queryHistoryByName(info.getComic_name())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
