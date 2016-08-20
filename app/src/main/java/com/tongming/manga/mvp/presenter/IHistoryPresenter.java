@@ -1,12 +1,14 @@
 package com.tongming.manga.mvp.presenter;
 
+import android.content.Context;
+
 /**
  * Created by Tongming on 2016/8/15.
  */
 public interface IHistoryPresenter {
-    void queryAllHistory();
+    void queryAllHistory(Context context);
 
-    void deleteHistoryByName(String name);
+    void deleteHistoryByName(Context context,String name);
 
-    void deleteAllHistory();
+    void deleteAllHistory(Context context);
 }

@@ -1,5 +1,7 @@
 package com.tongming.manga.mvp.presenter;
 
+import android.content.Context;
+
 import com.orhanobut.logger.Logger;
 import com.tongming.manga.mvp.base.BasePresenter;
 import com.tongming.manga.mvp.bean.HistoryComic;
@@ -22,18 +24,18 @@ public class HistoryPresenterImp extends BasePresenter implements IHistoryPresen
     }
 
     @Override
-    public void queryAllHistory() {
-        addSubscription(historyModel.queryAllHistory());
+    public void queryAllHistory(Context context) {
+        addSubscription(historyModel.queryAllHistory(context));
     }
 
     @Override
-    public void deleteHistoryByName(String name) {
-        addSubscription(historyModel.deleteHistoryByName(name));
+    public void deleteHistoryByName(Context context, String name) {
+        historyModel.deleteHistoryByName(context, name);
     }
 
     @Override
-    public void deleteAllHistory() {
-        addSubscription(historyModel.deleteAllHistory());
+    public void deleteAllHistory(Context context) {
+        historyModel.deleteAllHistory(context);
     }
 
     @Override

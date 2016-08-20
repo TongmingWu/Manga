@@ -1,5 +1,7 @@
 package com.tongming.manga.mvp.presenter;
 
+import android.content.Context;
+
 import com.tongming.manga.mvp.bean.ComicInfo;
 
 /**
@@ -8,15 +10,15 @@ import com.tongming.manga.mvp.bean.ComicInfo;
 public interface IDetailPresenter {
     void getDetail(String comicUrl);
 
-    void addHistory(ComicInfo info, String historyName, String historyUrl);
+    void addHistory(Context context, ComicInfo info, String historyName, String historyUrl);
 
-    void queryHistoryByName(String name);
+    void queryHistoryByName(Context context, String name);
 
-    void updateHistory(ComicInfo info, String historyName, String historyUrl);
+    void updateHistory(Context context, ComicInfo info, String historyName, String historyUrl);
 
-    void collectComic(ComicInfo info);
+    void collectComic(Context context, ComicInfo info);
 
-    void queryCollectByName(String name);
+    void queryCollectByName(Context context, String name);
 
-    void deleteCollectByName(String name);
+    void deleteCollectByName(Context context,String name);
 }

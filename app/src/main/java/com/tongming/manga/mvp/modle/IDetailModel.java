@@ -1,5 +1,7 @@
 package com.tongming.manga.mvp.modle;
 
+import android.content.Context;
+
 import com.tongming.manga.mvp.bean.ComicInfo;
 
 import rx.Subscription;
@@ -10,15 +12,15 @@ import rx.Subscription;
 public interface IDetailModel {
     Subscription getDetail(String comicUrl);
 
-    Subscription addHistory(ComicInfo info, String historyName, String historyUrl);
+    void addHistory(Context context, ComicInfo info, String historyName, String historyUrl);
 
-    Subscription queryHistoryByName(String comicName);
+    Subscription queryHistoryByName(Context context, String comicName);
 
-    Subscription updateHistory(ComicInfo info, String historyName, String historyUrl);
+    void updateHistory(Context context, ComicInfo info, String historyName, String historyUrl);
 
-    Subscription collectComic(ComicInfo info);
+    void collectComic(Context context, ComicInfo info);
 
-    Subscription queryCollectByName(String name);
+    Subscription queryCollectByName(Context context, String name);
 
-    Subscription deleteCollectByName(String name);
+    void deleteCollectByName(Context context, String name);
 }

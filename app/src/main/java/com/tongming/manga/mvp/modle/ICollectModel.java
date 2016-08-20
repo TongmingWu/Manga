@@ -1,14 +1,16 @@
 package com.tongming.manga.mvp.modle;
 
+import android.content.Context;
+
 import rx.Subscription;
 
 /**
  * Created by Tongming on 2016/8/17.
  */
 public interface ICollectModel {
-    Subscription queryAllCollect();
+    Subscription queryAllCollect(Context context);
 
-    Subscription deleteCollectByName(String name);
+    void deleteCollectByName(Context context,String name);
 
-    Subscription deleteAllCollect();
+    void deleteAllCollect(Context context);
 }

@@ -1,13 +1,15 @@
 package com.tongming.manga.mvp.modle;
 
+import android.content.Context;
+
 import com.tongming.manga.mvp.bean.HistoryComic;
 import com.tongming.manga.mvp.db.DBManager;
 
 import java.util.List;
 
+import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -22,57 +24,38 @@ public class HistoryModel implements IHistoryModel {
     }
 
     @Override
-    public Subscription queryAllHistory() {
-        return DBManager.getInstance().queryAllHistory()
+    public Subscription queryAllHistory(Context context) {
+        return new DBManager(context).queryAllHistory()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<HistoryComic>>() {
+                .subscribe(new Subscriber<List<HistoryComic>>() {
                     @Override
-                    public void call(List<HistoryComic> comics) {
+                    public void onCompleted() {
+                        this.unsubscribe();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        queryListener.onFail(e);
+                    }
+
+                    @Override
+                    public void onNext(List<HistoryComic> comics) {
                         queryListener.onQueryAll(comics);
                     }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        queryListener.onFail(throwable);
-                    }
                 });
     }
 
     @Override
-    public Subscription deleteHistoryByName(String name) {
-        return DBManager.getInstance().deleteHistoryByName(name)
-                .observeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Integer>() {
-                    @Override
-                    public void call(Integer integer) {
-                        queryListener.onDeleteByName(integer);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        queryListener.onFail(throwable);
-                    }
-                });
+    public void deleteHistoryByName(Context context, String name) {
+        int state = new DBManager(context).deleteHistoryByName(name);
+        queryListener.onDeleteByName(state);
     }
 
     @Override
-    public Subscription deleteAllHistory() {
-        return DBManager.getInstance().deleteAllHistory()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Integer>() {
-                    @Override
-                    public void call(Integer integer) {
-                        queryListener.onDeleteAll(integer);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        queryListener.onFail(throwable);
-                    }
-                });
+    public void deleteAllHistory(Context context) {
+        int state = new DBManager(context).deleteAllHistory();
+        queryListener.onDeleteAll(state);
     }
 
     public interface onQueryListener {

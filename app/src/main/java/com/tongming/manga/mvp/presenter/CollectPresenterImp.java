@@ -1,5 +1,7 @@
 package com.tongming.manga.mvp.presenter;
 
+import android.content.Context;
+
 import com.tongming.manga.mvp.base.BasePresenter;
 import com.tongming.manga.mvp.bean.CollectedComic;
 import com.tongming.manga.mvp.modle.CollectModel;
@@ -22,18 +24,18 @@ public class CollectPresenterImp extends BasePresenter implements ICollectPresen
     }
 
     @Override
-    public void queryAllCollect() {
-        addSubscription(collectModel.queryAllCollect());
+    public void queryAllCollect(Context context) {
+        addSubscription(collectModel.queryAllCollect(context));
     }
 
     @Override
-    public void deleteCollectByName(String name) {
-        addSubscription(collectModel.deleteCollectByName(name));
+    public void deleteCollectByName(Context context, String name) {
+        collectModel.deleteCollectByName(context, name);
     }
 
     @Override
-    public void deleteAllCollect() {
-        addSubscription(collectModel.deleteAllCollect());
+    public void deleteAllCollect(Context context) {
+        collectModel.deleteAllCollect(context);
     }
 
     @Override

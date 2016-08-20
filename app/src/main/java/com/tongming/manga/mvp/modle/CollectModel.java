@@ -1,13 +1,15 @@
 package com.tongming.manga.mvp.modle;
 
+import android.content.Context;
+
 import com.tongming.manga.mvp.bean.CollectedComic;
 import com.tongming.manga.mvp.db.DBManager;
 
 import java.util.List;
 
+import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -22,47 +24,39 @@ public class CollectModel implements ICollectModel {
     }
 
     @Override
-    public Subscription queryAllCollect() {
-        return DBManager.getInstance().queryAllCollected()
+    public Subscription queryAllCollect(Context context) {
+        return new DBManager(context).queryAllCollected()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<CollectedComic>>() {
+                .subscribe(new Subscriber<List<CollectedComic>>() {
                     @Override
-                    public void call(List<CollectedComic> comics) {
+                    public void onCompleted() {
+                        this.unsubscribe();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        collectListener.onFail(e);
+                    }
+
+                    @Override
+                    public void onNext(List<CollectedComic> comics) {
                         collectListener.onQueryAllCompleted(comics);
                     }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        collectListener.onFail(throwable);
-                    }
                 });
     }
 
     @Override
-    public Subscription deleteCollectByName(String name) {
-        return DBManager.getInstance().deleteCollectByName(name)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Integer>() {
-                    @Override
-                    public void call(Integer integer) {
-                        collectListener.onDeleteByName(integer);
-                    }
-                });
+    public void deleteCollectByName(Context context, String name) {
+        int state = new DBManager(context).deleteCollectByName(name);
+        collectListener.onDeleteByName(state);
+
     }
 
     @Override
-    public Subscription deleteAllCollect() {
-        return DBManager.getInstance().deleteAllCollect()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Integer>() {
-                    @Override
-                    public void call(Integer integer) {
-                        collectListener.onDeleteAll(integer);
-                    }
-                });
+    public void deleteAllCollect(Context context) {
+        int state = new DBManager(context).deleteAllCollect();
+        collectListener.onDeleteAll(state);
     }
 
     public interface OnCollectListener {

@@ -1,5 +1,6 @@
 package com.tongming.manga.mvp.modle;
 
+import android.content.Context;
 import android.text.TextUtils;
 
 import com.orhanobut.logger.Logger;
@@ -11,6 +12,7 @@ import com.tongming.manga.mvp.db.DBManager;
 
 import java.util.List;
 
+import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -45,21 +47,9 @@ public class DetailModel implements IDetailModel {
     }
 
     @Override
-    public Subscription addHistory(final ComicInfo info, final String historyName, final String historyUrl) {
-        return DBManager.getInstance().addHistory(info, historyName, historyUrl)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Long>() {
-                    @Override
-                    public void call(Long aLong) {
-                        onGetDataListener.onAddHistoryCompleted(aLong);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        onGetDataListener.onFail(throwable);
-                    }
-                });
+    public void addHistory(Context context, final ComicInfo info, final String historyName, final String historyUrl) {
+        long state = new DBManager(context).addHistory(info, historyName, historyUrl);
+        onGetDataListener.onAddHistoryCompleted(state);
         //git
         /*return DBManager.getInstance().queryHistoryByName(info.getComic_name())
                 .subscribeOn(Schedulers.io())
@@ -77,35 +67,33 @@ public class DetailModel implements IDetailModel {
     }
 
     @Override
-    public Subscription updateHistory(ComicInfo info, String historyName, String historyUrl) {
-        return DBManager.getInstance().updateHistory(info, historyName, historyUrl)
-                .observeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Integer>() {
-                    @Override
-                    public void call(Integer integer) {
-                        onGetDataListener.onUpdateHistoryCompleted(integer);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        onGetDataListener.onFail(throwable);
-                    }
-                });
+    public void updateHistory(Context context, ComicInfo info, String historyName, String historyUrl) {
+        int state = new DBManager(context).updateHistory(info, historyName, historyUrl);
+        onGetDataListener.onUpdateHistoryCompleted(state);
     }
 
     @Override
-    public Subscription queryHistoryByName(String comicName) {
+    public Subscription queryHistoryByName(Context context, final String comicName) {
         Logger.d("开始读取历史记录");
-        return DBManager.getInstance().queryHistoryByName(comicName)
+        return new DBManager(context).queryHistoryByName(comicName)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<HistoryComic>>() {
+                .subscribe(new Subscriber<List<HistoryComic>>() {
                     @Override
-                    public void call(List<HistoryComic> historyComics) {
-                        if (historyComics.size() > 0) {
-                            Logger.d("得到的历史记录:" + historyComics.get(0).getHistoryUrl());
-                            for (HistoryComic comic : historyComics) {
+                    public void onCompleted() {
+                        this.unsubscribe();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        onGetDataListener.onFail(e);
+                    }
+
+                    @Override
+                    public void onNext(List<HistoryComic> comics) {
+                        if (comics.size() > 0) {
+                            Logger.d("得到的历史记录:" + comics.get(0).getHistoryUrl());
+                            for (HistoryComic comic : comics) {
                                 if (!TextUtils.isEmpty(comic.getHistoryUrl())) {
                                     onGetDataListener.onQueryHistoryCompleted(
                                             comic.getHistoryName(),
@@ -116,76 +104,45 @@ public class DetailModel implements IDetailModel {
                             onGetDataListener.onQueryHistoryCompleted("", "");
                         }
                     }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        onGetDataListener.onFail(throwable);
-                    }
                 });
     }
 
     @Override
-    public Subscription collectComic(final ComicInfo info) {
+    public void collectComic(Context context, final ComicInfo info) {
         //先查询数据库中是否已有记录,有的话更新,没有则插入
-        return DBManager.getInstance().queryCollectedByName(info.getComic_name())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<CollectedComic>>() {
-                    @Override
-                    public void call(List<CollectedComic> collectedComics) {
-                        if (collectedComics.size() == 0) {
-                            DBManager.getInstance().collectComic(info)
-                                    .observeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(new Action1<Long>() {
-                                        @Override
-                                        public void call(Long aLong) {
-                                            onGetDataListener.onAddCollectCompleted(aLong);
-                                        }
-                                    }, new Action1<Throwable>() {
-                                        @Override
-                                        public void call(Throwable throwable) {
-                                            onGetDataListener.onFail(throwable);
-                                        }
-                                    });
-                        }
-                    }
-                });
+        long state = new DBManager(context).collectComic(info);
+        onGetDataListener.onAddCollectCompleted(state);
     }
 
     @Override
-    public Subscription queryCollectByName(String name) {
-        return DBManager.getInstance().queryCollectedByName(name)
+    public Subscription queryCollectByName(Context context, String name) {
+        return new DBManager(context).queryCollectedByName(name)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<CollectedComic>>() {
+                .subscribe(new Subscriber<List<CollectedComic>>() {
                     @Override
-                    public void call(List<CollectedComic> collectedComics) {
-                        if (collectedComics.size() > 0) {
+                    public void onCompleted() {
+                        this.unsubscribe();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        onGetDataListener.onFail(e);
+                    }
+
+                    @Override
+                    public void onNext(List<CollectedComic> comics) {
+                        if (comics.size() > 0) {
                             onGetDataListener.onQueryCollectCompleted(true);
-                        } else {
-                            onGetDataListener.onQueryCollectCompleted(false);
                         }
                     }
                 });
     }
 
     @Override
-    public Subscription deleteCollectByName(String name) {
-        return DBManager.getInstance().deleteCollectByName(name)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Integer>() {
-                    @Override
-                    public void call(Integer integer) {
-                        onGetDataListener.onDeleteCollectCompleted(integer);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        onGetDataListener.onFail(throwable);
-                    }
-                });
+    public void deleteCollectByName(Context context, String name) {
+        int state = new DBManager(context).deleteCollectByName(name);
+        onGetDataListener.onDeleteCollectCompleted(state);
     }
 
     public interface onGetDataListener {

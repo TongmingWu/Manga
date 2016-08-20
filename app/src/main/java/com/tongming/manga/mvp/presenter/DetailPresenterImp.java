@@ -1,5 +1,7 @@
 package com.tongming.manga.mvp.presenter;
 
+import android.content.Context;
+
 import com.orhanobut.logger.Logger;
 import com.tongming.manga.mvp.base.BasePresenter;
 import com.tongming.manga.mvp.bean.ComicInfo;
@@ -27,33 +29,30 @@ public class DetailPresenterImp extends BasePresenter implements IDetailPresente
     }
 
     @Override
-    public void addHistory(ComicInfo info, String historyName, String historyUrl) {
-        addSubscription(detailModel.addHistory(info, historyName, historyUrl));
+    public void addHistory(Context context,ComicInfo info, String historyName, String historyUrl) {
+        detailModel.addHistory(context,info, historyName, historyUrl);
     }
 
     @Override
-    public void updateHistory(ComicInfo info, String historyName, String historyUrl) {
-        addSubscription(detailModel.updateHistory(info, historyName, historyUrl));
+    public void updateHistory(Context context,ComicInfo info, String historyName, String historyUrl) {
+        detailModel.updateHistory(context,info, historyName, historyUrl);
     }
 
     @Override
-    public void queryHistoryByName(String name) {
-        addSubscription(detailModel.queryHistoryByName(name));
+    public void queryHistoryByName(Context context,String name) {
+        addSubscription(detailModel.queryHistoryByName(context,name));
     }
 
     @Override
-    public void collectComic(ComicInfo info) {
-        addSubscription(detailModel.collectComic(info));
+    public void collectComic(Context context,ComicInfo info) {detailModel.collectComic(context,info);
     }
 
     @Override
-    public void queryCollectByName(String name) {
-        addSubscription(detailModel.queryCollectByName(name));
+    public void queryCollectByName(Context context,String name) {detailModel.queryCollectByName(context,name);
     }
 
     @Override
-    public void deleteCollectByName(String name) {
-        addSubscription(detailModel.deleteCollectByName(name));
+    public void deleteCollectByName(Context context,String name){detailModel.deleteCollectByName(context,name);
     }
 
     @Override

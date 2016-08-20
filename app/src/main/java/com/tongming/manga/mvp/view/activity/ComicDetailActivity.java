@@ -101,8 +101,8 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView {
         presenter = new DetailPresenterImp(this);
         //先从数据库读取阅读记录,如果有阅读过的话返回historyUrl,跟list进行匹配得到position,在设置item的背景
         String name = getIntent().getStringExtra("name");
-        ((DetailPresenterImp) presenter).queryHistoryByName(name);
-        ((DetailPresenterImp) presenter).queryCollectByName(name);
+        ((DetailPresenterImp) presenter).queryHistoryByName(this, name);
+        ((DetailPresenterImp) presenter).queryCollectByName(this, name);
         sp = getSharedPreferences("config", MODE_PRIVATE);
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) toolbar.getLayoutParams();
         params.setMargins(0, 80, 0, 0);
@@ -198,9 +198,13 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView {
             @Override
             public void onClick(View v) {
                 if (isCollected) {
-                    ((DetailPresenterImp) presenter).deleteCollectByName(info.getComic_name());
+                    ((DetailPresenterImp) presenter).deleteCollectByName(ComicDetailActivity.this, info.getComic_name());
+//                    isCollected = false;
+//                    Toast.makeText(ComicDetailActivity.this, "取消收藏", Toast.LENGTH_SHORT).show();
                 } else {
-                    ((DetailPresenterImp) presenter).collectComic(info);
+//                    isCollected = true;
+//                    Toast.makeText(ComicDetailActivity.this, "收藏成功", Toast.LENGTH_SHORT).show();
+                    ((DetailPresenterImp) presenter).collectComic(ComicDetailActivity.this, info);
                 }
             }
         });
@@ -257,25 +261,22 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView {
         this.isCollected = isCollected;
         if (isCollected) {
             ivFav.setImageResource(R.drawable.ic_collected);
+            Logger.d("收藏成功");
         }
     }
 
     @Override
     public void onAddCollect(long state) {
-        if (state > 0) {
-            ivFav.setImageResource(R.drawable.ic_collected);
-            isCollected = true;
-            Toast.makeText(ComicDetailActivity.this, "收藏成功", Toast.LENGTH_SHORT).show();
-        }
+        ivFav.setImageResource(R.drawable.ic_collected);
+        isCollected = true;
+        Toast.makeText(ComicDetailActivity.this, "收藏成功", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onDeleteCollectByName(int state) {
-        if (state > 0) {
-            isCollected = false;
-            ivFav.setImageResource(R.drawable.select_collect);
-            Toast.makeText(ComicDetailActivity.this, "取消收藏", Toast.LENGTH_SHORT).show();
-        }
+        isCollected = false;
+        ivFav.setImageResource(R.drawable.select_collect);
+        Toast.makeText(ComicDetailActivity.this, "取消收藏", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -286,10 +287,11 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView {
             historyName = data.getStringExtra("name");
             historyUrl = data.getStringExtra("url");
             if (isRead) {
-                ((DetailPresenterImp) presenter).updateHistory(info, historyName, historyUrl);
+                ((DetailPresenterImp) presenter).updateHistory(ComicDetailActivity.this, info, historyName, historyUrl);
                 Logger.d("更新阅读记录");
             } else {
-                ((DetailPresenterImp) presenter).addHistory(info, historyName, historyUrl);
+                ((DetailPresenterImp) presenter).addHistory(ComicDetailActivity.this, info, historyName, historyUrl);
+                isRead = true;
                 Logger.d("添加阅读记录");
             }
             Logger.d("返回的url=" + historyUrl);

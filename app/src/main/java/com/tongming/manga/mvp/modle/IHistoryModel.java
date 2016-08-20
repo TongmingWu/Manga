@@ -1,14 +1,16 @@
 package com.tongming.manga.mvp.modle;
 
+import android.content.Context;
+
 import rx.Subscription;
 
 /**
  * Created by Tongming on 2016/8/15.
  */
 public interface IHistoryModel {
-    Subscription queryAllHistory();
+    Subscription queryAllHistory(Context context);
 
-    Subscription deleteHistoryByName(String name);
+    void deleteHistoryByName(Context context, String name);
 
-    Subscription deleteAllHistory();
+    void deleteAllHistory(Context context);
 }

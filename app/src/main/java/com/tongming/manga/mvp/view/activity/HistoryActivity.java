@@ -48,6 +48,10 @@ public class HistoryActivity extends BaseActivity implements IHistoryView {
                 onBackPressed();
             }
         });
+        if (presenter == null) {
+            presenter = new HistoryPresenterImp(this);
+        }
+        ((HistoryPresenterImp) presenter).queryAllHistory(this);
         fabClear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,7 +61,7 @@ public class HistoryActivity extends BaseActivity implements IHistoryView {
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                ((HistoryPresenterImp)presenter).deleteAllHistory();
+                                ((HistoryPresenterImp) presenter).deleteAllHistory(HistoryActivity.this);
                             }
                         }).setNegativeButton("取消", null).show();
             }
@@ -65,16 +69,8 @@ public class HistoryActivity extends BaseActivity implements IHistoryView {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        if (presenter == null) {
-            presenter = new HistoryPresenterImp(this);
-        }
-        ((HistoryPresenterImp)presenter).queryAllHistory();
-    }
-
-    @Override
     public void onQuery(final List<HistoryComic> comics) {
+        Logger.d("查询历史记录");
         gvHistory.setAdapter(new ComicAdapter(comics, this, ComicAdapter.HISTORY_COMIC));
         gvHistory.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -95,8 +91,7 @@ public class HistoryActivity extends BaseActivity implements IHistoryView {
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Logger.d(comics.get(position).toString());
-                                ((HistoryPresenterImp)presenter).deleteHistoryByName(comics.get(position).getName());
+                                ((HistoryPresenterImp) presenter).deleteHistoryByName(HistoryActivity.this, comics.get(position).getName());
                             }
                         }).setNegativeButton("取消", null)
                         .show();
@@ -107,11 +102,13 @@ public class HistoryActivity extends BaseActivity implements IHistoryView {
 
     @Override
     public void onDeleteByName(int state) {
-        ((HistoryPresenterImp)presenter).queryAllHistory();
+        ((HistoryPresenterImp) presenter).queryAllHistory(this);
+        Logger.d("删除指定历史");
     }
 
     @Override
     public void onDeleteAll(int state) {
-        ((HistoryPresenterImp)presenter).queryAllHistory();
+        Logger.d("清空历史记录");
+        ((HistoryPresenterImp) presenter).queryAllHistory(this);
     }
 }

@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import com.orhanobut.logger.Logger;
 import com.tongming.manga.R;
 import com.tongming.manga.mvp.base.BaseFragment;
 import com.tongming.manga.mvp.bean.CollectedComic;
@@ -35,7 +36,7 @@ public class CollectionFragment extends BaseFragment implements ICollectView {
     @Override
     protected void initView() {
         presenter = new CollectPresenterImp(this);
-        ((CollectPresenterImp) presenter).queryAllCollect();
+        ((CollectPresenterImp) presenter).queryAllCollect(getContext());
     }
 
     @Override
@@ -45,7 +46,7 @@ public class CollectionFragment extends BaseFragment implements ICollectView {
         if (presenter == null) {
             presenter = new CollectPresenterImp(this);
         }
-        ((CollectPresenterImp) presenter).queryAllCollect();
+        ((CollectPresenterImp) presenter).queryAllCollect(getContext());
     }
 
     @Override
@@ -72,7 +73,7 @@ public class CollectionFragment extends BaseFragment implements ICollectView {
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                ((CollectPresenterImp) presenter).deleteCollectByName(comics.get(position).getName());
+                                ((CollectPresenterImp) presenter).deleteCollectByName(getContext(), comics.get(position).getName());
                             }
                         }).setNegativeButton("取消", null)
                         .show();
@@ -84,7 +85,8 @@ public class CollectionFragment extends BaseFragment implements ICollectView {
     @Override
     public void onDeleteCollectByName(int state) {
         if (state > 0) {
-            ((CollectPresenterImp) presenter).queryAllCollect();
+            ((CollectPresenterImp) presenter).queryAllCollect(getContext());
+            Logger.d("删除指定收藏完毕");
         }
     }
 
