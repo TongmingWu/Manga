@@ -85,6 +85,11 @@ public class HomeActivity extends BaseActivity implements ISystemView {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkPermission();
         }
+        /*byte[] bytes = RSA.encryptData("哈哈".getBytes());
+        if (bytes != null) {
+            String strRead = Base64Utils.encode(bytes);
+            Logger.d(strRead);
+        }*/
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) rlBar.getLayoutParams();
         params.setMargins(0, 80, 0, 0);
         final List<BaseFragment> fragments = new ArrayList<>();

@@ -5,6 +5,9 @@ import com.tongming.manga.mvp.bean.ComicInfo;
 import com.tongming.manga.mvp.bean.ComicPage;
 import com.tongming.manga.mvp.bean.Hot;
 import com.tongming.manga.mvp.bean.Search;
+import com.tongming.manga.mvp.bean.Sms;
+import com.tongming.manga.mvp.bean.User;
+import com.tongming.manga.mvp.bean.UserInfo;
 import com.tongming.manga.util.CommonUtil;
 
 import java.io.File;
@@ -16,6 +19,7 @@ import okhttp3.CacheControl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -30,6 +34,9 @@ public class ApiManager {
     //    private static final String BASE_URL = "http://192.168.1.102:5000";
 //    private static final String BASE_URL = "http://45.78.25.201";
     private static final String BASE_URL = "http://119.29.57.187";
+
+    public static final String APP_ID = "Rp2mOsDSVkDoN5E4hbJEhlig-gzGzoHsz";
+    public static final String APP_KEY = "ri3VwT0ULLOqxtdjMPkhkgla";
 
     //短缓存有效期为1秒钟
     public static final int CACHE_STALE_SHORT = 1;
@@ -127,6 +134,26 @@ public class ApiManager {
 
     public Observable<Search> doSearch(String word, int page) {
         return apiService.doSearch(word, page);
+    }
+
+    public Observable<Sms> requestSms(RequestBody body) {
+        return apiService.requestSms(body);
+    }
+
+    public Observable<Sms> verifySms(RequestBody body) {
+        return apiService.verifySms(body);
+    }
+
+    public Observable<User> login(RequestBody body) {
+        return apiService.login(body);
+    }
+
+    public Observable<User> logon(RequestBody body) {
+        return apiService.logon(body);
+    }
+
+    public Observable<UserInfo> getUserInfo(String token) {
+        return apiService.getUserInfo(token);
     }
 
 }
