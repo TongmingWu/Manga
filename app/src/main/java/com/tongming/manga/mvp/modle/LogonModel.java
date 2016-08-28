@@ -1,5 +1,6 @@
 package com.tongming.manga.mvp.modle;
 
+import com.orhanobut.logger.Logger;
 import com.tongming.manga.mvp.api.ApiManager;
 import com.tongming.manga.mvp.bean.Result;
 
@@ -61,7 +62,7 @@ public class LogonModel implements ILogonModel {
     public Subscription logon(String phone, String pwd, String code) {
         Map<String, String> map = new HashMap<>();
         map.put("phone", phone);
-        map.put("pwd", pwd);
+        map.put("password", pwd);
         map.put("code", code);
         map.put("appId", ApiManager.APP_ID);
         map.put("appKey", ApiManager.APP_KEY);
@@ -76,8 +77,10 @@ public class LogonModel implements ILogonModel {
                     @Override
                     public void call(Result result) {
                         if (result.getCode() != 200) {
+                            Logger.d("注册失败");
                             logonListener.onLogon(false);
                         } else {
+                            Logger.d("注册成功");
                             logonListener.onLogon(true);
                         }
                     }

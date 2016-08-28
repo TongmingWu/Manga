@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.orhanobut.logger.Logger;
 import com.tongming.manga.R;
 import com.tongming.manga.mvp.base.BaseActivity;
 import com.tongming.manga.mvp.presenter.LogonPresenterImp;
@@ -147,7 +148,7 @@ public class LogonActivity extends BaseActivity implements ILogonView {
 
             @Override
             public void run() {
-                while (progress > 0) {
+                while (progress >= 0) {
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {
@@ -206,6 +207,6 @@ public class LogonActivity extends BaseActivity implements ILogonView {
 
     @Override
     public void onFail(Throwable throwable) {
-
+        Logger.e(throwable.getMessage());
     }
 }
