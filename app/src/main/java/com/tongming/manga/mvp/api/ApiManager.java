@@ -5,7 +5,7 @@ import com.tongming.manga.mvp.bean.ComicInfo;
 import com.tongming.manga.mvp.bean.ComicPage;
 import com.tongming.manga.mvp.bean.Hot;
 import com.tongming.manga.mvp.bean.Search;
-import com.tongming.manga.mvp.bean.Sms;
+import com.tongming.manga.mvp.bean.Result;
 import com.tongming.manga.mvp.bean.User;
 import com.tongming.manga.mvp.bean.UserInfo;
 import com.tongming.manga.util.CommonUtil;
@@ -21,7 +21,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -38,10 +37,10 @@ public class ApiManager {
     public static final String APP_ID = "Rp2mOsDSVkDoN5E4hbJEhlig-gzGzoHsz";
     public static final String APP_KEY = "ri3VwT0ULLOqxtdjMPkhkgla";
 
-    //短缓存有效期为1秒钟
-    public static final int CACHE_STALE_SHORT = 1;
-    //长缓存有效期为7天
-    public static final int CACHE_STALE_LONG = 60 * 60 * 24 * 7;
+    //短缓存有效期为120秒钟
+    public static final int CACHE_STALE_SHORT = 120;
+    //长缓存有效期为1天
+    public static final int CACHE_STALE_LONG = 60 * 60 * 24;
 
     private OkHttpClient mOkHttpClient;
 
@@ -78,32 +77,33 @@ public class ApiManager {
         public Response intercept(Chain chain) throws IOException {
             Request request = chain.request();
             if (!CommonUtil.isNet(BaseApplication.getContext())) {
-                request = request.newBuilder().cacheControl(CacheControl.FORCE_CACHE).build();
+                request = request.newBuilder()
+                        .cacheControl(CacheControl.FORCE_CACHE)
+                        .build();
             }
             Response originalResponse = chain.proceed(request);
             if (CommonUtil.isNet(BaseApplication.getContext())) {
-                //有网的时候读接口上的@Headers里的配置，你可以在这里进行统一的设置
+                //有网的时候读接口上的@Headers里的配置，可以在这里进行统一的设置
                 String cacheControl = request.cacheControl().toString();
-                return originalResponse.newBuilder().header("Cache-Control", cacheControl).removeHeader("Pragma").build();
+                return originalResponse.newBuilder()
+                        .header("Cache-Control", cacheControl)
+                        .removeHeader("Pragma").build();
             } else {
-                return originalResponse.newBuilder().header("Cache-Control", "public, only-if-cached, max-stale=" + CACHE_STALE_LONG).removeHeader("Pragma").build();
+                return originalResponse.newBuilder()
+                        .header("Cache-Control", "public, only-if-cached, max-stale=" + CACHE_STALE_SHORT)
+                        .removeHeader("Pragma")
+                        .build();
             }
         }
     };
 
     private void initOkHttpClient() {
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         if (mOkHttpClient == null) {
             synchronized (ApiManager.class) {
                 if (mOkHttpClient == null) {
                     // 指定缓存路径,缓存大小100Mb
                     Cache cache = new Cache(new File(BaseApplication.getContext().getCacheDir(), "HttpCache"),
                             1024 * 1024 * 100);
-
-                    /*.addInterceptor(mRewriteCacheControlInterceptor)
-                            .addNetworkInterceptor(mRewriteCacheControlInterceptor)
-                            .addInterceptor(interceptor)*/
                     mOkHttpClient = new OkHttpClient.Builder()
                             .cache(cache)
                             .addInterceptor(mRewriteCacheControlInterceptor)
@@ -136,19 +136,15 @@ public class ApiManager {
         return apiService.doSearch(word, page);
     }
 
-    public Observable<Sms> requestSms(RequestBody body) {
+    public Observable<Result> requestSms(RequestBody body) {
         return apiService.requestSms(body);
-    }
-
-    public Observable<Sms> verifySms(RequestBody body) {
-        return apiService.verifySms(body);
     }
 
     public Observable<User> login(RequestBody body) {
         return apiService.login(body);
     }
 
-    public Observable<User> logon(RequestBody body) {
+    public Observable<Result> logon(RequestBody body) {
         return apiService.logon(body);
     }
 

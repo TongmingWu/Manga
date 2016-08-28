@@ -3,6 +3,7 @@ package com.tongming.manga.mvp.view.activity;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.design.widget.NavigationView;
@@ -15,9 +16,11 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.orhanobut.logger.Logger;
@@ -39,6 +42,7 @@ import butterknife.OnClick;
 public class HomeActivity extends BaseActivity implements ISystemView {
 
     private static final int REQUEST_PERMISSION_CODE = 1;
+    public static final int LOGIN_CODE = 0x77;
     private long exitTime = 0;
     private final int[] tabPics = {
             R.drawable.icon_tab_favor_us,
@@ -62,6 +66,10 @@ public class HomeActivity extends BaseActivity implements ISystemView {
     DrawerLayout drawerLayout;
     @BindView(R.id.rl_bar)
     RelativeLayout rlBar;
+    private SharedPreferences sp;
+    private Button btnRegister;
+    private ImageView navAvatar;
+    private TextView tvUserName;
 
     @OnClick({R.id.iv_nav, R.id.iv_avatar})
     public void onClick(View view) {
@@ -168,18 +176,58 @@ public class HomeActivity extends BaseActivity implements ISystemView {
                 return true;
             }
         });
+        View headerView = nav.getHeaderView(0);
+        sp = getSharedPreferences("config", MODE_PRIVATE);
+        btnRegister = (Button) headerView.findViewById(R.id.btn_register);
+        navAvatar = (ImageView) headerView.findViewById(R.id.iv_avatar);
+        tvUserName = (TextView) headerView.findViewById(R.id.tv_user_name);
+        if (!sp.getBoolean("isLogin", false)) {
+            btnRegister.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(HomeActivity.this, LogonActivity.class));
+                }
+            });
+            navAvatar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivityForResult(new Intent(HomeActivity.this, LoginActivity.class), LOGIN_CODE);
+                }
+            });
+        } else {
+            btnRegister.setVisibility(View.GONE);
+            //初始化用户
+            initUser();
+        }
     }
+
+    private void initUser() {
+        if (!sp.getBoolean("isLogin", false)) {
+            sp.edit().putBoolean("isLogin", true).apply();
+        }
+        //从保存的User中获取用户信息
+        /*tvUserName.setText("");
+        Glide.with(this)
+                .load("")
+                .into(navAvatar);*/
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (viewPager.getCurrentItem()) {
-            case 0:
-                nav.setCheckedItem(R.id.menu_collected);
-                break;
-            case 1:
-            default:
-                nav.setCheckedItem(R.id.menu_index);
-                break;
+        if (resultCode == LOGIN_CODE) {
+            //登录成功后的回调处理
+            initUser();
+        } else {
+            switch (viewPager.getCurrentItem()) {
+                case 0:
+                    nav.setCheckedItem(R.id.menu_collected);
+                    break;
+                case 1:
+                default:
+                    nav.setCheckedItem(R.id.menu_index);
+                    break;
+            }
         }
     }
 

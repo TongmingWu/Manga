@@ -3,7 +3,7 @@ package com.tongming.manga.mvp.bean;
 /**
  * Created by Tongming on 2016/8/20.
  */
-public class Sms {
+public class Result {
 
     private int code;
     private String message;

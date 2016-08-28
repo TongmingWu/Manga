@@ -4,7 +4,7 @@ import com.tongming.manga.mvp.bean.ComicInfo;
 import com.tongming.manga.mvp.bean.ComicPage;
 import com.tongming.manga.mvp.bean.Hot;
 import com.tongming.manga.mvp.bean.Search;
-import com.tongming.manga.mvp.bean.Sms;
+import com.tongming.manga.mvp.bean.Result;
 import com.tongming.manga.mvp.bean.User;
 import com.tongming.manga.mvp.bean.UserInfo;
 
@@ -39,12 +39,12 @@ public interface ApiService {
     //@Query("appId") String appId, @Query("appKey") String appKey, @Query("phone") String phone
     @Headers("Content-Type:application/json")
     @POST("/requestSms")
-    Observable<Sms> requestSms(@Body RequestBody body);
+    Observable<Result> requestSms(@Body RequestBody body);
 
     //@Query("appId") String appId, @Query("appKey") String appKey, @Query("phone") String phone, @Query("code") String code
-    @Headers("Content-Type:application/json")
+    /*@Headers("Content-Type:application/json")
     @POST("/verifySms")
-    Observable<Sms> verifySms(@Body RequestBody body);
+    Observable<Result> verifySms(@Body RequestBody body);*/
 
     //@Query("phone") String phone, @Query("password") String password
     @Headers("Content-Type:application/json")
@@ -52,9 +52,10 @@ public interface ApiService {
     Observable<User> login(@Body RequestBody body);
 
     //@Query("phone") String phone, @Query("password") String password, @Query("name") String name
+    //@Query("appId") String appId, @Query("appKey") String appKey, @Query("code") String code
     @Headers("Content-Type:application/json")
     @POST("/logon")
-    Observable<User> logon(@Body RequestBody body);
+    Observable<Result> logon(@Body RequestBody body);
 
     @GET("/user")
     Observable<UserInfo> getUserInfo(@Query("token") String token);
