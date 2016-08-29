@@ -4,10 +4,10 @@ import com.tongming.manga.mvp.base.BaseApplication;
 import com.tongming.manga.mvp.bean.ComicInfo;
 import com.tongming.manga.mvp.bean.ComicPage;
 import com.tongming.manga.mvp.bean.Hot;
-import com.tongming.manga.mvp.bean.Search;
+import com.tongming.manga.mvp.bean.MangaToken;
 import com.tongming.manga.mvp.bean.Result;
+import com.tongming.manga.mvp.bean.Search;
 import com.tongming.manga.mvp.bean.User;
-import com.tongming.manga.mvp.bean.UserInfo;
 import com.tongming.manga.util.CommonUtil;
 
 import java.io.File;
@@ -140,7 +140,8 @@ public class ApiManager {
         return apiService.requestSms(body);
     }
 
-    public Observable<User> login(RequestBody body) {
+    public Observable<MangaToken> login(RequestBody body) {
+        //登录成功得到token
         return apiService.login(body);
     }
 
@@ -148,7 +149,7 @@ public class ApiManager {
         return apiService.logon(body);
     }
 
-    public Observable<UserInfo> getUserInfo(String token) {
+    public Observable<User> getUserInfo(String token) {
         return apiService.getUserInfo(token);
     }
 

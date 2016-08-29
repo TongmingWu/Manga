@@ -73,33 +73,33 @@ public class DBManager {
 
     //收藏漫画
     public long collectComic(final ComicInfo info) {
-        return briteDatabase.insert(CollectedTable.TABLE_NAME, CollectedTable.toContentValues(info));
+        return briteDatabase.insert(CollectionTable.TABLE_NAME, CollectionTable.toContentValues(info));
     }
 
     public Observable<List<CollectedComic>> queryAllCollected() {
         return briteDatabase
-                .createQuery(CollectedTable.TABLE_NAME, "SELECT * FROM " + CollectedTable.TABLE_NAME + " ORDER BY last_time DESC")
-                .mapToList(CollectedTable.COMIC_MAPPER);
+                .createQuery(CollectionTable.TABLE_NAME, "SELECT * FROM " + CollectionTable.TABLE_NAME + " ORDER BY last_time DESC")
+                .mapToList(CollectionTable.COMIC_MAPPER);
     }
 
     public Observable<List<CollectedComic>> queryCollectedByName(String name) {
-        return briteDatabase.createQuery(CollectedTable.TABLE_NAME, "SELECT * FROM "
-                        + CollectedTable.TABLE_NAME
+        return briteDatabase.createQuery(CollectionTable.TABLE_NAME, "SELECT * FROM "
+                        + CollectionTable.TABLE_NAME
                         + " WHERE "
-                        + CollectedTable.COLUMN_NAME
+                        + CollectionTable.COLUMN_NAME
                         + " = ?"
                 , name)
-                .mapToList(CollectedTable.COMIC_MAPPER);
+                .mapToList(CollectionTable.COMIC_MAPPER);
     }
 
     //删除指定收藏
     public int deleteCollectByName(final String name) {
-        return briteDatabase.delete(CollectedTable.TABLE_NAME, CollectedTable.COLUMN_NAME + " = ?", name);
+        return briteDatabase.delete(CollectionTable.TABLE_NAME, CollectionTable.COLUMN_NAME + " = ?", name);
     }
 
     //删除所有收藏
     public int deleteAllCollect() {
-        return briteDatabase.delete(CollectedTable.TABLE_NAME,
-                "DELETE * FROM " + CollectedTable.TABLE_NAME);
+        return briteDatabase.delete(CollectionTable.TABLE_NAME,
+                "DELETE * FROM " + CollectionTable.TABLE_NAME);
     }
 }

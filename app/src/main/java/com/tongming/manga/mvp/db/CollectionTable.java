@@ -11,7 +11,7 @@ import rx.functions.Func1;
 /**
  * Created by Tongming on 2016/8/17.
  */
-public class CollectedTable {
+public class CollectionTable {
     public static final String TABLE_NAME = "collect_comic";
 
     // 表字段
@@ -19,7 +19,7 @@ public class CollectedTable {
     public static final String COLUMN_NAME = "name";
     public static final String COLUMN_AUTHOR = "author";
     public static final String COLUMN_AREA = "area";
-    public static final String COLUMN_TYPE = "type";
+    public static final String COLUMN_TYPE = "category";
     public static final String COLUMN_URL = "url";
     public static final String COLUMN_STATUS = "status";
     public static final String COLUMN_COVER = "cover";

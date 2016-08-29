@@ -32,6 +32,7 @@ public class LogonPresenterImp extends BasePresenter implements ILogonPresenter,
     @Override
     public void onGetCode(boolean result) {
         logonView.onGetCode(result);
+//        clearSubscription();
     }
 
     @Override

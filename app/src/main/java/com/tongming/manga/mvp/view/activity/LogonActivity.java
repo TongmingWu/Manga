@@ -177,6 +177,8 @@ public class LogonActivity extends BaseActivity implements ILogonView {
         switch (view.getId()) {
             case R.id.btn_code:
                 getCode();
+                //开启1分钟倒计时,按钮为不可按状态
+                chronometer();
                 break;
             case R.id.btn_logon:
                 logon();
@@ -190,8 +192,6 @@ public class LogonActivity extends BaseActivity implements ILogonView {
             Toast.makeText(this, "获取验证码失败", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "发送验证码成功", Toast.LENGTH_SHORT).show();
-            //开启1分钟倒计时,按钮为不可按状态
-            chronometer();
         }
     }
 
@@ -202,6 +202,7 @@ public class LogonActivity extends BaseActivity implements ILogonView {
         } else {
             Toast.makeText(this, "注册成功", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(this, LoginActivity.class));
+            finish();
         }
     }
 

@@ -25,7 +25,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(HistoryTable.CREATE);
-        db.execSQL(CollectedTable.CREATE);
+        db.execSQL(CollectionTable.CREATE);
         Logger.d("数据库创建完成");
     }
 

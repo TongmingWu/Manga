@@ -3,10 +3,10 @@ package com.tongming.manga.mvp.api;
 import com.tongming.manga.mvp.bean.ComicInfo;
 import com.tongming.manga.mvp.bean.ComicPage;
 import com.tongming.manga.mvp.bean.Hot;
-import com.tongming.manga.mvp.bean.Search;
+import com.tongming.manga.mvp.bean.MangaToken;
 import com.tongming.manga.mvp.bean.Result;
+import com.tongming.manga.mvp.bean.Search;
 import com.tongming.manga.mvp.bean.User;
-import com.tongming.manga.mvp.bean.UserInfo;
 
 import okhttp3.RequestBody;
 import retrofit2.http.Body;
@@ -49,7 +49,7 @@ public interface ApiService {
     //@Query("phone") String phone, @Query("password") String password
     @Headers("Content-Type:application/json")
     @POST("/login")
-    Observable<User> login(@Body RequestBody body);
+    Observable<MangaToken> login(@Body RequestBody body);
 
     //@Query("phone") String phone, @Query("password") String password, @Query("name") String name
     //@Query("appId") String appId, @Query("appKey") String appKey, @Query("code") String code
@@ -58,6 +58,6 @@ public interface ApiService {
     Observable<Result> logon(@Body RequestBody body);
 
     @GET("/user")
-    Observable<UserInfo> getUserInfo(@Query("token") String token);
+    Observable<User> getUserInfo(@Query("token") String token);
 
 }
