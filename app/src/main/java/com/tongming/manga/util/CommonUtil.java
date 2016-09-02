@@ -261,7 +261,6 @@ public class CommonUtil {
     }
 
     //动态隐藏软键盘
-    @TargetApi(Build.VERSION_CODES.CUPCAKE)
     public static void hideSoftInput(Activity activity) {
         View view = activity.getWindow().peekDecorView();
         if (view != null) {
@@ -271,7 +270,6 @@ public class CommonUtil {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.CUPCAKE)
     public static void hideSoftInput(Context context, EditText edit) {
         edit.clearFocus();
         InputMethodManager inputmanger = (InputMethodManager) context
@@ -280,7 +278,6 @@ public class CommonUtil {
     }
 
     //动态显示软键盘
-    @TargetApi(Build.VERSION_CODES.CUPCAKE)
     public static void showSoftInput(Context context, EditText edit) {
         edit.setFocusable(true);
         edit.setFocusableInTouchMode(true);
@@ -291,7 +288,6 @@ public class CommonUtil {
     }
 
     //动态显示或者是隐藏软键盘
-    @TargetApi(Build.VERSION_CODES.CUPCAKE)
     public static void toggleSoftInput(Context context, EditText edit) {
         edit.setFocusable(true);
         edit.setFocusableInTouchMode(true);

@@ -9,7 +9,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.orhanobut.logger.Logger;
@@ -52,15 +51,7 @@ public class LogonActivity extends BaseActivity implements ILogonView {
 
     @Override
     protected void initView() {
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) toolbar.getLayoutParams();
-        params.setMargins(0, 80, 0, 0);
-        setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        initToolbar(toolbar);
         presenter = new LogonPresenterImp(this);
     }
 

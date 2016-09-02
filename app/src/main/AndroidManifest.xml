@@ -15,6 +15,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".mvp.view.activity.SplashActivity">
+            <!--<intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>-->
+        </activity>
+        <activity
+            android:name=".mvp.view.activity.HomeActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,7 +32,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".mvp.view.activity.HomeActivity"
+            android:name=".mvp.view.activity.PersonCenterActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".mvp.view.activity.PersonalityActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".mvp.view.activity.LogonActivity"

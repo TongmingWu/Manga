@@ -2,6 +2,7 @@ package com.tongming.manga.mvp.presenter;
 
 import com.tongming.manga.mvp.base.BasePresenter;
 import com.tongming.manga.mvp.bean.User;
+import com.tongming.manga.mvp.bean.UserInfo;
 import com.tongming.manga.mvp.modle.ILoginModel;
 import com.tongming.manga.mvp.modle.LoginModel;
 import com.tongming.manga.mvp.view.activity.ILoginView;
@@ -26,9 +27,19 @@ public class LoginPresenterImp extends BasePresenter implements ILoginPresenter,
     }
 
     @Override
-    public void onLogin(User user) {
-        loginView.onLogin(user);
+    public void saveUser(User user) {
+        loginModel.saveUser(user);
+    }
+
+    @Override
+    public void onLogin(UserInfo info) {
+        loginView.onLogin(info);
         loginView.hideDialog();
+    }
+
+    @Override
+    public void onSaveUser(boolean result) {
+        loginView.onSaveUser(result);
     }
 
     @Override

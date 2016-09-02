@@ -2,18 +2,19 @@ package com.tongming.manga.mvp.view.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tongming.manga.R;
 import com.tongming.manga.mvp.base.BaseActivity;
 import com.tongming.manga.mvp.bean.User;
+import com.tongming.manga.mvp.bean.UserInfo;
 import com.tongming.manga.mvp.presenter.LoginPresenterImp;
 import com.tongming.manga.util.Base64Utils;
 import com.tongming.manga.util.RSA;
@@ -25,6 +26,7 @@ import butterknife.OnClick;
  * Created by Tongming on 2016/8/28.
  */
 public class LoginActivity extends BaseActivity implements ILoginView {
+    public static final int LOGIN_RESULT_CODE = 0x45;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.appbar)
@@ -40,6 +42,7 @@ public class LoginActivity extends BaseActivity implements ILoginView {
     @BindView(R.id.tv_forget)
     TextView tvForget;
     private ProgressDialog dialog;
+    private SharedPreferences sp;
 
     @Override
     protected int getLayoutId() {
@@ -48,15 +51,12 @@ public class LoginActivity extends BaseActivity implements ILoginView {
 
     @Override
     protected void initView() {
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) toolbar.getLayoutParams();
-        params.setMargins(0, 80, 0, 0);
-        setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        initToolbar(toolbar);
+        sp = getSharedPreferences("config", MODE_PRIVATE);
+        String phone = sp.getString("phone", null);
+        if (phone != null) {
+            etPhone.setText(phone);
+        }
         presenter = new LoginPresenterImp(this);
     }
 
@@ -69,7 +69,9 @@ public class LoginActivity extends BaseActivity implements ILoginView {
         if (bytes != null) {
             password = Base64Utils.encode(bytes);
         }
-        ((LoginPresenterImp) presenter).login(etPhone.getText().toString(), password);
+        String phone = etPhone.getText().toString();
+        sp.edit().putString("phone", phone).apply();
+        ((LoginPresenterImp) presenter).login(phone, password);
     }
 
     private boolean checkInput() {
@@ -99,10 +101,22 @@ public class LoginActivity extends BaseActivity implements ILoginView {
     }
 
     @Override
-    public void onLogin(User user) {
+    public void onLogin(UserInfo info) {
         Toast.makeText(this, "登录成功", Toast.LENGTH_SHORT).show();
         //登录成功后得到user,将user对象保存到本地
+        SharedPreferences sp = getSharedPreferences("config", MODE_PRIVATE);
+        sp.edit().putBoolean("isLogin", true).apply();
+        //首页-->注册-->登录-->首页
+        //首页-->登录-->首页
+        ((LoginPresenterImp) presenter).saveUser(User.getInstance());
+        Intent data = new Intent(this, HomeActivity.class);
+        data.putExtra("info", info);
+        startActivity(data);
+    }
 
+    @Override
+    public void onSaveUser(boolean result) {
+        finish();
     }
 
     @Override

@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -507,6 +509,7 @@ public class PageActivity extends BaseActivity implements IPageView {
         View dialog = View.inflate(this, R.layout.dialog_bright, null);
         AlertDialog alertDialog = new AlertDialog.Builder(this)
                 .setView(dialog).show();
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(126, 49, 39, 26)));
         sbBright = (SeekBar) dialog.findViewById(R.id.sb_bright);
         cbCheck = (CheckBox) dialog.findViewById(R.id.cb_auto);
         ivAuto = (ImageView) dialog.findViewById(R.id.iv_bright);

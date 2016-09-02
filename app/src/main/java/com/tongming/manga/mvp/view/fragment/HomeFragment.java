@@ -62,18 +62,21 @@ public class HomeFragment extends BaseFragment implements IHomeView {
     @Override
     protected void initView() {
         presenter = new HomePresenterImp(this);
-        ((HomePresenterImp)presenter).getData();
+        ((HomePresenterImp) presenter).getData();
         refresh.setColorSchemeResources(new int[]{R.color.colorPrimary});
         refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                ((HomePresenterImp)presenter).getData();
+                ((HomePresenterImp) presenter).getData();
             }
         });
     }
 
     @Override
     public void onLoad(final Hot hot) {
+        if (hot.getBanner().size() == 0 || hot.getResult().getHot().size() == 0) {
+            return;
+        }
         List<String> bannerList = new ArrayList<>();
         for (Hot.BannerBean bean : hot.getBanner()) {
             bannerList.add(bean.getImg());
@@ -193,6 +196,12 @@ public class HomeFragment extends BaseFragment implements IHomeView {
                 refresh.setRefreshing(true);
             }
         });
+        refresh.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                refresh.setRefreshing(false);
+            }
+        }, 1000 * 10);
     }
 
     @Override

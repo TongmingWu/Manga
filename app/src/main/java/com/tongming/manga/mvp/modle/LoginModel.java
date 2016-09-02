@@ -1,20 +1,21 @@
 package com.tongming.manga.mvp.modle;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-
 import com.orhanobut.logger.Logger;
 import com.tongming.manga.mvp.api.ApiManager;
 import com.tongming.manga.mvp.base.BaseApplication;
 import com.tongming.manga.mvp.bean.MangaToken;
 import com.tongming.manga.mvp.bean.User;
+import com.tongming.manga.mvp.bean.UserInfo;
 
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import rx.Observable;
 import rx.Subscription;
@@ -29,7 +30,7 @@ import rx.schedulers.Schedulers;
 public class LoginModel implements ILoginModel {
 
     private onLoginListener loginListener;
-    private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
 
     public LoginModel(onLoginListener loginListener) {
         this.loginListener = loginListener;
@@ -41,38 +42,73 @@ public class LoginModel implements ILoginModel {
         map.put("phone", phone);
         map.put("password", password);
         JSONObject object = new JSONObject(map);
-        RequestBody body = RequestBody.create(JSON, object.toString());
+        RequestBody body = RequestBody.create(ApiManager.JSON, object.toString());
         return ApiManager.getInstance()
                 .login(body)
-                .flatMap(new Func1<MangaToken, Observable<User>>() {
+                .flatMap(new Func1<MangaToken, Observable<UserInfo>>() {
                     @Override
-                    public Observable<User> call(MangaToken token) {
+                    public Observable<UserInfo> call(MangaToken token) {
                         //将token保存
-                        SharedPreferences sp = BaseApplication.getContext().getSharedPreferences("config", Context.MODE_PRIVATE);
-                        sp.edit().putString("token", token.getToken()).apply();
+                        User.getInstance().setToken(token.getToken());
                         return ApiManager.getInstance()
                                 .getUserInfo(token.getToken());
                     }
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<User>() {
+                .subscribe(new Action1<UserInfo>() {
                     @Override
-                    public void call(User user) {
+                    public void call(UserInfo info) {
                         Logger.d("登录成功");
-                        loginListener.onLogin(user);
+                        User.getInstance().setInfo(info);
+                        loginListener.onLogin(info);
                     }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        Logger.d("登录失败");
+                        Logger.d(throwable.getMessage());
                         loginListener.onFail(throwable);
                     }
                 });
     }
 
+    @Override
+    public void saveUser(final User user) {
+        Logger.d("saveUser");
+        //将User对象保存到本地
+        new Thread(new Runnable() {
+            File file = new File(BaseApplication.getContext().getFilesDir() + "/data.dat");
+
+            @Override
+            public void run() {
+                ObjectOutputStream objectOutputStream = null;
+                try {
+                    objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
+                    objectOutputStream.writeObject(user);
+                    loginListener.onSaveUser(true);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    loginListener.onSaveUser(false);
+                    Logger.d("保存失败" + e.getMessage());
+                } finally {
+                    try {
+                        if (objectOutputStream != null) {
+                            objectOutputStream.close();
+                            Logger.d("保存成功");
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        ).start();
+    }
+
     public interface onLoginListener {
-        void onLogin(User user);
+        void onLogin(UserInfo info);
+
+        void onSaveUser(boolean result);
 
         void onFail(Throwable throwable);
     }

@@ -109,7 +109,8 @@ public class DetailModel implements IDetailModel {
 
     @Override
     public void collectComic(Context context, final ComicInfo info) {
-        //先查询数据库中是否已有记录,有的话更新,没有则插入
+        //TODO 向服务器更新数据
+
         long state = new DBManager(context).collectComic(info);
         onGetDataListener.onAddCollectCompleted(state);
     }

@@ -9,7 +9,6 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -23,7 +22,6 @@ public class LogonModel implements ILogonModel {
 
     private onLogonListener logonListener;
 
-    private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     public LogonModel(onLogonListener logonListener) {
         this.logonListener = logonListener;
@@ -37,7 +35,7 @@ public class LogonModel implements ILogonModel {
         map.put("appKey", ApiManager.APP_KEY);
         JSONObject object = new JSONObject(map);
         String json = object.toString();
-        RequestBody body = RequestBody.create(JSON, json);
+        RequestBody body = RequestBody.create(ApiManager.JSON, json);
         return ApiManager.getInstance().requestSms(body)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -68,7 +66,7 @@ public class LogonModel implements ILogonModel {
         map.put("appKey", ApiManager.APP_KEY);
         JSONObject object = new JSONObject(map);
         String json = object.toString();
-        RequestBody body = RequestBody.create(JSON, json);
+        RequestBody body = RequestBody.create(ApiManager.JSON, json);
         return ApiManager.getInstance()
                 .logon(body)
                 .subscribeOn(Schedulers.io())

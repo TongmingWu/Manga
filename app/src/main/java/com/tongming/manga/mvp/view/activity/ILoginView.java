@@ -1,12 +1,14 @@
 package com.tongming.manga.mvp.view.activity;
 
-import com.tongming.manga.mvp.bean.User;
+import com.tongming.manga.mvp.bean.UserInfo;
 
 /**
  * Created by Tongming on 2016/8/28.
  */
 public interface ILoginView {
-    void onLogin(User user);
+    void onLogin(UserInfo info);
+
+    void onSaveUser(boolean result);
 
     void showDialog();
 

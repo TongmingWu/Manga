@@ -13,7 +13,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -90,7 +89,6 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView {
     private boolean isRead;
     private boolean isCollected;
 
-
     @Override
     protected int getLayoutId() {
         return R.layout.activity_detail;
@@ -104,15 +102,7 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView {
         ((DetailPresenterImp) presenter).queryHistoryByName(this, name);
         ((DetailPresenterImp) presenter).queryCollectByName(this, name);
         sp = getSharedPreferences("config", MODE_PRIVATE);
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) toolbar.getLayoutParams();
-        params.setMargins(0, 80, 0, 0);
-        setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        initToolbar(toolbar);
         ((DetailPresenterImp) presenter).getDetail(getIntent().getStringExtra("url"));
         slContent.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override

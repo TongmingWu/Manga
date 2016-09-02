@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -48,15 +47,7 @@ public class SearchActivity extends BaseActivity implements ISearchView {
 
     @Override
     protected void initView() {
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) toolbar.getLayoutParams();
-        params.setMargins(0, 80, 0, 0);
-        setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        initToolbar(toolbar);
         presenter = new SearchPresenterImp(this);
         Intent intent = getIntent();
         word = intent.getStringExtra("word");

@@ -1,5 +1,9 @@
 package com.tongming.manga.mvp.api;
 
+import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+
 import com.tongming.manga.mvp.base.BaseApplication;
 import com.tongming.manga.mvp.bean.ComicInfo;
 import com.tongming.manga.mvp.bean.ComicPage;
@@ -8,6 +12,7 @@ import com.tongming.manga.mvp.bean.MangaToken;
 import com.tongming.manga.mvp.bean.Result;
 import com.tongming.manga.mvp.bean.Search;
 import com.tongming.manga.mvp.bean.User;
+import com.tongming.manga.mvp.bean.UserInfo;
 import com.tongming.manga.util.CommonUtil;
 
 import java.io.File;
@@ -17,6 +22,8 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.Cache;
 import okhttp3.CacheControl;
 import okhttp3.Interceptor;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -30,12 +37,14 @@ import rx.Observable;
  * Created by Tongming on 2016/8/9.
  */
 public class ApiManager {
-    //    private static final String BASE_URL = "http://192.168.1.102:5000";
+//    private static final String BASE_URL = "http://192.168.137.1:5000";
 //    private static final String BASE_URL = "http://45.78.25.201";
     private static final String BASE_URL = "http://119.29.57.187";
 
     public static final String APP_ID = "Rp2mOsDSVkDoN5E4hbJEhlig-gzGzoHsz";
     public static final String APP_KEY = "ri3VwT0ULLOqxtdjMPkhkgla";
+
+    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     //短缓存有效期为120秒钟
     public static final int CACHE_STALE_SHORT = 120;
@@ -73,16 +82,29 @@ public class ApiManager {
 
     // 云端响应头拦截器，用来配置缓存策略
     private Interceptor mRewriteCacheControlInterceptor = new Interceptor() {
+
+        private int versonCode;
+
         @Override
         public Response intercept(Chain chain) throws IOException {
             Request request = chain.request();
-            if (!CommonUtil.isNet(BaseApplication.getContext())) {
+            Context context = BaseApplication.getContext();
+            if (!CommonUtil.isNet(context)) {
+                PackageManager manager = context.getPackageManager();
+                PackageInfo info = null;
+                try {
+                    info = manager.getPackageInfo(context.getPackageName(), 0);
+                    versonCode = info != null ? info.versionCode : 1;
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
+                }
                 request = request.newBuilder()
+                        .addHeader("App-Version", versonCode + "")
                         .cacheControl(CacheControl.FORCE_CACHE)
                         .build();
             }
             Response originalResponse = chain.proceed(request);
-            if (CommonUtil.isNet(BaseApplication.getContext())) {
+            if (CommonUtil.isNet(context)) {
                 //有网的时候读接口上的@Headers里的配置，可以在这里进行统一的设置
                 String cacheControl = request.cacheControl().toString();
                 return originalResponse.newBuilder()
@@ -149,8 +171,25 @@ public class ApiManager {
         return apiService.logon(body);
     }
 
-    public Observable<User> getUserInfo(String token) {
+    public Observable<UserInfo> getUserInfo(String token) {
         return apiService.getUserInfo(token);
+    }
+
+    public Observable<UserInfo> updateUser(RequestBody body) {
+        return apiService.updateUser(body);
+    }
+
+    public Observable<UserInfo> uploadAvatar(MultipartBody.Part body) {
+        return apiService.uploadAvatar(body, User.getInstance().getToken());
+    }
+
+
+    public Observable<Result> addCollection(RequestBody body) {
+        return apiService.addCollection(body);
+    }
+
+    public Observable<Result> deleteCollection(RequestBody body) {
+        return apiService.deleteCollection(body);
     }
 
 }

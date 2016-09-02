@@ -8,7 +8,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.LinearLayout;
 
 import com.orhanobut.logger.Logger;
 import com.tongming.manga.R;
@@ -39,15 +38,7 @@ public class HistoryActivity extends BaseActivity implements IHistoryView {
 
     @Override
     protected void initView() {
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) toolbar.getLayoutParams();
-        params.setMargins(0, 80, 0, 0);
-        setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        initToolbar(toolbar);
         if (presenter == null) {
             presenter = new HistoryPresenterImp(this);
         }

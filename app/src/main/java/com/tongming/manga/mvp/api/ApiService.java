@@ -6,13 +6,18 @@ import com.tongming.manga.mvp.bean.Hot;
 import com.tongming.manga.mvp.bean.MangaToken;
 import com.tongming.manga.mvp.bean.Result;
 import com.tongming.manga.mvp.bean.Search;
-import com.tongming.manga.mvp.bean.User;
+import com.tongming.manga.mvp.bean.UserInfo;
 
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 import rx.Observable;
 
@@ -38,7 +43,7 @@ public interface ApiService {
 
     //@Query("appId") String appId, @Query("appKey") String appKey, @Query("phone") String phone
     @Headers("Content-Type:application/json")
-    @POST("/requestSms")
+    @POST("/sms")
     Observable<Result> requestSms(@Body RequestBody body);
 
     //@Query("appId") String appId, @Query("appKey") String appKey, @Query("phone") String phone, @Query("code") String code
@@ -58,6 +63,21 @@ public interface ApiService {
     Observable<Result> logon(@Body RequestBody body);
 
     @GET("/user")
-    Observable<User> getUserInfo(@Query("token") String token);
+    Observable<UserInfo> getUserInfo(@Query("token") String token);
 
+    @POST("/user/update")
+    Observable<UserInfo> updateUser(@Body RequestBody body);
+
+    @Multipart
+    @POST("/user/upload/{token}")
+    Observable<UserInfo> uploadAvatar(@Part MultipartBody.Part file, @Path("token") String token);
+
+    @Headers("Content-Type:application/json")
+    @POST("/collection")
+    Observable<Result> addCollection(@Body RequestBody body);
+
+
+    @Headers("Content-Type:application/json")
+    @DELETE("/collection")
+    Observable<Result> deleteCollection(@Body RequestBody body);
 }

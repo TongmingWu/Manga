@@ -1,25 +1,12 @@
 package com.tongming.manga.mvp.bean;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by Tongming on 2016/8/17.
  */
-public class CollectedComic {
-    @Override
-    public String toString() {
-        return "CollectedComic{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", author='" + author + '\'' +
-                ", area='" + area + '\'' +
-                ", type='" + type + '\'' +
-                ", status=" + status +
-                ", lastTime=" + lastTime +
-                ", url='" + url + '\'' +
-                ", cover='" + cover + '\'' +
-                '}';
-    }
-
-    private int id;
+public class CollectedComic implements Parcelable {
     private String name;
     private String author;
     private String area;
@@ -29,9 +16,6 @@ public class CollectedComic {
     private String url;
     private String cover;
 
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public void setName(String name) {
         this.name = name;
@@ -65,11 +49,6 @@ public class CollectedComic {
         this.cover = cover;
     }
 
-    public int getId() {
-
-        return id;
-    }
-
     public String getName() {
         return name;
     }
@@ -101,4 +80,61 @@ public class CollectedComic {
     public String getCover() {
         return cover;
     }
+
+    @Override
+    public String toString() {
+        return "CollectedComic{" +
+                ", name='" + name + '\'' +
+                ", author='" + author + '\'' +
+                ", area='" + area + '\'' +
+                ", type='" + type + '\'' +
+                ", status=" + status +
+                ", lastTime=" + lastTime +
+                ", url='" + url + '\'' +
+                ", cover='" + cover + '\'' +
+                '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.name);
+        dest.writeString(this.author);
+        dest.writeString(this.area);
+        dest.writeString(this.type);
+        dest.writeInt(this.status);
+        dest.writeLong(this.lastTime);
+        dest.writeString(this.url);
+        dest.writeString(this.cover);
+    }
+
+    public CollectedComic() {
+    }
+
+    protected CollectedComic(Parcel in) {
+        this.name = in.readString();
+        this.author = in.readString();
+        this.area = in.readString();
+        this.type = in.readString();
+        this.status = in.readInt();
+        this.lastTime = in.readLong();
+        this.url = in.readString();
+        this.cover = in.readString();
+    }
+
+    public static final Parcelable.Creator<CollectedComic> CREATOR = new Parcelable.Creator<CollectedComic>() {
+        @Override
+        public CollectedComic createFromParcel(Parcel source) {
+            return new CollectedComic(source);
+        }
+
+        @Override
+        public CollectedComic[] newArray(int size) {
+            return new CollectedComic[size];
+        }
+    };
 }

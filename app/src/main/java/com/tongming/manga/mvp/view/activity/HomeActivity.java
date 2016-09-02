@@ -18,16 +18,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.orhanobut.logger.Logger;
 import com.tongming.manga.R;
+import com.tongming.manga.cusview.GlideGircleTransform;
 import com.tongming.manga.mvp.base.BaseActivity;
 import com.tongming.manga.mvp.base.BaseApplication;
 import com.tongming.manga.mvp.base.BaseFragment;
+import com.tongming.manga.mvp.bean.User;
+import com.tongming.manga.mvp.bean.UserInfo;
 import com.tongming.manga.mvp.presenter.SystemPresenterImp;
 import com.tongming.manga.mvp.view.fragment.CategoryFragment;
 import com.tongming.manga.mvp.view.fragment.CollectionFragment;
@@ -93,13 +97,7 @@ public class HomeActivity extends BaseActivity implements ISystemView {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkPermission();
         }
-        /*byte[] bytes = RSA.encryptData("哈哈".getBytes());
-        if (bytes != null) {
-            String strRead = Base64Utils.encode(bytes);
-            Logger.d(strRead);
-        }*/
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) rlBar.getLayoutParams();
-        params.setMargins(0, 80, 0, 0);
+        initToolbar(rlBar);
         final List<BaseFragment> fragments = new ArrayList<>();
         CollectionFragment collectionFragment = new CollectionFragment();
         HomeFragment homeFragment = new HomeFragment();
@@ -148,7 +146,9 @@ public class HomeActivity extends BaseActivity implements ISystemView {
 
             }
         });
+        presenter = new SystemPresenterImp(this);
         initDrawerView();
+
     }
 
     private void initDrawerView() {
@@ -195,40 +195,69 @@ public class HomeActivity extends BaseActivity implements ISystemView {
                 }
             });
         } else {
-            btnRegister.setVisibility(View.GONE);
-            //初始化用户
+            //已登录,初始化用户
             initUser();
         }
     }
 
+
     private void initUser() {
-        if (!sp.getBoolean("isLogin", false)) {
-            sp.edit().putBoolean("isLogin", true).apply();
-        }
+        btnRegister.setVisibility(View.GONE);
+        navAvatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivityForResult(new Intent(HomeActivity.this, PersonCenterActivity.class), REQUEST_PERMISSION_CODE);
+            }
+        });
         //从保存的User中获取用户信息
-        /*tvUserName.setText("");
-        Glide.with(this)
-                .load("")
-                .into(navAvatar);*/
+        ((SystemPresenterImp) presenter).readUser();
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        //栈内复用
+        Logger.d("onNewIntent");
+        //登录界面跳转过来
+        setIntent(intent);
+        initUser();
+    }
+
+    @Override
+    public void onReadUser() {
+        User user = User.getInstance();
+        UserInfo.UserBean bean = user.getInfo().getUser();
+        tvUserName.setText(bean.getName());
+        if (!"".equals(bean.getAvatar()) && bean.getAvatar() != null) {
+            Glide.with(this)
+                    .load(bean.getAvatar())
+                    .placeholder(R.drawable.default_avatar)
+                    .transform(new GlideGircleTransform(this))
+                    .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                    .into(navAvatar);
+            Glide.with(this)
+                    .load(bean.getAvatar())
+                    .placeholder(R.drawable.default_avatar)
+                    .transform(new GlideGircleTransform(this))
+                    .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                    .into(ivAvatar);
+        }
+        ((SystemPresenterImp) presenter).getUser(user.getToken());
+        Logger.d("用户名为:" + bean.getName());
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == LOGIN_CODE) {
-            //登录成功后的回调处理
-            initUser();
-        } else {
-            switch (viewPager.getCurrentItem()) {
-                case 0:
-                    nav.setCheckedItem(R.id.menu_collected);
-                    break;
-                case 1:
-                default:
-                    nav.setCheckedItem(R.id.menu_index);
-                    break;
-            }
+        switch (viewPager.getCurrentItem()) {
+            case 0:
+                nav.setCheckedItem(R.id.menu_collected);
+                break;
+            case 1:
+            default:
+                nav.setCheckedItem(R.id.menu_index);
+                break;
         }
+        initUser();
     }
 
     private void clearCache() {
@@ -237,7 +266,6 @@ public class HomeActivity extends BaseActivity implements ISystemView {
     }
 
     private void calculateCache() {
-        presenter = new SystemPresenterImp(this);
         ((SystemPresenterImp) presenter).calculateCacheSize(BaseApplication.getContext());
     }
 
@@ -295,5 +323,18 @@ public class HomeActivity extends BaseActivity implements ISystemView {
         } else {
             System.exit(0);
         }
+    }
+
+    @Override
+    public void onGetUser(UserInfo info) {
+        //更新用户数据
+        User user = User.getInstance();
+        user.saveUser(info);
+        Logger.d("更新用户数据");
+    }
+
+    @Override
+    public void onFail(Throwable throwable) {
+
     }
 }

@@ -9,4 +9,8 @@ public interface ISystemPresenter {
     void clearCache(Context context, boolean clearAll);
 
     void calculateCacheSize(Context context);
+
+    void getUser(String token);
+
+    void readUser();
 }
