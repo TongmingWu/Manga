@@ -13,6 +13,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
@@ -764,5 +765,12 @@ public class CommonUtil {
             Log.e("TAG", e.getMessage());
         }
         return millis;
+    }
+
+    //获取内置SD卡剩余容量
+    public static long getAvailableSize() {
+        File file = Environment.getDataDirectory();
+        long size = file.getFreeSpace();
+        return size;
     }
 }

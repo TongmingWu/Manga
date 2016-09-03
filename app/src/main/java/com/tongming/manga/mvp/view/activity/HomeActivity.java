@@ -28,10 +28,10 @@ import com.orhanobut.logger.Logger;
 import com.tongming.manga.R;
 import com.tongming.manga.cusview.GlideGircleTransform;
 import com.tongming.manga.mvp.base.BaseActivity;
-import com.tongming.manga.mvp.base.BaseApplication;
 import com.tongming.manga.mvp.base.BaseFragment;
 import com.tongming.manga.mvp.bean.User;
 import com.tongming.manga.mvp.bean.UserInfo;
+import com.tongming.manga.mvp.presenter.CachePresenterImp;
 import com.tongming.manga.mvp.presenter.SystemPresenterImp;
 import com.tongming.manga.mvp.view.fragment.CategoryFragment;
 import com.tongming.manga.mvp.view.fragment.CollectionFragment;
@@ -43,7 +43,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.OnClick;
 
-public class HomeActivity extends BaseActivity implements ISystemView {
+public class HomeActivity extends BaseActivity implements ISystemView, ICacheView {
 
     private static final int REQUEST_PERMISSION_CODE = 1;
     public static final int LOGIN_CODE = 0x77;
@@ -74,6 +74,7 @@ public class HomeActivity extends BaseActivity implements ISystemView {
     private Button btnRegister;
     private ImageView navAvatar;
     private TextView tvUserName;
+    private CachePresenterImp cachePresenterImp;
 
     @OnClick({R.id.iv_nav, R.id.iv_avatar})
     public void onClick(View view) {
@@ -147,8 +148,8 @@ public class HomeActivity extends BaseActivity implements ISystemView {
             }
         });
         presenter = new SystemPresenterImp(this);
+        cachePresenterImp = new CachePresenterImp(this);
         initDrawerView();
-
     }
 
     private void initDrawerView() {
@@ -162,7 +163,7 @@ public class HomeActivity extends BaseActivity implements ISystemView {
                     case R.id.menu_local:
                         break;
                     case R.id.menu_history:
-                        startActivityForResult(new Intent(HomeActivity.this, HistoryActivity.class), 1);
+                        startActivityForResult(new Intent(HomeActivity.this, HistoryActivity.class), REQUEST_PERMISSION_CODE);
                         break;
                     case R.id.menu_collected:
                         viewPager.setCurrentItem(0);
@@ -170,6 +171,7 @@ public class HomeActivity extends BaseActivity implements ISystemView {
                     case R.id.menu_download:
                         break;
                     case R.id.menu_setting:
+                        startActivityForResult(new Intent(HomeActivity.this, SettingActivity.class), REQUEST_PERMISSION_CODE);
                         break;
                 }
                 drawerLayout.closeDrawer(Gravity.LEFT);
@@ -226,24 +228,30 @@ public class HomeActivity extends BaseActivity implements ISystemView {
     @Override
     public void onReadUser() {
         User user = User.getInstance();
-        UserInfo.UserBean bean = user.getInfo().getUser();
+        initAvatar();
+        Logger.d("本地读取用户信息成功");
+        ((SystemPresenterImp) presenter).getUser(user.getToken());
+    }
+
+    private void initAvatar() {
+        UserInfo.UserBean bean = User.getInstance().getInfo().getUser();
         tvUserName.setText(bean.getName());
         if (!"".equals(bean.getAvatar()) && bean.getAvatar() != null) {
             Glide.with(this)
                     .load(bean.getAvatar())
                     .placeholder(R.drawable.default_avatar)
                     .transform(new GlideGircleTransform(this))
-                    .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+//                    .skipMemoryCache(true)
                     .into(navAvatar);
             Glide.with(this)
                     .load(bean.getAvatar())
                     .placeholder(R.drawable.default_avatar)
                     .transform(new GlideGircleTransform(this))
-                    .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+//                    .skipMemoryCache(true)
                     .into(ivAvatar);
         }
-        ((SystemPresenterImp) presenter).getUser(user.getToken());
-        Logger.d("用户名为:" + bean.getName());
     }
 
     @Override
@@ -262,11 +270,11 @@ public class HomeActivity extends BaseActivity implements ISystemView {
 
     private void clearCache() {
         //清除缓存
-        ((SystemPresenterImp) presenter).clearCache(BaseApplication.getContext(), false);
+        cachePresenterImp.clearCache();
     }
 
     private void calculateCache() {
-        ((SystemPresenterImp) presenter).calculateCacheSize(BaseApplication.getContext());
+        cachePresenterImp.calculateCacheSize();
     }
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -301,7 +309,9 @@ public class HomeActivity extends BaseActivity implements ISystemView {
                 exitTime = System.currentTimeMillis();
             } else {
                 finish();
-                calculateCache();
+                if (sp.getBoolean("isAutoClearCache", false)) {
+                    clearCache();
+                }
                 //System.exit(0);
             }
             return true;
@@ -310,31 +320,32 @@ public class HomeActivity extends BaseActivity implements ISystemView {
     }
 
     @Override
-    public void onClearCache() {
+    public void onGetUser(UserInfo info) {
+        //更新用户数据
+        User user = User.getInstance();
+        user.saveUser(info);
+        initAvatar();
+    }
+
+    @Override
+    public void onFail(Throwable throwable) {
+        Logger.d(throwable.getMessage());
+    }
+
+    @Override
+    public void onClearCacheComplete() {
         Logger.d("清除成功");
         System.exit(0);
     }
 
     @Override
-    public void onCalculateCacheSize(long size) {
-        Logger.d("缓存大小为" + size / 1024 / 1024 + "MB");
-        if (size / 1024 / 1024 > 200) {
+    public void onCalculateCache(long totalSize) {
+        Logger.d("缓存大小为" + totalSize / 1024 / 1024 + "MB");
+        /*if (totalSize / 1024 / 1024 > 200) {
             clearCache();
         } else {
             System.exit(0);
-        }
+        }*/
     }
 
-    @Override
-    public void onGetUser(UserInfo info) {
-        //更新用户数据
-        User user = User.getInstance();
-        user.saveUser(info);
-        Logger.d("更新用户数据");
-    }
-
-    @Override
-    public void onFail(Throwable throwable) {
-
-    }
 }

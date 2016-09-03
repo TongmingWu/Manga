@@ -20,7 +20,6 @@
             android:layout_height="?attr/actionBarSize"
             android:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
             android:theme="@style/ThemeOverlay.AppCompat.Dark"
-
             toolbar:navigationIcon="@drawable/abc_ic_ab_back_mtrl_am_alpha"
             toolbar:title="个性签名"
             toolbar:titleTextAppearance="?android:attr/textAppearanceMedium"

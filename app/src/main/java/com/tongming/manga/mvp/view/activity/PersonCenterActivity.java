@@ -2,6 +2,7 @@ package com.tongming.manga.mvp.view.activity;
 
 import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -10,6 +11,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -29,6 +31,7 @@ import com.tongming.manga.mvp.base.BaseActivity;
 import com.tongming.manga.mvp.bean.User;
 import com.tongming.manga.mvp.bean.UserInfo;
 import com.tongming.manga.mvp.presenter.PersonPresenterImp;
+import com.tongming.manga.util.CommonUtil;
 import com.tongming.manga.util.ImagePathUtil;
 
 import java.text.SimpleDateFormat;
@@ -78,6 +81,7 @@ public class PersonCenterActivity extends BaseActivity implements IPersonView {
     private String oldSex;
     private String oldPersonality;
     private String path;
+    private ProgressDialog progressDialog;
 
     @Override
     protected int getLayoutId() {
@@ -94,7 +98,7 @@ public class PersonCenterActivity extends BaseActivity implements IPersonView {
                     .load(bean.getAvatar())
                     .placeholder(R.drawable.default_avatar)
                     .transform(new GlideGircleTransform(this))
-                    .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .into(ivAvatar);
         }
 
@@ -147,6 +151,9 @@ public class PersonCenterActivity extends BaseActivity implements IPersonView {
                         .setNegativeButton("取消", null)
                         .create();
                 final Window window = dialog.getWindow();
+                WindowManager.LayoutParams params = window.getAttributes();
+                params.gravity = Gravity.TOP;
+                params.y = CommonUtil.getDeviceHeight(this) / 4;
                 window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
                 dialog.show();
                 //TODO 修复dialog自适应软键盘的问题
@@ -198,6 +205,9 @@ public class PersonCenterActivity extends BaseActivity implements IPersonView {
                                     ((PersonPresenterImp) presenter).updateUser(path, nickname, sex, personality);
                                 } else {
                                     ((PersonPresenterImp) presenter).updateUser(nickname, sex, personality);
+                                }
+                                if (progressDialog == null) {
+                                    progressDialog = ProgressDialog.show(PersonCenterActivity.this, null, "更新中...");
                                 }
                             }
                         })
@@ -256,6 +266,7 @@ public class PersonCenterActivity extends BaseActivity implements IPersonView {
                     Glide.with(this)
                             .load(uri)
                             .transform(new GlideGircleTransform(this))
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)
                             .into(ivAvatar);
                     changeAvatar = true;
                     path = ImagePathUtil.getPathByUri4kitkat(this, uri);
@@ -267,7 +278,10 @@ public class PersonCenterActivity extends BaseActivity implements IPersonView {
 
     @Override
     public void onUpdateUser(UserInfo info) {
-        //更新用户信息
+        //更新用户信息完成
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
         User instance = User.getInstance();
         instance.saveUser(info);
         hideSaveButton();

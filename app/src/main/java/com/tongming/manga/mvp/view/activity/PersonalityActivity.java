@@ -2,7 +2,9 @@ package com.tongming.manga.mvp.view.activity;
 
 import android.content.Intent;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -36,6 +38,25 @@ public class PersonalityActivity extends BaseActivity {
         if (!TextUtils.isEmpty(personality)) {
             etPersonality.setText(personality);
         }
+        etPersonality.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (count == 120) {
+                    Toast.makeText(PersonalityActivity.this, "字数已满", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
 

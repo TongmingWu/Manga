@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:padding="10dp">
+
+    <EditText
+        android:id="@+id/et_cache"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:inputType="number" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/et_cache"
+        android:layout_marginBottom="5dp"
+        android:layout_toRightOf="@id/et_cache"
+        android:text="MB"
+        android:textColor="@color/normalText" />
+
+    <TextView
+        android:id="@+id/tv_cache_tip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/et_cache"
+        android:textSize="12sp"
+        tools:text="不能低于100M" />
+
+
+</RelativeLayout>

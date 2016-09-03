@@ -9,6 +9,7 @@ import android.content.Context;
 public class BaseApplication extends Application {
 
     private static Context mContext;
+    public static final long DEFAULT_CACHE_CEILING = 1024 * 1024 * 200L;
 
     @Override
     public void onCreate() {

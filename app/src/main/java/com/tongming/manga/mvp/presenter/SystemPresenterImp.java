@@ -1,7 +1,5 @@
 package com.tongming.manga.mvp.presenter;
 
-import android.content.Context;
-
 import com.tongming.manga.mvp.base.BasePresenter;
 import com.tongming.manga.mvp.bean.UserInfo;
 import com.tongming.manga.mvp.modle.ISystemModel;
@@ -22,16 +20,6 @@ public class SystemPresenterImp extends BasePresenter implements ISystemPresente
     }
 
     @Override
-    public void clearCache(Context context, boolean clearAll) {
-        addSubscription(systemModel.clearCache(context, clearAll));
-    }
-
-    @Override
-    public void calculateCacheSize(Context context) {
-        addSubscription(systemModel.calculateSize(context));
-    }
-
-    @Override
     public void getUser(String token) {
         addSubscription(systemModel.getUser(token));
     }
@@ -39,16 +27,6 @@ public class SystemPresenterImp extends BasePresenter implements ISystemPresente
     @Override
     public void readUser() {
         systemModel.readUser();
-    }
-
-    @Override
-    public void onClearCacheCompleted() {
-        systemView.onClearCache();
-    }
-
-    @Override
-    public void onCalculateCompleted(long size) {
-        systemView.onCalculateCacheSize(size);
     }
 
     @Override

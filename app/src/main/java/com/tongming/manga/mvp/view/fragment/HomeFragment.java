@@ -201,7 +201,7 @@ public class HomeFragment extends BaseFragment implements IHomeView {
             public void run() {
                 refresh.setRefreshing(false);
             }
-        }, 1000 * 10);
+        }, 1000 * 5);
     }
 
     @Override
