@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Manga</string>
     <string name="personality">这家伙很懒,什么都没有留下...</string>
+    <string-array name="screen">
+        <item>竖屏模式</item>
+        <item>横屏模式</item>
+    </string-array>
 </resources>

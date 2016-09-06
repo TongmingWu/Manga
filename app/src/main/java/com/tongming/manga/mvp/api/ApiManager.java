@@ -37,7 +37,7 @@ import rx.Observable;
  * Created by Tongming on 2016/8/9.
  */
 public class ApiManager {
-//    private static final String BASE_URL = "http://192.168.137.1:5000";
+    //    private static final String BASE_URL = "http://192.168.137.1:5000";
 //    private static final String BASE_URL = "http://45.78.25.201";
     private static final String BASE_URL = "http://119.29.57.187";
 
@@ -184,12 +184,16 @@ public class ApiManager {
     }
 
 
-    public Observable<Result> addCollection(RequestBody body) {
+    public Observable<UserInfo> addCollection(RequestBody body) {
         return apiService.addCollection(body);
     }
 
-    public Observable<Result> deleteCollection(RequestBody body) {
+    public Observable<UserInfo> deleteCollection(RequestBody body) {
         return apiService.deleteCollection(body);
+    }
+
+    public Observable<Result> queryCollection(int uid, String name) {
+        return apiService.queryCollection(uid, name);
     }
 
 }

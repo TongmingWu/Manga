@@ -10,5 +10,5 @@ import java.util.List;
 public interface IPagePresenter {
     void getPage(String chapterUrl);
 
-    void cacheImg(Context mContext, List<String> imgList);
+    void cacheImg(Context mContext, List<String> imgList, boolean isLast);
 }

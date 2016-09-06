@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
-        android:max="256"
+        android:max="255"
         android:maxHeight="8dp"
         android:minHeight="8dp"
         android:progressDrawable="@drawable/progressbar"

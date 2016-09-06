@@ -12,5 +12,5 @@ import rx.Subscription;
 public interface IPageModel {
     Subscription getPage(String chapterUrl);
 
-    Subscription cacheImg(Context mContext, List<String> imgList);
+    Subscription cacheImg(Context mContext, List<String> imgList, boolean isLast);
 }

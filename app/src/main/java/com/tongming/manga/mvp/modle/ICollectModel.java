@@ -13,4 +13,6 @@ public interface ICollectModel {
     void deleteCollectByName(Context context,String name);
 
     void deleteAllCollect(Context context);
+
+    Subscription deleteCollectOnNet(String name);
 }

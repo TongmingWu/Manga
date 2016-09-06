@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="minScaleFactor" format="float"/>
+    <attr name="maxScaleFactor" format="float"/>
+    <attr name="autoScaleTime"  format="integer"/>
+
+    <declare-styleable name="ZoomRecyclerView">
+        <attr name="minScaleFactor" />
+        <attr name="maxScaleFactor" />
+        <attr name="autoScaleTime"  />
+    </declare-styleable>
+</resources>

@@ -23,4 +23,10 @@ public interface IDetailModel {
     Subscription queryCollectByName(Context context, String name);
 
     void deleteCollectByName(Context context, String name);
+
+    Subscription collectComicOnNet(ComicInfo info);
+
+    Subscription queryCollectOnNet(String name);
+
+    Subscription deleteCollectOnNet(ComicInfo info);
 }

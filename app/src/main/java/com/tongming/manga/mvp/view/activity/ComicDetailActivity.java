@@ -26,6 +26,8 @@ import com.orhanobut.logger.Logger;
 import com.tongming.manga.R;
 import com.tongming.manga.mvp.base.BaseActivity;
 import com.tongming.manga.mvp.bean.ComicInfo;
+import com.tongming.manga.mvp.bean.User;
+import com.tongming.manga.mvp.bean.UserInfo;
 import com.tongming.manga.mvp.presenter.DetailPresenterImp;
 import com.tongming.manga.mvp.view.adapter.ChapterAdapter;
 import com.tongming.manga.util.FastBlur;
@@ -96,12 +98,16 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView {
 
     @Override
     protected void initView() {
+        sp = getSharedPreferences("config", MODE_PRIVATE);
         presenter = new DetailPresenterImp(this);
         //先从数据库读取阅读记录,如果有阅读过的话返回historyUrl,跟list进行匹配得到position,在设置item的背景
         String name = getIntent().getStringExtra("name");
         ((DetailPresenterImp) presenter).queryHistoryByName(this, name);
-        ((DetailPresenterImp) presenter).queryCollectByName(this, name);
-        sp = getSharedPreferences("config", MODE_PRIVATE);
+        if (!sp.getBoolean("isLogin", false)) {
+            ((DetailPresenterImp) presenter).queryCollectByName(this, name);
+        } else {
+            ((DetailPresenterImp) presenter).queryCollectOnNet(name);
+        }
         initToolbar(toolbar);
         ((DetailPresenterImp) presenter).getDetail(getIntent().getStringExtra("url"));
         slContent.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
@@ -187,20 +193,34 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView {
         ivFav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isCollected) {
-                    ((DetailPresenterImp) presenter).deleteCollectByName(ComicDetailActivity.this, info.getComic_name());
-//                    isCollected = false;
-//                    Toast.makeText(ComicDetailActivity.this, "取消收藏", Toast.LENGTH_SHORT).show();
+                //判断是否有登录,如果没有登录的话,从本地数据库操作,有的话从服务器操作
+                if (!sp.getBoolean("isLogin", false)) {
+                    //未登录
+                    if (isCollected) {
+                        ((DetailPresenterImp) presenter).deleteCollectByName(ComicDetailActivity.this, info.getComic_name());
+                    } else {
+                        ((DetailPresenterImp) presenter).collectComic(ComicDetailActivity.this, info);
+                    }
                 } else {
-//                    isCollected = true;
-//                    Toast.makeText(ComicDetailActivity.this, "收藏成功", Toast.LENGTH_SHORT).show();
-                    ((DetailPresenterImp) presenter).collectComic(ComicDetailActivity.this, info);
+                    //已登录
+                    if (isCollected) {
+                        ((DetailPresenterImp) presenter).deleteCollectOnNet(info);
+                        ivFav.setImageResource(R.drawable.select_collect);
+                    } else {
+                        ((DetailPresenterImp) presenter).collectComicOnNet(info);
+                        ivFav.setImageResource(R.drawable.ic_collected);
+                    }
                 }
             }
         });
 
         //下载漫画
+        ivDownload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+            }
+        });
 
         //分享链接
         ivShare.setOnClickListener(new View.OnClickListener() {
@@ -266,6 +286,28 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView {
     public void onDeleteCollectByName(int state) {
         isCollected = false;
         ivFav.setImageResource(R.drawable.select_collect);
+        Toast.makeText(ComicDetailActivity.this, "取消收藏", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onQueryCollectOnNet(boolean isCollected) {
+        this.isCollected = isCollected;
+        if (isCollected) {
+            ivFav.setImageResource(R.drawable.ic_collected);
+        }
+    }
+
+    @Override
+    public void onAddCollectOnNet(UserInfo info) {
+        User.getInstance().saveUser(info);
+        isCollected = true;
+        Toast.makeText(ComicDetailActivity.this, "收藏成功", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDeleteCollectOnNet(UserInfo info) {
+        isCollected = false;
+        User.getInstance().saveUser(info);
         Toast.makeText(ComicDetailActivity.this, "取消收藏", Toast.LENGTH_SHORT).show();
     }
 

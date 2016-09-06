@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.tongming.manga.mvp.base.BasePresenter;
 import com.tongming.manga.mvp.bean.CollectedComic;
+import com.tongming.manga.mvp.bean.UserInfo;
 import com.tongming.manga.mvp.modle.CollectModel;
 import com.tongming.manga.mvp.modle.ICollectModel;
 import com.tongming.manga.mvp.view.activity.ICollectView;
@@ -44,6 +45,11 @@ public class CollectPresenterImp extends BasePresenter implements ICollectPresen
     }
 
     @Override
+    public void deleteCollectOnNet(String name) {
+        addSubscription(collectModel.deleteCollectOnNet(name));
+    }
+
+    @Override
     public void onDeleteByName(int state) {
         collectView.onDeleteCollectByName(state);
     }
@@ -54,7 +60,12 @@ public class CollectPresenterImp extends BasePresenter implements ICollectPresen
     }
 
     @Override
-    public void onFail(Throwable throwable) {
+    public void onDeleteOnNet(UserInfo info) {
+        collectView.onDeleteCollectOnNet(info);
+    }
 
+    @Override
+    public void onFail(Throwable throwable) {
+        collectView.onFail(throwable);
     }
 }

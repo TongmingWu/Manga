@@ -32,9 +32,10 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.orhanobut.logger.Logger;
 import com.tongming.manga.R;
+import com.tongming.manga.cusview.ScrollSpeedLinearLayoutManger;
 import com.tongming.manga.cusview.SpaceItemDecoration;
+import com.tongming.manga.cusview.ZoomRecyclerView;
 import com.tongming.manga.mvp.base.BaseActivity;
-import com.tongming.manga.mvp.base.BaseApplication;
 import com.tongming.manga.mvp.bean.ComicPage;
 import com.tongming.manga.mvp.presenter.PagePresenterImp;
 import com.tongming.manga.mvp.view.adapter.PageAdapter;
@@ -53,7 +54,8 @@ public class PageActivity extends BaseActivity implements IPageView {
     public static final int PAGE_REQUEST_CODE = 1;
     public static final int PAGE_RESULT_CODE = 10;
     @BindView(R.id.rv_page)
-    RecyclerView rvPage;
+    ZoomRecyclerView rvPage;
+    //    RecyclerView rvPage;
     @BindView(R.id.iv_load)
     ImageView ivLoad;
     @BindView(R.id.iv_back)
@@ -86,12 +88,6 @@ public class PageActivity extends BaseActivity implements IPageView {
     RelativeLayout rlBottomBar;
     @BindView(R.id.fl_root)
     FrameLayout flRoot;
-    /*@BindView(R.id.iv_bright)
-    ImageView ivBright;
-    @BindView(R.id.sb_bright)
-    VerticleSeekBar sbBright;
-    @BindView(R.id.rl_bright)
-    RelativeLayout rlBright;*/
     private boolean isControllerShowing = true;
     private Animation animation;
     private CheckBox cbCheck;
@@ -100,15 +96,14 @@ public class PageActivity extends BaseActivity implements IPageView {
     private SeekBar sbBright;
     private List<String> imgList;
     private PageAdapter adapter;
-    private LinearLayoutManager manager;
+    private ScrollSpeedLinearLayoutManger manager;
     private boolean isLoadNext;
     private boolean isLoadPre;
     private boolean isFirstLoad;
-    private float lastY = 0;
     private List<String> nameList;
     private List<Integer> numList;
     private List<String> urlList;
-    private String lastUrl;
+    private String preUrl;
     private String nextUrl;
     private String resultName;
     private String resultUrl;
@@ -126,6 +121,11 @@ public class PageActivity extends BaseActivity implements IPageView {
             initNetTime();
         }
     };
+    private int currentChapter;
+    private float firstX = 0;
+    private float firstY = 0;
+    private boolean isVertical;
+    private int currentPage;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -156,9 +156,13 @@ public class PageActivity extends BaseActivity implements IPageView {
 
     @Override
     protected void initView() {
+        //TODO 手指控制图片缩放,双击缩放
+        Glide.get(this).clearMemory();  //清除内存缓存
+        CommonUtil.requireScreenOn(this);   //屏幕常亮
         handler.postDelayed(runnable, 1000 * 60);      //时间定时器
         sp = getSharedPreferences("config", MODE_PRIVATE);
-//        setOrientation();     //进来时初始化横竖屏
+        isVertical = sp.getBoolean("isVertical", true);
+        setOrientation();     //进来时初始化横竖屏
         setWindowBright();
         initNetTime();
         if (!isFirstLoad) {
@@ -166,10 +170,6 @@ public class PageActivity extends BaseActivity implements IPageView {
             presenter = new PagePresenterImp(this);
             ((PagePresenterImp) presenter).getPage(getIntent().getStringExtra("url"));
         }
-       /* //去掉Activity上面的状态栏
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        //去掉虚拟按键全屏显示
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);*/
         initRecycle();
         sbPage.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             int progress;
@@ -177,7 +177,6 @@ public class PageActivity extends BaseActivity implements IPageView {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 this.progress = progress;
-//                calculatePos(progress);
             }
 
             @Override
@@ -188,60 +187,67 @@ public class PageActivity extends BaseActivity implements IPageView {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 //停止拖动时跳转图片
-                rvPage.scrollToPosition(progress);
+                //先计算,再跳转
+                int position = calculateSB(progress);
+                calculatePos(position);
+                rvPage.scrollToPosition(position);
             }
         });
     }
 
     private void initRecycle() {
-        manager = new LinearLayoutManager(this);
+        manager = new ScrollSpeedLinearLayoutManger(this);
+        if (!isVertical) {
+            manager.setOrientation(LinearLayoutManager.HORIZONTAL);
+            manager.setSpeed(0.2f);
+        }
         rvPage.setLayoutManager(manager);
         rvPage.addItemDecoration(new SpaceItemDecoration(30));
+
         rvPage.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+            boolean isSlide;
+            boolean isLeft;
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                isLeft = dx < 0;
+            }
 
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 switch (newState) {
-                    case RecyclerView.SCROLL_STATE_DRAGGING:
-                        //正在滑动
-//                        tvCurrent.setText(position + 1 + "");
+                    case RecyclerView.SCROLL_STATE_DRAGGING:    //手指拖动
                         if (isControllerShowing) {
                             hideController();
                         }
+                        isSlide = true;
+                        Logger.d("DRAGGING");
                         break;
                     case RecyclerView.SCROLL_STATE_IDLE:
-                        int position = manager.findFirstVisibleItemPosition();
+                        int position = manager.findLastVisibleItemPosition();
                         //静止状态
                         if (manager.findFirstCompletelyVisibleItemPosition() == manager.getItemCount() - 1) {
                             //滑动到最后一页时加载下一章
-                            if (!TextUtils.isEmpty(nextUrl) && !isLoadNext && !isFirstLoad) {
-                                Logger.d("开始加载下一章");
-                                ((PagePresenterImp) presenter).getPage(nextUrl);
-                                isLoadNext = true;
-                            } else if (TextUtils.isEmpty(nextUrl)) {
-                                Toast.makeText(PageActivity.this, "下面没有咯", Toast.LENGTH_SHORT).show();
-                            }
+                            loadNext();
                         }
-                        sbPage.setProgress(position);
-                        calculatePos(manager.findFirstVisibleItemPosition());
+                        if (!isVertical && isSlide && sp.getBoolean("isPortrait", true)) {
+                            if (isLeft) {
+                                rvPage.smoothScrollToPosition(manager.findFirstVisibleItemPosition());
+                            } else {
+                                rvPage.smoothScrollToPosition(manager.findLastVisibleItemPosition());
+                            }
+                            isSlide = false;
+//                            rvPage.scrollToPosition(manager.findFirstVisibleItemPosition());
+                        }
+                        calculatePos(position);
+                        currentPage = position;
+                        Logger.d("IDLE");
+                        break;
+                    case RecyclerView.SCROLL_STATE_SETTLING:
+                        Logger.d("SETTLING");
                         break;
                 }
-            }
-        });
-        rvPage.setOnTouchListener(new View.OnTouchListener() {
-            long lastTime;
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    if (System.currentTimeMillis() - lastTime < 1000) {
-
-                        lastTime = 0;
-                    } else {
-                        lastTime = System.currentTimeMillis();
-                    }
-                }
-                return false;
             }
         });
     }
@@ -253,33 +259,47 @@ public class PageActivity extends BaseActivity implements IPageView {
             int sum = 0;
             for (int j = 0; j < i + 1; j++) {
                 sum += numList.get(j);
-                if ((position + 1 - sum) < 0) {
+                if ((position + 1 - sum) <= 0) {
                     tvChapterName.setText(nameList.get(j));
-                    tvTotalPage.setText(" / " + numList.get(j) + "");
+                    tvTotalPage.setText(" / " + numList.get(j));
+                    sbPage.setMax(numList.get(j) - 1);
                     resultName = nameList.get(j);
                     resultUrl = urlList.get(j);
+                    currentChapter = j;
                     int currentPos = position + 1;
                     if (j > 0) {
                         for (int n = 0; n < j; n++) {
                             currentPos -= numList.get(n);
                         }
                     }
-                    tvCurrent.setText(currentPos + 1 + "");
+                    tvCurrent.setText(currentPos + "");
+                    sbPage.setProgress(currentPos);
                     break outer;
                 }
             }
         }
     }
 
+    private int calculateSB(int position) {
+        int sum = 0;
+        if (currentChapter != 0) {
+            for (int i = 0; i <= currentChapter - 1; i++) {
+                sum += numList.get(i);
+            }
+        }
+        sum += position;
+        return sum;
+    }
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
+        int width = CommonUtil.getDeviceWidth(getApplicationContext());
+        int height = CommonUtil.getDeviceHeight(getApplicationContext());
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                float rowX = ev.getRawX();
-                float rowY = ev.getRawY();
-                int width = CommonUtil.getDeviceWidth(getApplicationContext());
-                int height = CommonUtil.getDeviceHeight(getApplicationContext());
-                if (Math.abs((int) rowX - width / 2) < 400 && Math.abs((int) rowY - height / 2) < 400) {
+                firstX = ev.getRawX();
+                firstY = ev.getRawY();
+                if (Math.abs(firstX - width / 2) < width / 3) {
                     if (isControllerShowing) {
                         hideController();
                     } else {
@@ -291,29 +311,65 @@ public class PageActivity extends BaseActivity implements IPageView {
                     Logger.d("正在加载图片,不允许滑动");
                     return true;
                 }
-                //在第一页的时候向下滑动,请求上一话
-                if (manager.findFirstCompletelyVisibleItemPosition() == 0) {
-                    lastY = rowY;
-                }
                 break;
             case MotionEvent.ACTION_MOVE:
                 break;
             case MotionEvent.ACTION_UP:
-                if (manager.findFirstCompletelyVisibleItemPosition() == 0 && (ev.getRawY() - lastY) > 20f) {
-                    loadLast();
+                //加载上一话
+                if (manager.findFirstCompletelyVisibleItemPosition() == 0) {
+                    if (isVertical && (ev.getRawY() - firstY) > 20f) {
+                        loadPre();
+                    } else if (!isVertical && (ev.getRawX() - firstX > 20f)) {
+                        loadPre();
+                    }
+                }
+                if (!isVertical && sp.getBoolean("isPortrait", true)) {
+                    //点击屏幕左右边缘切页
+                    if (Math.abs(firstY - height / 2) < 500 && Math.abs(ev.getRawX() - firstX) < 10f) {
+                        if (firstX < width / 3) {
+                            //上一页
+                            if (manager.findFirstVisibleItemPosition() == 0) {
+                                loadPre();
+                            } else {
+                                Logger.d("上一页=" + (manager.findFirstVisibleItemPosition() + 1));
+                                rvPage.smoothScrollToPosition(manager.findFirstVisibleItemPosition() - 1);
+//                                rvPage.smoothScrollBy(-width, 0);
+                            }
+                        } else if (firstX > width / 3 * 2) {
+                            //下一页
+                            if (manager.findLastVisibleItemPosition() == manager.getItemCount() - 1) {
+                                loadNext();
+                            } else {
+                                Logger.d("下一页=" + (manager.findLastVisibleItemPosition() + 1));
+                                rvPage.smoothScrollToPosition(manager.findLastVisibleItemPosition() + 1);
+//                                rvPage.smoothScrollBy(width, 0);
+                            }
+                        }
+                        calculatePos(manager.findFirstVisibleItemPosition());
+                    }
                 }
                 break;
         }
         return super.dispatchTouchEvent(ev);
     }
 
-    private void loadLast() {
-        if (!isLoadPre && !TextUtils.isEmpty(lastUrl)) {
-            ((PagePresenterImp) presenter).getPage(lastUrl);
+    private void loadPre() {
+        if (!isLoadPre && !TextUtils.isEmpty(preUrl)) {
+            ((PagePresenterImp) presenter).getPage(preUrl);
             Logger.d("开始加载上一话");
             isLoadPre = true;
-        } else if (TextUtils.isEmpty(lastUrl)) {
+        } else if (TextUtils.isEmpty(preUrl)) {
             Toast.makeText(PageActivity.this, "这是第一话哦", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void loadNext() {
+        if (!TextUtils.isEmpty(nextUrl) && !isLoadNext && !isFirstLoad) {
+            Logger.d("开始加载下一章");
+            ((PagePresenterImp) presenter).getPage(nextUrl);
+            isLoadNext = true;
+        } else if (TextUtils.isEmpty(nextUrl)) {
+            Toast.makeText(PageActivity.this, "下面没有咯", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -354,7 +410,7 @@ public class PageActivity extends BaseActivity implements IPageView {
         }
         if (isFirstLoad) {
             if (page.isPrepare()) {
-                lastUrl = page.getLast_chapter_url();
+                preUrl = page.getPre_chapter_url();
             }
             if (page.isNext()) {
                 nextUrl = page.getNext_chapter_url();
@@ -365,6 +421,12 @@ public class PageActivity extends BaseActivity implements IPageView {
             urlList.add(page.getCurrent_chapter_url());
             Logger.d("当前的urlList = :" + urlList.toString());
             resultUrl = page.getCurrent_chapter_url();
+            ((PagePresenterImp) presenter).cacheImg(this, page.getImg_list(), false);
+            tvChapterName.setText(page.getChapter_name());
+            tvTotalPage.setText(" / " + page.getImg_list().size());
+            tvCurrent.setText("1");
+            sbPage.setMax(page.getImg_list().size() - 1);
+            sbPage.setProgress(1);
         } else if (isLoadNext) {
             nameList.add(page.getChapter_name());
             numList.add(page.getPage_count());
@@ -375,26 +437,19 @@ public class PageActivity extends BaseActivity implements IPageView {
             } else {
                 nextUrl = null;
             }
+            ((PagePresenterImp) presenter).cacheImg(this, page.getImg_list(), false);
         } else {
             nameList.add(0, page.getChapter_name());
             numList.add(0, page.getPage_count());
             urlList.add(0, page.getCurrent_chapter_url());
             Logger.d("当前的urlList = :" + urlList.toString());
             if (page.isPrepare()) {
-                lastUrl = page.getLast_chapter_url();
+                preUrl = page.getPre_chapter_url();
             } else {
-                lastUrl = null;
+                preUrl = null;
             }
+            ((PagePresenterImp) presenter).cacheImg(this, page.getImg_list(), true);
         }
-        if (page.getImg_list().size() > 0) {
-            //先将图片缓存到磁盘
-            ((PagePresenterImp) presenter).cacheImg(this, page.getImg_list());
-        } else {
-            Toast.makeText(PageActivity.this, "没有图片", Toast.LENGTH_SHORT).show();
-        }
-        tvChapterName.setText(page.getChapter_name());
-        tvTotalPage.setText(" / " + page.getImg_list().size());
-        tvCurrent.setText("1");
     }
 
     @Override
@@ -410,18 +465,17 @@ public class PageActivity extends BaseActivity implements IPageView {
                 Logger.d("加载下一话成功");
                 isLoadNext = false;
                 this.imgList.addAll(imgList);
+                adapter.notifyDataSetChanged();
             } else if (isLoadPre) {
                 Logger.d("加载上一话成功");
-                //TODO 加载上一话的时候不要跳转到第一页去
                 isLoadPre = false;
-                /*List<String> reverseList = imgList;
-                Collections.reverse(reverseList);*/
                 this.imgList.addAll(0, imgList);
+                adapter.notifyDataSetChanged();
+                manager.scrollToPosition(imgList.size());
             }
-            Logger.d(numList.toString());
-            adapter.notifyDataSetChanged();
-            sbPage.setMax(manager.getItemCount());
-            sbPage.setProgress(manager.findFirstCompletelyVisibleItemPosition());
+            /*sbPage.setMax(manager.getItemCount());
+            Logger.d("sb的最大值为:" + sbPage.getMax());
+            sbPage.setProgress(manager.findFirstCompletelyVisibleItemPosition());*/
         }
     }
 
@@ -460,15 +514,16 @@ public class PageActivity extends BaseActivity implements IPageView {
     }
 
     private void setOrientation() {
-        int width = CommonUtil.getDeviceWidth(getApplicationContext());
-        int height = CommonUtil.getDeviceHeight(getApplicationContext());
-        if (sp.getBoolean("isPortrait", true)) {
-            if (width > height) {
-                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        int width = CommonUtil.getDeviceWidth(this);
+        int height = CommonUtil.getDeviceHeight(this);
+        if (!sp.getBoolean("isPortrait", false)) {
+            //切换为横屏
+            if (height > width) {
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             }
         } else {
-            if (width < height) {
-                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            if (height < width) {
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             }
         }
     }
@@ -477,7 +532,7 @@ public class PageActivity extends BaseActivity implements IPageView {
         boolean isSystemBright = sp.getBoolean("isSystemBright", true);
         if (!isSystemBright) {
             //从sp中获取保存的亮度
-            int windowBright = sp.getInt("windowBright", 255 / 2);
+            int windowBright = sp.getInt("windowBright", CommonUtil.getSystemScreenBrightness(this));
             CommonUtil.setScreenBrightness(this, windowBright);
         } else {
             CommonUtil.setScreenBrightness(this, CommonUtil.getSystemScreenBrightness(this));
@@ -488,20 +543,49 @@ public class PageActivity extends BaseActivity implements IPageView {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         Logger.d("configChanged");
-        //TODO 做图片的放大处理
-
+        int width = CommonUtil.getDeviceWidth(this);
+        int height = CommonUtil.getDeviceHeight(this);
+        if (height < width) {
+            if (!sp.getBoolean("isVertical", true)) {
+                manager.setOrientation(LinearLayoutManager.VERTICAL);
+            }
+            sp.edit().putBoolean("isPortrait", false).apply();
+        } else {
+            if (!sp.getBoolean("isVertical", true)) {
+                manager.setOrientation(LinearLayoutManager.HORIZONTAL);
+            }
+            sp.edit().putBoolean("isPortrait", true).apply();
+        }
+        if (adapter != null && imgList != null) {
+            adapter = new PageAdapter(imgList, this);
+            rvPage.setAdapter(adapter);
+            rvPage.addItemDecoration(new SpaceItemDecoration(30));
+            manager.scrollToPosition(currentPage);
+        }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //设置返回处理
-        Logger.d("settingResult");
+        if (requestCode == PAGE_REQUEST_CODE) {
+            Logger.d("设置回调处理");
+            if (sp.getBoolean("isVertical", true) != isVertical) {
+                //配置发生改变
+                isVertical = sp.getBoolean("isVertical", true);
+                if (!isVertical) {
+                    manager.setOrientation(LinearLayoutManager.HORIZONTAL);
+                    manager.setSpeed(0.2f);
+                } else {
+                    manager.setOrientation(LinearLayoutManager.VERTICAL);
+                }
+            }
+            setOrientation();
+        }
     }
 
     @Override
     protected void onDestroy() {
-        Glide.get(BaseApplication.getContext()).clearMemory();
         handler.removeCallbacks(runnable);
+        CommonUtil.releaseScreenOn(this);   //取消屏幕常亮
         super.onDestroy();
     }
 
@@ -559,7 +643,13 @@ public class PageActivity extends BaseActivity implements IPageView {
         cbCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
+                if (isChecked) {
+                    sp.edit().putBoolean("isSystemBright", true).apply();
+                    CommonUtil.setScreenBrightness(PageActivity.this, CommonUtil.getSystemScreenBrightness(getApplicationContext()));
+                } else {
+                    sp.edit().putBoolean("isSystemBright", false).apply();
+                    CommonUtil.setScreenBrightness(PageActivity.this, sp.getInt("windowBright", 255 / 2));
+                }
             }
         });
     }

@@ -31,9 +31,9 @@ public class CollectionTable {
             + COLUMN_AUTHOR + " TEXT,"
             + COLUMN_AREA + " TEXT,"
             + COLUMN_TYPE + " TEXT,"
-            + COLUMN_URL + " VARCHAR(20),"
+            + COLUMN_URL + " VARCHAR(50),"
             + COLUMN_STATUS + " INTEGER,"
-            + COLUMN_COVER + " VARCHAR(60),"
+            + COLUMN_COVER + " VARCHAR(120),"
             + COLUMN_TIME + " INTEGER"
             + ")";
 
@@ -62,8 +62,8 @@ public class CollectionTable {
             comic.setAuthor(author);
             String area = cursor.getString(cursor.getColumnIndex(COLUMN_AREA));
             comic.setArea(area);
-            String type = cursor.getString(cursor.getColumnIndex(COLUMN_TYPE));
-            comic.setType(type);
+            String category = cursor.getString(cursor.getColumnIndex(COLUMN_TYPE));
+            comic.setType(category);
             String url = cursor.getString(cursor.getColumnIndex(COLUMN_URL));
             comic.setUrl(url);
             int status = cursor.getInt(cursor.getColumnIndex(COLUMN_STATUS));

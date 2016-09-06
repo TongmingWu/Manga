@@ -11,8 +11,8 @@ import com.tongming.manga.mvp.bean.UserInfo;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.http.Body;
-import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.HTTP;
 import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
@@ -74,10 +74,13 @@ public interface ApiService {
 
     @Headers("Content-Type:application/json")
     @POST("/collection")
-    Observable<Result> addCollection(@Body RequestBody body);
+    Observable<UserInfo> addCollection(@Body RequestBody body);
 
 
     @Headers("Content-Type:application/json")
-    @DELETE("/collection")
-    Observable<Result> deleteCollection(@Body RequestBody body);
+    @HTTP(method = "DELETE", path = "/collection", hasBody = true)
+    Observable<UserInfo> deleteCollection(@Body RequestBody body);
+
+    @GET("/collection")
+    Observable<Result> queryCollection(@Query("uid") int uid, @Query("name") String name);
 }

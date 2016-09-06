@@ -1,5 +1,7 @@
 package com.tongming.manga.mvp.modle;
 
+import java.io.File;
+
 import rx.Subscription;
 
 /**
@@ -8,5 +10,7 @@ import rx.Subscription;
 public interface IPersonModel {
     Subscription updateUser(String nickname, String sex, String personality);
 
-    Subscription updateUser(String path, String nickname, String sex, String personality);
+    Subscription updateUser(File file, String nickname, String sex, String personality);
+
+    Subscription compressFile(String path);
 }

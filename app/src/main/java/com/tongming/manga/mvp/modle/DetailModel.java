@@ -8,14 +8,21 @@ import com.tongming.manga.mvp.api.ApiManager;
 import com.tongming.manga.mvp.bean.CollectedComic;
 import com.tongming.manga.mvp.bean.ComicInfo;
 import com.tongming.manga.mvp.bean.HistoryComic;
+import com.tongming.manga.mvp.bean.Result;
+import com.tongming.manga.mvp.bean.User;
+import com.tongming.manga.mvp.bean.UserInfo;
 import com.tongming.manga.mvp.db.DBManager;
 
-import java.util.List;
+import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import okhttp3.RequestBody;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -33,15 +40,20 @@ public class DetailModel implements IDetailModel {
         return ApiManager.getInstance().getComicInfo(comicUrl)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<ComicInfo>() {
+                .subscribe(new Subscriber<ComicInfo>() {
                     @Override
-                    public void call(ComicInfo info) {
-                        onGetDataListener.onGetData(info);
+                    public void onCompleted() {
+                        this.unsubscribe();
                     }
-                }, new Action1<Throwable>() {
+
                     @Override
-                    public void call(Throwable throwable) {
-                        onGetDataListener.onFail(throwable);
+                    public void onError(Throwable e) {
+                        onGetDataListener.onFail(e);
+                    }
+
+                    @Override
+                    public void onNext(ComicInfo info) {
+                        onGetDataListener.onGetData(info);
                     }
                 });
     }
@@ -50,7 +62,6 @@ public class DetailModel implements IDetailModel {
     public void addHistory(Context context, final ComicInfo info, final String historyName, final String historyUrl) {
         long state = new DBManager(context).addHistory(info, historyName, historyUrl);
         onGetDataListener.onAddHistoryCompleted(state);
-        //git
         /*return DBManager.getInstance().queryHistoryByName(info.getComic_name())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -109,7 +120,6 @@ public class DetailModel implements IDetailModel {
 
     @Override
     public void collectComic(Context context, final ComicInfo info) {
-        //TODO 向服务器更新数据
 
         long state = new DBManager(context).collectComic(info);
         onGetDataListener.onAddCollectCompleted(state);
@@ -146,6 +156,97 @@ public class DetailModel implements IDetailModel {
         onGetDataListener.onDeleteCollectCompleted(state);
     }
 
+    @Override
+    public Subscription collectComicOnNet(ComicInfo info) {
+        Map<String, String> map = new HashMap<>();
+        map.put("token", User.getInstance().getToken());
+        map.put("name", info.getComic_name());
+        map.put("author", info.getComic_author());
+        map.put("area", info.getComic_area());
+        map.put("category", info.getComic_type());
+        map.put("url", info.getComic_url());
+        int status = info.getStatus().contains("连载") ? 0 : 1;
+        map.put("status", status + "");
+        map.put("cover", info.getCover());
+        JSONObject object = new JSONObject(map);
+        RequestBody body = RequestBody.create(ApiManager.JSON, object.toString());
+        return ApiManager.getInstance().addCollection(body)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<UserInfo>() {
+                    @Override
+                    public void onCompleted() {
+                        this.unsubscribe();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        onGetDataListener.onFail(e);
+                    }
+
+                    @Override
+                    public void onNext(UserInfo info) {
+                        onGetDataListener.onAddCollectOnNet(info);
+                    }
+                });
+    }
+
+    @Override
+    public Subscription queryCollectOnNet(String name) {
+        return ApiManager.getInstance()
+                .queryCollection(User.getInstance().getInfo().getUser().getUid(), name)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Result>() {
+                    @Override
+                    public void onCompleted() {
+                        this.unsubscribe();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        onGetDataListener.onFail(e);
+                    }
+
+                    @Override
+                    public void onNext(Result result) {
+                        if (result.getCode() == 200) {
+                            onGetDataListener.onQueryCollectOnNet(true);
+                        } else {
+                            onGetDataListener.onQueryCollectOnNet(false);
+                        }
+                    }
+                });
+    }
+
+    @Override
+    public Subscription deleteCollectOnNet(ComicInfo info) {
+        Map<String, String> map = new HashMap<>();
+        map.put("token", User.getInstance().getToken());
+        map.put("name", info.getComic_name());
+        JSONObject object = new JSONObject(map);
+        RequestBody body = RequestBody.create(ApiManager.JSON, object.toString());
+        return ApiManager.getInstance().deleteCollection(body)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<UserInfo>() {
+                    @Override
+                    public void onCompleted() {
+                        this.unsubscribe();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        onGetDataListener.onFail(e);
+                    }
+
+                    @Override
+                    public void onNext(UserInfo info) {
+                        onGetDataListener.onDeleteCollectOnNet(info);
+                    }
+                });
+    }
+
     public interface onGetDataListener {
         void onGetData(ComicInfo info);
 
@@ -160,6 +261,12 @@ public class DetailModel implements IDetailModel {
         void onQueryCollectCompleted(boolean isCollected);
 
         void onDeleteCollectCompleted(int state);
+
+        void onQueryCollectOnNet(boolean isCollected);
+
+        void onAddCollectOnNet(UserInfo info);
+
+        void onDeleteCollectOnNet(UserInfo info);
 
         void onFail(Throwable throwable);
     }

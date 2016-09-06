@@ -2,6 +2,7 @@ package com.tongming.manga.mvp.modle;
 
 import com.orhanobut.logger.Logger;
 import com.tongming.manga.mvp.api.ApiManager;
+import com.tongming.manga.mvp.base.BaseApplication;
 import com.tongming.manga.mvp.bean.User;
 import com.tongming.manga.mvp.bean.UserInfo;
 
@@ -11,6 +12,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import id.zelory.compressor.Compressor;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -52,15 +54,15 @@ public class PersonModel implements IPersonModel {
     }
 
     @Override
-    public Subscription updateUser(String path, String nickname, String sex, String personality) {
-        File file = new File(path);
+    public Subscription updateUser(File file, String nickname, String sex, String personality) {
+//        File file = new File(path);
         Logger.d(file.length() / 1024 + "kb");
-        //TODO 压缩图片
         RequestBody body = RequestBody.create(MediaType.parse("multipart/form-data"), file);
         MultipartBody.Part data = MultipartBody.Part.createFormData("avatar", file.getName(), body);
         Observable<UserInfo> updateUser = getNormalObservable(nickname, sex, personality);
         Observable<UserInfo> uploadAvatar = ApiManager.getInstance().uploadAvatar(data);
-        return Observable.merge(updateUser, uploadAvatar)
+        return Observable
+                .merge(updateUser, uploadAvatar)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<UserInfo>() {
@@ -83,6 +85,26 @@ public class PersonModel implements IPersonModel {
                 });
     }
 
+    @Override
+    public Subscription compressFile(String path) {
+        File file = new File(path);
+        return Compressor.getDefault(BaseApplication.getContext())
+                .compressToFileAsObservable(file)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<File>() {
+                    @Override
+                    public void call(File file) {
+                        updateListener.onCompress(file);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        updateListener.onFail(throwable);
+                    }
+                });
+    }
+
     private Observable<UserInfo> getNormalObservable(String nickname, String sex, String personality) {
         Map<String, String> map = new HashMap<>();
         map.put("token", User.getInstance().getToken());
@@ -97,6 +119,8 @@ public class PersonModel implements IPersonModel {
 
     public interface onUpdateListener {
         void onUpdate(UserInfo info);
+
+        void onCompress(File file);
 
         void onFail(Throwable throwable);
     }

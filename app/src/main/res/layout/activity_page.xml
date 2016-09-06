@@ -1,17 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fl_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black">
 
-    <android.support.v7.widget.RecyclerView
+    <!--<android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_page"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />-->
+
+    <com.tongming.manga.cusview.ZoomRecyclerView
         android:id="@+id/rv_page"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:focusable="true"
-        android:focusableInTouchMode="true" />
+        app:autoScaleTime="5"
+        app:maxScaleFactor="4.0"
+        app:minScaleFactor="1.0" />
 
     <!--<TextView
         android:id="@+id/tv_load"

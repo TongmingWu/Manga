@@ -34,6 +34,7 @@ import com.tongming.manga.mvp.presenter.PersonPresenterImp;
 import com.tongming.manga.util.CommonUtil;
 import com.tongming.manga.util.ImagePathUtil;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 
 import butterknife.BindView;
@@ -151,7 +152,7 @@ public class PersonCenterActivity extends BaseActivity implements IPersonView {
                         .setNegativeButton("取消", null)
                         .create();
                 final Window window = dialog.getWindow();
-                WindowManager.LayoutParams params = window.getAttributes();
+                final WindowManager.LayoutParams params = window.getAttributes();
                 params.gravity = Gravity.TOP;
                 params.y = CommonUtil.getDeviceHeight(this) / 4;
                 window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
@@ -202,7 +203,8 @@ public class PersonCenterActivity extends BaseActivity implements IPersonView {
                                 String sex = tvSex.getText().toString();
                                 String personality = tvPersonality.getText().toString();
                                 if (changeAvatar) {
-                                    ((PersonPresenterImp) presenter).updateUser(path, nickname, sex, personality);
+//                                    ((PersonPresenterImp) presenter).updateUser(path, nickname, sex, personality);
+                                    ((PersonPresenterImp) presenter).compressFile(path);
                                 } else {
                                     ((PersonPresenterImp) presenter).updateUser(nickname, sex, personality);
                                 }
@@ -290,6 +292,11 @@ public class PersonCenterActivity extends BaseActivity implements IPersonView {
         tvSex.setTextColor(getResources().getColor(R.color.gray, null));
         tvPersonality.setTextColor(getResources().getColor(R.color.gray, null));
         changeAvatar = false;
+    }
+
+    @Override
+    public void onCompress(File file) {
+        ((PersonPresenterImp) presenter).updateUser(file, tvNickname.getText().toString(), tvSex.getText().toString(), tvPersonality.getText().toString());
     }
 
     @Override

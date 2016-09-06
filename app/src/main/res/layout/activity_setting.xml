@@ -118,4 +118,33 @@
             android:layout_centerVertical="true" />
     </RelativeLayout>
 
+    <RelativeLayout
+        android:id="@+id/rl_read_setting"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="3dp"
+        android:background="@android:color/white"
+        android:padding="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="阅读设置"
+            android:textColor="@color/normalText"
+            android:textSize="16sp" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv_logout"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/white"
+        android:gravity="center"
+        android:text="注销"
+        android:textColor="@color/colorPrimary"
+        android:textSize="16sp" />
+
 </LinearLayout>

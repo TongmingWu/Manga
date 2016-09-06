@@ -11,7 +11,7 @@ public class ComicPage {
      * code : 200
      * img_list : ["http://tkpic.um5.cc/4700/20140924/c_176717/001.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/002.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/003.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/004.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/005.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/006.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/007.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/008.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/009.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/010.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/011.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/012.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/013.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/014.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/015.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/016.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/017.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/018.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/019.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/020.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/021.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/022.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/023.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/024.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/025.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/026.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/027.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/028.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/029.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/030.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/031.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/032.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/033.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/034.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/035.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/036.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/037.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/038.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/039.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/040.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/041.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/042.jpg","http://tkpic.um5.cc/4700/20140924/c_176717/043.jpg"]
      * page_count : 43
-     * last_chapter_url : /comic/14562/n-1410360438-91503/
+     * pre_chapter_url : /comic/14562/n-1410360438-91503/
      * next_chapter_url : /comic/14562/n-1412477539-62705/
      * chapter_name : 王室教师海涅第8话
      * prepare : true
@@ -21,7 +21,7 @@ public class ComicPage {
     private boolean next;
     private int code;
     private int page_count;
-    private String last_chapter_url;
+    private String pre_chapter_url;
     private String next_chapter_url;
     private String current_chapter_url;
     private String chapter_name;
@@ -53,12 +53,12 @@ public class ComicPage {
         this.page_count = page_count;
     }
 
-    public String getLast_chapter_url() {
-        return last_chapter_url;
+    public String getPre_chapter_url() {
+        return pre_chapter_url;
     }
 
-    public void setLast_chapter_url(String last_chapter_url) {
-        this.last_chapter_url = last_chapter_url;
+    public void setPre_chapter_url(String last_chapter_url) {
+        this.pre_chapter_url = last_chapter_url;
     }
 
     public String getNext_chapter_url() {

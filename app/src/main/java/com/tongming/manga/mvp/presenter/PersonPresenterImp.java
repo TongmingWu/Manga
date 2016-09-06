@@ -6,6 +6,8 @@ import com.tongming.manga.mvp.modle.IPersonModel;
 import com.tongming.manga.mvp.modle.PersonModel;
 import com.tongming.manga.mvp.view.activity.IPersonView;
 
+import java.io.File;
+
 /**
  * Created by Tongming on 2016/9/1.
  */
@@ -25,8 +27,13 @@ public class PersonPresenterImp extends BasePresenter implements IPersonPresente
     }
 
     @Override
-    public void updateUser(String path, String nickname, String sex, String personality) {
-        addSubscription(personModel.updateUser(path, nickname, sex, personality));
+    public void updateUser(File file, String nickname, String sex, String personality) {
+        addSubscription(personModel.updateUser(file, nickname, sex, personality));
+    }
+
+    @Override
+    public void compressFile(String path) {
+        addSubscription(personModel.compressFile(path));
     }
 
     @Override
@@ -37,5 +44,10 @@ public class PersonPresenterImp extends BasePresenter implements IPersonPresente
     @Override
     public void onFail(Throwable throwable) {
         personView.onFail(throwable);
+    }
+
+    @Override
+    public void onCompress(File file) {
+        personView.onCompress(file);
     }
 }

@@ -76,6 +76,21 @@ public class User implements Serializable {
         ).start();
     }
 
+    public void clearUser() {
+        instance.setInfo(null);
+        instance.setToken(null);
+        new Thread(new Runnable() {
+            File file = new File(BaseApplication.getContext().getFilesDir() + "/data.dat");
+
+            @Override
+            public void run() {
+                if (file.exists()) {
+                    file.delete();
+                }
+            }
+        }).start();
+    }
+
     private User readUser() {
 
         return instance;

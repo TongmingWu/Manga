@@ -75,6 +75,7 @@ public class HomeActivity extends BaseActivity implements ISystemView, ICacheVie
     private ImageView navAvatar;
     private TextView tvUserName;
     private CachePresenterImp cachePresenterImp;
+    private List<BaseFragment> fragments;
 
     @OnClick({R.id.iv_nav, R.id.iv_avatar})
     public void onClick(View view) {
@@ -99,7 +100,7 @@ public class HomeActivity extends BaseActivity implements ISystemView, ICacheVie
             checkPermission();
         }
         initToolbar(rlBar);
-        final List<BaseFragment> fragments = new ArrayList<>();
+        fragments = new ArrayList<>();
         CollectionFragment collectionFragment = new CollectionFragment();
         HomeFragment homeFragment = new HomeFragment();
         CategoryFragment categoryFragment = new CategoryFragment();
@@ -125,7 +126,7 @@ public class HomeActivity extends BaseActivity implements ISystemView, ICacheVie
         }
         tab.getTabAt(1).select();
         tab.getTabAt(1).setIcon(selectedPics[1]);
-        tab.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        tab.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 selectedIcon(tab);
@@ -183,7 +184,16 @@ public class HomeActivity extends BaseActivity implements ISystemView, ICacheVie
         btnRegister = (Button) headerView.findViewById(R.id.btn_register);
         navAvatar = (ImageView) headerView.findViewById(R.id.iv_avatar);
         tvUserName = (TextView) headerView.findViewById(R.id.tv_user_name);
+        initUser();
+    }
+
+
+    private void initUser() {
         if (!sp.getBoolean("isLogin", false)) {
+            navAvatar.setImageResource(R.drawable.default_avatar);
+            ivAvatar.setImageResource(R.drawable.default_avatar);
+            tvUserName.setText("未登录");
+            btnRegister.setVisibility(View.VISIBLE);
             btnRegister.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -196,23 +206,24 @@ public class HomeActivity extends BaseActivity implements ISystemView, ICacheVie
                     startActivityForResult(new Intent(HomeActivity.this, LoginActivity.class), LOGIN_CODE);
                 }
             });
+            refreshCollection();
         } else {
-            //已登录,初始化用户
-            initUser();
+            btnRegister.setVisibility(View.GONE);
+            navAvatar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivityForResult(new Intent(HomeActivity.this, PersonCenterActivity.class), REQUEST_PERMISSION_CODE);
+                }
+            });
+            //从保存的User中获取用户信息
+            ((SystemPresenterImp) presenter).readUser();
         }
     }
 
-
-    private void initUser() {
-        btnRegister.setVisibility(View.GONE);
-        navAvatar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivityForResult(new Intent(HomeActivity.this, PersonCenterActivity.class), REQUEST_PERMISSION_CODE);
-            }
-        });
-        //从保存的User中获取用户信息
-        ((SystemPresenterImp) presenter).readUser();
+    private void refreshCollection() {
+        //通知CollectionFragment页面刷新数据
+        CollectionFragment fragment = (CollectionFragment) fragments.get(0);
+        fragment.refresh();
     }
 
     @Override
@@ -230,7 +241,11 @@ public class HomeActivity extends BaseActivity implements ISystemView, ICacheVie
         User user = User.getInstance();
         initAvatar();
         Logger.d("本地读取用户信息成功");
-        ((SystemPresenterImp) presenter).getUser(user.getToken());
+        getUser(user.getToken());
+    }
+
+    public void getUser(String token) {
+        ((SystemPresenterImp) presenter).getUser(token);
     }
 
     private void initAvatar() {
@@ -311,8 +326,9 @@ public class HomeActivity extends BaseActivity implements ISystemView, ICacheVie
                 finish();
                 if (sp.getBoolean("isAutoClearCache", false)) {
                     clearCache();
+                } else {
+                    System.exit(0);
                 }
-                //System.exit(0);
             }
             return true;
         }
@@ -324,6 +340,7 @@ public class HomeActivity extends BaseActivity implements ISystemView, ICacheVie
         //更新用户数据
         User user = User.getInstance();
         user.saveUser(info);
+        refreshCollection();
         initAvatar();
     }
 

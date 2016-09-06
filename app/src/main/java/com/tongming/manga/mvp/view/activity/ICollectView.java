@@ -1,6 +1,7 @@
 package com.tongming.manga.mvp.view.activity;
 
 import com.tongming.manga.mvp.bean.CollectedComic;
+import com.tongming.manga.mvp.bean.UserInfo;
 
 import java.util.List;
 
@@ -13,4 +14,8 @@ public interface ICollectView {
     void onDeleteCollectByName(int state);
 
     void onDeleteAllCollect(int state);
+
+    void onDeleteCollectOnNet(UserInfo info);
+
+    void onFail(Throwable throwable);
 }

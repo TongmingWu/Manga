@@ -2,6 +2,7 @@ package com.tongming.manga.mvp.view.activity;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.support.v7.widget.Toolbar;
@@ -22,6 +23,7 @@ import com.orhanobut.logger.Logger;
 import com.tongming.manga.R;
 import com.tongming.manga.cusview.CustomCachingGlideModule;
 import com.tongming.manga.mvp.base.BaseActivity;
+import com.tongming.manga.mvp.bean.User;
 import com.tongming.manga.mvp.presenter.CachePresenterImp;
 import com.tongming.manga.mvp.view.fragment.EditDialogFragment;
 import com.tongming.manga.util.CommonUtil;
@@ -32,7 +34,7 @@ import butterknife.OnClick;
 /**
  * Created by Tongming on 2016/9/3.
  */
-public class SettingActivity extends BaseActivity implements ICacheView,EditDialogFragment.EditDialogListener {
+public class SettingActivity extends BaseActivity implements ICacheView, EditDialogFragment.EditDialogListener {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.tv_cache_ceiling)
@@ -47,6 +49,8 @@ public class SettingActivity extends BaseActivity implements ICacheView,EditDial
     RelativeLayout rlCacheAutoClear;
     @BindView(R.id.sw_cache_auto_clear)
     Switch swCache;
+    @BindView(R.id.tv_logout)
+    TextView tvLogout;
     private SharedPreferences sp;
     private AlertDialog alertDialog;
     private long availableSize;
@@ -75,9 +79,12 @@ public class SettingActivity extends BaseActivity implements ICacheView,EditDial
         presenter = new CachePresenterImp(this);
         ((CachePresenterImp) presenter).calculateCacheSize();
         availableSize = CommonUtil.getAvailableSize() / 1024 / 1024;
+        if (!sp.getBoolean("isLogin", false)) {
+            tvLogout.setVisibility(View.GONE);
+        }
     }
 
-    @OnClick({R.id.rl_cache_ceiling, R.id.rl_cache_clear, R.id.rl_cache_auto_clear})
+    @OnClick({R.id.rl_cache_ceiling, R.id.rl_cache_clear, R.id.rl_cache_auto_clear, R.id.tv_logout, R.id.rl_read_setting})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.rl_cache_ceiling:
@@ -90,7 +97,29 @@ public class SettingActivity extends BaseActivity implements ICacheView,EditDial
             case R.id.rl_cache_auto_clear:
                 autoClearCache();
                 break;
+            case R.id.rl_read_setting:
+                startActivity(new Intent(this, WatchSettingActivity.class));
+                break;
+            case R.id.tv_logout:
+                //退出登录
+                logout();
+                break;
         }
+    }
+
+    private void logout() {
+        new AlertDialog.Builder(this)
+                .setMessage("确定退出登录?")
+                .setPositiveButton("注销", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        sp.edit().putBoolean("isLogin", false).apply();
+                        User.getInstance().clearUser();
+                        finish();
+                    }
+                })
+                .setNegativeButton("取消", null)
+                .show();
     }
 
     private void clearCache() {

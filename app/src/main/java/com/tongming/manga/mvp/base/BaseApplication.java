@@ -3,6 +3,9 @@ package com.tongming.manga.mvp.base;
 import android.app.Application;
 import android.content.Context;
 
+import com.tencent.bugly.crashreport.CrashReport;
+
+
 /**
  * Created by Tongming on 2016/8/9.
  */
@@ -15,6 +18,7 @@ public class BaseApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mContext = this;
+        CrashReport.initCrashReport(getApplicationContext(), "900051193", false);
     }
 
     public static Context getContext() {

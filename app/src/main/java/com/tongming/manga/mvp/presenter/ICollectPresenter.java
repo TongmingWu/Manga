@@ -11,4 +11,6 @@ public interface ICollectPresenter {
     void deleteCollectByName(Context context,String name);
 
     void deleteAllCollect(Context context);
+
+    void deleteCollectOnNet(String name);
 }

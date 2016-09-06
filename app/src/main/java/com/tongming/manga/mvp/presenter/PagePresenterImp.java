@@ -30,8 +30,8 @@ public class PagePresenterImp extends BasePresenter implements IPagePresenter, P
     }
 
     @Override
-    public void cacheImg(Context mContext, List<String> imgList) {
-        addSubscription(pageModel.cacheImg(mContext, imgList));
+    public void cacheImg(Context mContext, List<String> imgList, boolean isLast) {
+        addSubscription(pageModel.cacheImg(mContext, imgList, isLast));
     }
 
     @Override

@@ -20,5 +20,11 @@ public interface IDetailPresenter {
 
     void queryCollectByName(Context context, String name);
 
-    void deleteCollectByName(Context context,String name);
+    void deleteCollectByName(Context context, String name);
+
+    void collectComicOnNet(ComicInfo info);
+
+    void queryCollectOnNet(String name);
+
+    void deleteCollectOnNet(ComicInfo info);
 }

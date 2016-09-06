@@ -6,6 +6,7 @@ import com.bumptech.glide.Glide;
 import com.tongming.manga.mvp.api.ApiManager;
 import com.tongming.manga.mvp.bean.ComicPage;
 
+import java.util.Collections;
 import java.util.List;
 
 import rx.Observable;
@@ -45,13 +46,20 @@ public class PageModel implements IPageModel {
     }
 
     @Override
-    public Subscription cacheImg(final Context mContext, final List<String> imgList) {
+    public Subscription cacheImg(final Context mContext, final List<String> imgList, final boolean isLast) {
+        //判断是否为加载上一话,是的话reserve
+        if (isLast) {
+            Collections.reverse(imgList);
+        }
         return Observable.from(imgList)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<String>() {
                     @Override
                     public void onCompleted() {
+                        if (isLast) {
+                            Collections.reverse(imgList);
+                        }
                         onGetPageListener.onPageCompleted(imgList);
                     }
 
@@ -62,7 +70,7 @@ public class PageModel implements IPageModel {
 
                     @Override
                     public void onNext(String s) {
-                        Glide.with(mContext).load(s).downloadOnly(600, 850);
+                        Glide.with(mContext).load(s).downloadOnly(720, 1280);
                     }
                 });
     }

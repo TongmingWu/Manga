@@ -24,6 +24,8 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
+import com.orhanobut.logger.Logger;
+
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -455,6 +457,7 @@ public class CommonUtil {
         } catch (Settings.SettingNotFoundException e) {
             e.printStackTrace();
         }
+        Logger.d("当前屏幕亮度为" + values / 255f);
         return values;
     }
 
@@ -471,6 +474,7 @@ public class CommonUtil {
         } else {
             lp.screenBrightness = (brightness <= 0 ? 1 : brightness) / 255f;
         }
+        Logger.d("设置当前窗口的亮度为" + lp.screenBrightness);
         window.setAttributes(lp);
     }
 

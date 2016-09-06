@@ -18,8 +18,10 @@ import com.bumptech.glide.Glide;
 import com.tongming.manga.R;
 import com.tongming.manga.mvp.base.BaseFragment;
 import com.tongming.manga.mvp.bean.Hot;
+import com.tongming.manga.mvp.bean.User;
 import com.tongming.manga.mvp.presenter.HomePresenterImp;
 import com.tongming.manga.mvp.view.activity.ComicDetailActivity;
+import com.tongming.manga.mvp.view.activity.HomeActivity;
 import com.tongming.manga.mvp.view.activity.IHomeView;
 import com.tongming.manga.mvp.view.activity.SearchActivity;
 import com.tongming.manga.mvp.view.adapter.ComicAdapter;
@@ -68,6 +70,10 @@ public class HomeFragment extends BaseFragment implements IHomeView {
             @Override
             public void onRefresh() {
                 ((HomePresenterImp) presenter).getData();
+                //调用HomeActivity的getUser()方法
+                if (getActivity().getSharedPreferences("config", Context.MODE_PRIVATE).getBoolean("isLogin", false)) {
+                    ((HomeActivity) getActivity()).getUser(User.getInstance().getToken());
+                }
             }
         });
     }

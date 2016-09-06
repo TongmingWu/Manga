@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.tongming.manga.R;
@@ -62,7 +63,7 @@ public class CategoryAdapter extends BaseAdapter {
                 .load(picList.get(position))
                 .into(holder.ivCategory);*/
         holder.tvCategory.setText(nameList.get(position));
-        holder.ivCategory.setOnClickListener(new View.OnClickListener() {
+        holder.root.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int type = typeList.get(position);
@@ -81,6 +82,8 @@ public class CategoryAdapter extends BaseAdapter {
 
     class ViewHolder {
         View itemView;
+        @BindView(R.id.item_root)
+        LinearLayout root;
         @BindView(R.id.tv_category)
         TextView tvCategory;
         @BindView(R.id.iv_category)
