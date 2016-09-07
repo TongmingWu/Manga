@@ -34,7 +34,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
 
 /**
- * Created by Tongming on 2016/8/9.
+ * Author: Tongming
+ * Date: 2016/8/9
  */
 public class ApiManager {
     //    private static final String BASE_URL = "http://192.168.137.1:5000";
@@ -47,7 +48,7 @@ public class ApiManager {
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     //短缓存有效期为120秒钟
-    public static final int CACHE_STALE_SHORT = 120;
+    private static final int CACHE_STALE_SHORT = 120;
     //长缓存有效期为1天
     public static final int CACHE_STALE_LONG = 60 * 60 * 24;
 
@@ -55,12 +56,11 @@ public class ApiManager {
 
     private static ApiManager instance;
     private ApiService apiService;
-    private Retrofit retrofit;
 
     private ApiManager() {
         initOkHttpClient();
 
-        retrofit = new Retrofit.Builder()
+        Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .client(mOkHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -83,7 +83,7 @@ public class ApiManager {
     // 云端响应头拦截器，用来配置缓存策略
     private Interceptor mRewriteCacheControlInterceptor = new Interceptor() {
 
-        private int versonCode;
+        private int versionCode;
 
         @Override
         public Response intercept(Chain chain) throws IOException {
@@ -91,15 +91,15 @@ public class ApiManager {
             Context context = BaseApplication.getContext();
             if (!CommonUtil.isNet(context)) {
                 PackageManager manager = context.getPackageManager();
-                PackageInfo info = null;
+                PackageInfo info;
                 try {
                     info = manager.getPackageInfo(context.getPackageName(), 0);
-                    versonCode = info != null ? info.versionCode : 1;
+                    versionCode = info != null ? info.versionCode : 1;
                 } catch (PackageManager.NameNotFoundException e) {
                     e.printStackTrace();
                 }
                 request = request.newBuilder()
-                        .addHeader("App-Version", versonCode + "")
+                        .addHeader("App-Version", versionCode + "")
                         .cacheControl(CacheControl.FORCE_CACHE)
                         .build();
             }

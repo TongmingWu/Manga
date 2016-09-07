@@ -1,6 +1,7 @@
 package com.tongming.manga.mvp.view.activity;
 
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -108,7 +109,7 @@ public class PersonCenterActivity extends BaseActivity implements IPersonView {
         oldPersonality = bean.getPersonality();
         tvNickname.setText(oldName);
         tvSex.setText(oldSex);
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         String logonDate = format.format((long) bean.getLogon_date() * 1000);
         tvLogonDate.setText(logonDate);
         if (!TextUtils.isEmpty(oldPersonality)) {

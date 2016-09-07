@@ -5,7 +5,7 @@ import java.io.File;
 /**
  * Created by Tongming on 2016/9/1.
  */
-public interface IPersonPresenter {
+interface IPersonPresenter {
     void updateUser(String nickname, String sex, String personality);
 
     void updateUser(File file, String nickname, String sex, String personality);

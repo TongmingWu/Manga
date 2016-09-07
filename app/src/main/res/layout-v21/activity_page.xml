@@ -55,7 +55,8 @@
                 android:layout_height="10dp"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="10dp"
-                android:background="@drawable/icon_back" />
+                android:background="@drawable/icon_back"
+                android:backgroundTint="@android:color/white" />
 
             <TextView
                 android:id="@+id/tv_page_chapter_name"

@@ -35,7 +35,8 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="8dp"
-                android:background="@drawable/ic_search_m" />
+                android:background="@drawable/ic_search_m"
+                android:backgroundTint="@android:color/darker_gray" />
         </RelativeLayout>
 
         <LinearLayout

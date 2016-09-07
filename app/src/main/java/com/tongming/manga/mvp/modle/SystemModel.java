@@ -65,7 +65,7 @@ public class SystemModel implements ISystemModel {
 
             @Override
             public void run() {
-                ObjectInputStream ois = null;
+                ObjectInputStream ois;
                 try {
                     if (file.exists()) {
                         ois = new ObjectInputStream(new FileInputStream(file));
@@ -88,9 +88,7 @@ public class SystemModel implements ISystemModel {
                             }
                         });
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (ClassNotFoundException e) {
+                } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
             }

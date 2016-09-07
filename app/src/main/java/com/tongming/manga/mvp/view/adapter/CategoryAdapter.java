@@ -51,7 +51,7 @@ public class CategoryAdapter extends BaseAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        ViewHolder holder = null;
+        ViewHolder holder;
         if (convertView == null) {
             convertView = View.inflate(mContext, R.layout.item_type, null);
             holder = new ViewHolder(convertView);
@@ -63,6 +63,7 @@ public class CategoryAdapter extends BaseAdapter {
                 .load(picList.get(position))
                 .into(holder.ivCategory);*/
         holder.tvCategory.setText(nameList.get(position));
+
         holder.root.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -1,7 +1,8 @@
 package com.tongming.manga.util;
 
 /**
- * Created by Tongming on 2016/4/5.
+ * Author: Tongming
+ * Date: 2016/4/5
  */
 import java.io.UnsupportedEncodingException;
 
@@ -28,7 +29,7 @@ public class Base64Utils
      */
     public static String encode(byte[] data)
     {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         int len = data.length;
         int i = 0;
         int b1, b2, b3;
@@ -81,8 +82,8 @@ public class Base64Utils
 
     private static byte[] decodePrivate(String str) throws UnsupportedEncodingException
     {
-        StringBuffer sb = new StringBuffer();
-        byte[] data = null;
+        StringBuilder sb = new StringBuilder();
+        byte[] data;
         data = str.getBytes("US-ASCII");
         int len = data.length;
         int i = 0;

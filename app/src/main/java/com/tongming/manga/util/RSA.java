@@ -64,8 +64,7 @@ public final class RSA {
         BigInteger bigIntPrivateExponent = new BigInteger(publicExponent);
         RSAPublicKeySpec keySpec = new RSAPublicKeySpec(bigIntModulus, bigIntPrivateExponent);
         KeyFactory keyFactory = KeyFactory.getInstance(RSA);
-        PublicKey publicKey = keyFactory.generatePublic(keySpec);
-        return publicKey;
+        return keyFactory.generatePublic(keySpec);
     }
 
     /**
@@ -118,7 +117,6 @@ public final class RSA {
         StringBuilder sb = new StringBuilder();
         while ((readLine = br.readLine()) != null) {
             if (readLine.charAt(0) == '-') {
-                continue;
             } else {
                 sb.append(readLine);
                 sb.append('\r');

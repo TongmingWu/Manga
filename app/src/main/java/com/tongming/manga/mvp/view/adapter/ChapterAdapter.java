@@ -47,7 +47,7 @@ public class ChapterAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder = null;
+        ViewHolder holder;
         if (convertView == null) {
             convertView = View.inflate(mContext, R.layout.item_chapter, null);
             holder = new ViewHolder(convertView);

@@ -16,6 +16,7 @@ import com.tongming.manga.mvp.view.activity.SearchActivity;
 import com.tongming.manga.mvp.view.adapter.CategoryAdapter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
@@ -84,9 +85,7 @@ public class CategoryFragment extends BaseFragment {
         for (int type : types) {
             typeList.add(type);
         }
-        for (String name : names) {
-            nameList.add(name);
-        }
+        Collections.addAll(nameList, names);
         gvSpecialCategory.setAdapter(new CategoryAdapter(picList, nameList, typeList, getActivity()));
 
         List<Integer> normalPicList = new ArrayList<>();
@@ -107,9 +106,7 @@ public class CategoryFragment extends BaseFragment {
         for (int type : types) {
             normalTypeList.add(type);
         }
-        for (String name : names) {
-            normalNameList.add(name);
-        }
+        Collections.addAll(normalNameList, names);
         gvNormalCategory.setAdapter(new CategoryAdapter(normalPicList, normalNameList, normalTypeList, getActivity()));
     }
 }

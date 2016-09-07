@@ -113,8 +113,7 @@ public class PersonModel implements IPersonModel {
         map.put("personality", personality);
         JSONObject object = new JSONObject(map);
         RequestBody body = RequestBody.create(ApiManager.JSON, object.toString());
-        Observable<UserInfo> observable = ApiManager.getInstance().updateUser(body);
-        return observable;
+        return ApiManager.getInstance().updateUser(body);
     }
 
     public interface onUpdateListener {

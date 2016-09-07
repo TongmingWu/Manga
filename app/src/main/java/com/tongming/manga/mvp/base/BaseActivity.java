@@ -15,7 +15,8 @@ import com.tongming.manga.util.CommonUtil;
 import butterknife.ButterKnife;
 
 /**
- * Created by Tongming on 2016/8/9.
+ * Author: Tongming
+ * Date: 2016/8/9
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
@@ -24,7 +25,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         }
         setContentView(getLayoutId());

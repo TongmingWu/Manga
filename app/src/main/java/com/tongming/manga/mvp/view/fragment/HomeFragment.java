@@ -65,7 +65,7 @@ public class HomeFragment extends BaseFragment implements IHomeView {
     protected void initView() {
         presenter = new HomePresenterImp(this);
         ((HomePresenterImp) presenter).getData();
-        refresh.setColorSchemeResources(new int[]{R.color.colorPrimary});
+        refresh.setColorSchemeResources(R.color.colorPrimary);
         refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {

@@ -102,8 +102,7 @@ public class CommonUtil {
     public static boolean isSleeping(Context context) {
         KeyguardManager kgMgr = (KeyguardManager) context
                 .getSystemService(Context.KEYGUARD_SERVICE);
-        boolean isSleeping = kgMgr.inKeyguardRestrictedInputMode();
-        return isSleeping;
+        return kgMgr.inKeyguardRestrictedInputMode();
     }
 
     //判断当前是否有网络连接
@@ -489,11 +488,7 @@ public class CommonUtil {
         } catch (Settings.SettingNotFoundException e) {
             e.printStackTrace();
         }
-        if (autoBrightness == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC) {
-            return true;
-        } else {
-            return false;
-        }
+        return autoBrightness == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC;
     }
 
     /**
@@ -733,7 +728,7 @@ public class CommonUtil {
                 "yyyy-MM-dd");
 
         // 一小时内
-        if (now - millis <= oneHourMillis && now - millis > 0l) {
+        if (now - millis <= oneHourMillis && now - millis > 0L) {
             String m = millisToStringShort(now - millis, false, false);
             return "".equals(m) ? "1分钟内" : m + "前";
         }
@@ -774,7 +769,6 @@ public class CommonUtil {
     //获取内置SD卡剩余容量
     public static long getAvailableSize() {
         File file = Environment.getDataDirectory();
-        long size = file.getFreeSpace();
-        return size;
+        return file.getFreeSpace();
     }
 }

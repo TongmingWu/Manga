@@ -22,9 +22,10 @@ import retrofit2.http.Query;
 import rx.Observable;
 
 /**
- * Created by Tongming on 2016/8/9.
+ * Author: Tongming
+ * Date: 2016/8/9
  */
-public interface ApiService {
+interface ApiService {
     @GET("/cc")
     Observable<Hot> getHot();
 

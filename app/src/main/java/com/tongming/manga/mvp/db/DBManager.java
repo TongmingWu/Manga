@@ -18,12 +18,11 @@ import rx.schedulers.Schedulers;
  */
 public class DBManager {
 
-    private SQLiteHelper helper;
     private BriteDatabase briteDatabase;
     private static DBManager instance;
 
     public DBManager(Context context) {
-        helper = new SQLiteHelper(context);
+        SQLiteHelper helper = new SQLiteHelper(context);
         briteDatabase = SqlBrite.create().wrapDatabaseHelper(helper, Schedulers.io());
     }
 

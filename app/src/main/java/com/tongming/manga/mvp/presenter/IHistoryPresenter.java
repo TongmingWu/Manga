@@ -5,7 +5,7 @@ import android.content.Context;
 /**
  * Created by Tongming on 2016/8/15.
  */
-public interface IHistoryPresenter {
+interface IHistoryPresenter {
     void queryAllHistory(Context context);
 
     void deleteHistoryByName(Context context,String name);

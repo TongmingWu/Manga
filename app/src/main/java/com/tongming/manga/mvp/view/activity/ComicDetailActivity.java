@@ -230,7 +230,7 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView {
                 intent.setAction(Intent.ACTION_SEND);
                 intent.putExtra(Intent.EXTRA_TEXT, info.getComic_name() + "http://m.tuku.cc" + info.getComic_url());
                 intent.setType("text/plain");
-                startActivity(intent.createChooser(intent, "分享到"));
+                startActivity(Intent.createChooser(intent, "分享到"));
             }
         });
     }

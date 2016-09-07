@@ -211,10 +211,7 @@ public class ZoomRecyclerView extends RecyclerView {
         mGestureDetector = new GestureDetector(mContext, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onSingleTapConfirmed(MotionEvent e) {
-                if (mOnGestureListener != null) {
-                    return mOnGestureListener.onSingleTapConfirmed(e);
-                }
-                return false;
+                return mOnGestureListener != null && mOnGestureListener.onSingleTapConfirmed(e);
             }
 
             @Override

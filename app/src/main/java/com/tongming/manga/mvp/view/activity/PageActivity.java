@@ -222,7 +222,6 @@ public class PageActivity extends BaseActivity implements IPageView {
                             hideController();
                         }
                         isSlide = true;
-                        Logger.d("DRAGGING");
                         break;
                     case RecyclerView.SCROLL_STATE_IDLE:
                         int position = manager.findLastVisibleItemPosition();
@@ -242,10 +241,8 @@ public class PageActivity extends BaseActivity implements IPageView {
                         }
                         calculatePos(position);
                         currentPage = position;
-                        Logger.d("IDLE");
                         break;
                     case RecyclerView.SCROLL_STATE_SETTLING:
-                        Logger.d("SETTLING");
                         break;
                 }
             }
@@ -331,7 +328,6 @@ public class PageActivity extends BaseActivity implements IPageView {
                             if (manager.findFirstVisibleItemPosition() == 0) {
                                 loadPre();
                             } else {
-                                Logger.d("上一页=" + (manager.findFirstVisibleItemPosition() + 1));
                                 rvPage.smoothScrollToPosition(manager.findFirstVisibleItemPosition() - 1);
 //                                rvPage.smoothScrollBy(-width, 0);
                             }
@@ -340,7 +336,6 @@ public class PageActivity extends BaseActivity implements IPageView {
                             if (manager.findLastVisibleItemPosition() == manager.getItemCount() - 1) {
                                 loadNext();
                             } else {
-                                Logger.d("下一页=" + (manager.findLastVisibleItemPosition() + 1));
                                 rvPage.smoothScrollToPosition(manager.findLastVisibleItemPosition() + 1);
 //                                rvPage.smoothScrollBy(width, 0);
                             }

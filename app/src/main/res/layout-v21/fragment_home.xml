@@ -81,7 +81,8 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:layout_centerVertical="true"
-                        android:background="@drawable/ic_hourglass_full_white_24dp" />
+                        android:background="@drawable/ic_hourglass_full_white_24dp"
+                        android:backgroundTint="@color/colorPrimary" />
 
                     <TextView
                         style="@style/ComicName"
@@ -121,7 +122,8 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:layout_centerVertical="true"
-                        android:background="@drawable/ic_newest" />
+                        android:background="@drawable/ic_newest"
+                        android:backgroundTint="#FF4081" />
 
                     <TextView
                         style="@style/ComicName"

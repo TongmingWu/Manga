@@ -8,7 +8,7 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class BasePresenter {
 
-    protected CompositeSubscription compositeSubscription;
+    private CompositeSubscription compositeSubscription;
 
     public void addSubscription(Subscription subscription) {
         if (compositeSubscription == null) {

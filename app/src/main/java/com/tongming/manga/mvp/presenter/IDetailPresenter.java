@@ -7,7 +7,7 @@ import com.tongming.manga.mvp.bean.ComicInfo;
 /**
  * Created by Tongming on 2016/8/11.
  */
-public interface IDetailPresenter {
+interface IDetailPresenter {
     void getDetail(String comicUrl);
 
     void addHistory(Context context, ComicInfo info, String historyName, String historyUrl);

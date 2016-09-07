@@ -25,7 +25,6 @@ import com.tongming.manga.cusview.CustomCachingGlideModule;
 import com.tongming.manga.mvp.base.BaseActivity;
 import com.tongming.manga.mvp.bean.User;
 import com.tongming.manga.mvp.presenter.CachePresenterImp;
-import com.tongming.manga.mvp.view.fragment.EditDialogFragment;
 import com.tongming.manga.util.CommonUtil;
 
 import butterknife.BindView;
@@ -34,7 +33,7 @@ import butterknife.OnClick;
 /**
  * Created by Tongming on 2016/9/3.
  */
-public class SettingActivity extends BaseActivity implements ICacheView, EditDialogFragment.EditDialogListener {
+public class SettingActivity extends BaseActivity implements ICacheView {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.tv_cache_ceiling)
@@ -206,7 +205,7 @@ public class SettingActivity extends BaseActivity implements ICacheView, EditDia
                 .setNegativeButton("取消", null)
                 .create();
         final Window window = alertDialog.getWindow();
-        WindowManager.LayoutParams params = window.getAttributes();
+        WindowManager.LayoutParams params = window != null ? window.getAttributes() : null;
         params.gravity = Gravity.TOP;
         params.y = CommonUtil.getDeviceHeight(this) / 4;    //监听软键盘
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
@@ -234,10 +233,5 @@ public class SettingActivity extends BaseActivity implements ICacheView, EditDia
     @Override
     public void onFail(Throwable throwable) {
         Logger.d(throwable.getMessage());
-    }
-
-    @Override
-    public void onFinishDialog() {
-
     }
 }

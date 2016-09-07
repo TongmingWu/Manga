@@ -5,6 +5,6 @@ import rx.Subscription;
 /**
  * Created by Tongming on 2016/8/9.
  */
-public interface IHomeModel {
+interface IHomeModel {
     Subscription getData();
 }
