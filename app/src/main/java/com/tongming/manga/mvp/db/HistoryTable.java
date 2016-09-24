@@ -12,25 +12,27 @@ import rx.functions.Func1;
  * Created by Tongming on 2016/8/15.
  */
 public class HistoryTable {
-    public static final String TABLE_NAME = "history_comic";
+    static final String TABLE_NAME = "history_comic";
 
     // 表字段
-    public static final String ID = "_id";
-    public static final String COLUMN_NAME = "name";
-    public static final String COLUMN_AUTHOR = "author";
-    public static final String COLUMN_AREA = "area";
-    public static final String COLUMN_TYPE = "type";
-    public static final String COLUMN_URL = "url";
-    public static final String COLUMN_CHAPTER_NUM = "chapter_num";
-    public static final String COLUMN_STATUS = "status";
-    public static final String COLUMN_HISTORY_NAME = "history_name";
-    public static final String COLUMN_HISTORY_URL = "history_url";
-    public static final String COLUMN_COVER = "cover";
-    public static final String COLUMN_TIME = "last_time";
+    static final String ID = "_id";
+    static final String COMIC_ID = "comic_id";
+    static final String COLUMN_NAME = "name";
+    static final String COLUMN_AUTHOR = "author";
+    static final String COLUMN_AREA = "area";
+    static final String COLUMN_TYPE = "type";
+    static final String COLUMN_URL = "url";
+    static final String COLUMN_CHAPTER_NUM = "chapter_num";
+    static final String COLUMN_STATUS = "status";
+    static final String COLUMN_HISTORY_NAME = "history_name";
+    static final String COLUMN_HISTORY_URL = "history_url";
+    static final String COLUMN_COVER = "cover";
+    static final String COLUMN_TIME = "last_time";
 
 
-    public static final String CREATE = "CREATE TABLE " + TABLE_NAME + "("
+    static final String CREATE = "CREATE TABLE " + TABLE_NAME + "("
             + ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + COMIC_ID + " TEXT,"
             + COLUMN_NAME + " TEXT,"
             + COLUMN_AUTHOR + " TEXT,"
             + COLUMN_AREA + " TEXT,"
@@ -45,9 +47,10 @@ public class HistoryTable {
             + ")";
 
     // 对象转字段,放入表中
-    public static ContentValues toContentValues(ComicInfo info, String historyName, String historyUrl) {
+    static ContentValues toContentValues(ComicInfo info, String historyName, String historyUrl) {
         ContentValues values = new ContentValues();
         values.put(COLUMN_NAME, info.getComic_name());
+        values.put(COMIC_ID, info.getComic_id());
         values.put(COLUMN_AUTHOR, info.getComic_author());
         values.put(COLUMN_AREA, info.getComic_area());
         values.put(COLUMN_TYPE, info.getComic_type());
@@ -61,7 +64,7 @@ public class HistoryTable {
         return values;
     }
 
-    public static ContentValues toContentValues(String historyName, String historyUrl) {
+    static ContentValues toContentValues(String historyName, String historyUrl) {
         ContentValues values = new ContentValues();
         values.put(COLUMN_HISTORY_NAME, historyName);
         values.put(COLUMN_HISTORY_URL, historyUrl);
@@ -76,6 +79,8 @@ public class HistoryTable {
             HistoryComic comic = new HistoryComic();
             String name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME));
             comic.setName(name);
+            String comicId = cursor.getString(cursor.getColumnIndex(COMIC_ID));
+            comic.setComic_id(comicId);
             String author = cursor.getString(cursor.getColumnIndex(COLUMN_AUTHOR));
             comic.setAuthor(author);
             String area = cursor.getString(cursor.getColumnIndex(COLUMN_AREA));

@@ -2,6 +2,7 @@ package com.tongming.manga.mvp.view.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -26,6 +27,7 @@ public class CategoryAdapter extends BaseAdapter {
     private List<String> nameList;
     private List<Integer> typeList;
     private Context mContext;
+    private SparseArray<String> array;
 
     public CategoryAdapter(List<Integer> picList, List<String> nameList, List<Integer> typeList, Context mContext) {
         this.picList = picList;
@@ -34,14 +36,25 @@ public class CategoryAdapter extends BaseAdapter {
         this.mContext = mContext;
     }
 
+    public CategoryAdapter(List<Integer> picList, SparseArray<String> array, Context mContext) {
+        this.mContext = mContext;
+        this.array = array;
+    }
+
     @Override
     public int getCount() {
-        return nameList.size();
+        if (array == null) {
+            return nameList.size();
+        }
+        return array.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return nameList.get(position);
+        if (array == null) {
+            return nameList.get(position);
+        }
+        return array.get(position);
     }
 
     @Override
@@ -62,22 +75,37 @@ public class CategoryAdapter extends BaseAdapter {
         /*Glide.with(mContext)
                 .load(picList.get(position))
                 .into(holder.ivCategory);*/
-        holder.tvCategory.setText(nameList.get(position));
-
-        holder.root.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int type = typeList.get(position);
-                int page = 1;
-                int select = typeList.size() < 10 ? 0 : 1;
-                Intent intent = new Intent(mContext, SearchActivity.class);
-                intent.putExtra("type", type)
-                        .putExtra("page", page)
-                        .putExtra("select", select)
-                        .putExtra("name", nameList.get(position));
-                mContext.startActivity(intent);
-            }
-        });
+        if (array == null) {
+            holder.tvCategory.setText(nameList.get(position));
+            holder.root.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int type = typeList.get(position);
+                    int page = 0;
+                    int select = typeList.size() < 10 ? 0 : 1;
+                    Intent intent = new Intent(mContext, SearchActivity.class);
+                    intent.putExtra("type", type)
+                            .putExtra("page", page)
+                            .putExtra("name", nameList.get(position));
+                    mContext.startActivity(intent);
+                }
+            });
+        } else {
+            holder.tvCategory.setText(array.get(position + 1));
+            holder.root.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int type = 35 - position;
+                    int page = 0;
+                    Intent intent = new Intent(mContext, SearchActivity.class);
+                    intent.putExtra("type", type)
+                            .putExtra("page", page)
+                            .putExtra("select", 0)
+                            .putExtra("name", array.get(position + 1));
+                    mContext.startActivity(intent);
+                }
+            });
+        }
         return convertView;
     }
 

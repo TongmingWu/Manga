@@ -28,6 +28,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -90,6 +91,12 @@ public class ApiManager {
             Request request = chain.request();
             Context context = BaseApplication.getContext();
             if (!CommonUtil.isNet(context)) {
+                request = request.newBuilder()
+                        .cacheControl(CacheControl.FORCE_CACHE)
+                        .build();
+            }
+            Response originalResponse = chain.proceed(request);
+            if (CommonUtil.isNet(context)) {
                 PackageManager manager = context.getPackageManager();
                 PackageInfo info;
                 try {
@@ -98,17 +105,11 @@ public class ApiManager {
                 } catch (PackageManager.NameNotFoundException e) {
                     e.printStackTrace();
                 }
-                request = request.newBuilder()
-                        .addHeader("App-Version", versionCode + "")
-                        .cacheControl(CacheControl.FORCE_CACHE)
-                        .build();
-            }
-            Response originalResponse = chain.proceed(request);
-            if (CommonUtil.isNet(context)) {
                 //有网的时候读接口上的@Headers里的配置，可以在这里进行统一的设置
                 String cacheControl = request.cacheControl().toString();
                 return originalResponse.newBuilder()
                         .header("Cache-Control", cacheControl)
+                        .addHeader("App-Version", versionCode + "")
                         .removeHeader("Pragma").build();
             } else {
                 return originalResponse.newBuilder()
@@ -151,7 +152,7 @@ public class ApiManager {
     }
 
     public Observable<Search> getComicType(int select, int type, int page) {
-        return apiService.getComicType(select, type, page);
+        return apiService.getComicType(type, page);
     }
 
     public Observable<Search> doSearch(String word, int page) {
@@ -194,6 +195,10 @@ public class ApiManager {
 
     public Observable<Result> queryCollection(int uid, String name) {
         return apiService.queryCollection(uid, name);
+    }
+
+    public Observable<ResponseBody> downloadImage(String url) {
+        return apiService.downloadImage(url);
     }
 
 }

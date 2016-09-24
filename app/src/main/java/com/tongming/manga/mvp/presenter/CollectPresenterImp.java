@@ -2,6 +2,7 @@ package com.tongming.manga.mvp.presenter;
 
 import android.content.Context;
 
+import com.tongming.manga.mvp.base.BaseApplication;
 import com.tongming.manga.mvp.base.BasePresenter;
 import com.tongming.manga.mvp.bean.CollectedComic;
 import com.tongming.manga.mvp.bean.UserInfo;
@@ -21,7 +22,7 @@ public class CollectPresenterImp extends BasePresenter implements ICollectPresen
 
     public CollectPresenterImp(ICollectView collectView) {
         this.collectView = collectView;
-        collectModel = new CollectModel(this);
+        collectModel = new CollectModel(BaseApplication.getContext(), this);
     }
 
     @Override

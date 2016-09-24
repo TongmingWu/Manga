@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/chatper_select" android:state_focused="true" />
+    <!--<item android:drawable="@drawable/chatper_select" android:state_focused="true" />
     <item android:drawable="@drawable/chatper_select" android:state_pressed="true" />
-    <item android:drawable="@drawable/chapter_unselect" />
+    <item android:drawable="@drawable/chapter_unselect" />-->
+    <item android:drawable="@drawable/chapter_select_bg" android:state_focused="true" />
+    <item android:drawable="@drawable/chapter_select_bg" android:state_pressed="true" />
+    <item android:drawable="@drawable/chapter_unselect_bg" />
 </selector>

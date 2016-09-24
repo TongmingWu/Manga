@@ -1,10 +1,11 @@
 package com.tongming.manga.mvp.modle;
 
 import android.content.Context;
+import android.text.TextUtils;
 
-import com.bumptech.glide.Glide;
 import com.tongming.manga.mvp.api.ApiManager;
 import com.tongming.manga.mvp.bean.ComicPage;
+import com.tongming.manga.util.HeaderGlide;
 
 import java.util.Collections;
 import java.util.List;
@@ -70,7 +71,9 @@ public class PageModel implements IPageModel {
 
                     @Override
                     public void onNext(String s) {
-                        Glide.with(mContext).load(s).downloadOnly(720, 1280);
+                        if (!TextUtils.isEmpty(s)){
+                            HeaderGlide.downloadImage(mContext, s);
+                        }
                     }
                 });
     }

@@ -60,7 +60,10 @@ public class DetailModel implements IDetailModel {
 
     @Override
     public void addHistory(Context context, final ComicInfo info, final String historyName, final String historyUrl) {
-        long state = new DBManager(context).addHistory(info, historyName, historyUrl);
+        DBManager manager = new DBManager(context);
+        manager.openDB();
+        long state = manager.addHistory(info, historyName, historyUrl);
+        manager.closeDB();
         onGetDataListener.onAddHistoryCompleted(state);
         /*return DBManager.getInstance().queryHistoryByName(info.getComic_name())
                 .subscribeOn(Schedulers.io())
@@ -79,25 +82,32 @@ public class DetailModel implements IDetailModel {
 
     @Override
     public void updateHistory(Context context, ComicInfo info, String historyName, String historyUrl) {
-        int state = new DBManager(context).updateHistory(info, historyName, historyUrl);
-        onGetDataListener.onUpdateHistoryCompleted(state);
+        DBManager manager = new DBManager(context);
+        if (!TextUtils.isEmpty(historyName) && !TextUtils.isEmpty(historyUrl)) {
+            int state = manager.updateHistory(info, historyName, historyUrl);
+            manager.closeDB();
+            onGetDataListener.onUpdateHistoryCompleted(state);
+        }
     }
 
     @Override
     public Subscription queryHistoryByName(Context context, final String comicName) {
         Logger.d("开始读取历史记录");
-        return new DBManager(context).queryHistoryByName(comicName)
+        final DBManager manager = new DBManager(context);
+        return manager.queryHistoryByName(comicName)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<List<HistoryComic>>() {
                     @Override
                     public void onCompleted() {
                         this.unsubscribe();
+                        manager.closeDB();
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         onGetDataListener.onFail(e);
+                        manager.closeDB();
                     }
 
                     @Override
@@ -120,25 +130,29 @@ public class DetailModel implements IDetailModel {
 
     @Override
     public void collectComic(Context context, final ComicInfo info) {
-
-        long state = new DBManager(context).collectComic(info);
+        DBManager manager = new DBManager(context);
+        long state = manager.collectComic(info);
+        manager.closeDB();
         onGetDataListener.onAddCollectCompleted(state);
     }
 
     @Override
     public Subscription queryCollectByName(Context context, String name) {
-        return new DBManager(context).queryCollectedByName(name)
+        final DBManager manager = new DBManager(context);
+        return manager.queryCollectedByName(name)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<List<CollectedComic>>() {
                     @Override
                     public void onCompleted() {
                         this.unsubscribe();
+                        manager.closeDB();
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         onGetDataListener.onFail(e);
+                        manager.closeDB();
                     }
 
                     @Override
@@ -152,7 +166,9 @@ public class DetailModel implements IDetailModel {
 
     @Override
     public void deleteCollectByName(Context context, String name) {
-        int state = new DBManager(context).deleteCollectByName(name);
+        DBManager manager = new DBManager(context);
+        int state = manager.deleteCollectByName(name);
+        manager.closeDB();
         onGetDataListener.onDeleteCollectCompleted(state);
     }
 

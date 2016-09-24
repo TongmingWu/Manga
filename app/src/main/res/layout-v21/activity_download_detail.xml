@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:toolbar="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark"
+            toolbar:navigationIcon="@drawable/abc_ic_ab_back_mtrl_am_alpha"
+            toolbar:title="下载详情"
+            toolbar:titleTextAppearance="?android:attr/textAppearanceMedium"
+            toolbar:titleTextColor="@android:color/white" />
+    </android.support.design.widget.AppBarLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_download"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="60dp"
+            android:layout_marginTop="5dp" />
+
+        <RelativeLayout
+            android:id="@+id/rl_bottom_bar"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_gravity="bottom"
+            android:background="@android:color/white"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/tv_select_all"
+                android:layout_width="120dp"
+                android:layout_height="40dp"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/btn_logon_border"
+                android:gravity="center"
+                android:text="全部开始"
+                android:textColor="@color/colorPrimary" />
+
+            <TextView
+                android:id="@+id/tv_download"
+                android:layout_width="120dp"
+                android:layout_height="40dp"
+                android:layout_alignBottom="@id/tv_select_all"
+                android:layout_marginLeft="20dp"
+                android:layout_toRightOf="@id/tv_select_all"
+                android:background="@drawable/btn_logon_bg"
+                android:gravity="center"
+                android:text="查看目录"
+                android:textColor="@android:color/white" />
+        </RelativeLayout>
+    </FrameLayout>
+
+</LinearLayout>

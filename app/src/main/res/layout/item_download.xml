@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/tv_chapter_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:textColor="@color/normalText"
+        tools:text="第1话" />
+
+    <TextView
+        android:id="@+id/tv_current_download"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_chapter_name"
+        android:layout_marginTop="8dp"
+        android:text="0/0"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/tv_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/tv_current_download"
+        android:layout_marginLeft="5dp"
+        android:layout_toRightOf="@id/tv_current_download"
+        android:textSize="12sp"
+        tools:text="等待中" />
+
+    <ProgressBar
+        android:id="@+id/progress"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="320dp"
+        android:layout_height="3dp"
+        android:layout_below="@id/tv_status"
+        android:layout_marginTop="5dp" />
+
+    <ImageView
+        android:id="@+id/iv_action"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/ic_download_continue" />
+
+    <TextView
+        android:id="@+id/tv_watch"
+        android:layout_width="60dp"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:background="@drawable/btn_logon_border"
+        android:gravity="center"
+        android:text="观看"
+        android:textColor="@color/colorPrimary"
+        android:visibility="gone" />
+</RelativeLayout>

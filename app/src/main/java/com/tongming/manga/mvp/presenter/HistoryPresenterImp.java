@@ -3,6 +3,7 @@ package com.tongming.manga.mvp.presenter;
 import android.content.Context;
 
 import com.orhanobut.logger.Logger;
+import com.tongming.manga.mvp.base.BaseApplication;
 import com.tongming.manga.mvp.base.BasePresenter;
 import com.tongming.manga.mvp.bean.HistoryComic;
 import com.tongming.manga.mvp.modle.HistoryModel;
@@ -20,7 +21,7 @@ public class HistoryPresenterImp extends BasePresenter implements IHistoryPresen
 
     public HistoryPresenterImp(IHistoryView historyView) {
         this.historyView = historyView;
-        historyModel = new HistoryModel(this);
+        historyModel = new HistoryModel(BaseApplication.getContext(), this);
     }
 
     @Override

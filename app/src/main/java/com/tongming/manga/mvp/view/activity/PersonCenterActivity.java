@@ -155,7 +155,7 @@ public class PersonCenterActivity extends BaseActivity implements IPersonView {
                 final Window window = dialog.getWindow();
                 final WindowManager.LayoutParams params = window.getAttributes();
                 params.gravity = Gravity.TOP;
-                params.y = CommonUtil.getDeviceHeight(this) / 4;
+                params.y = CommonUtil.getScreenHeight(this) / 4;
                 window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
                 dialog.show();
                 //TODO 修复dialog自适应软键盘的问题

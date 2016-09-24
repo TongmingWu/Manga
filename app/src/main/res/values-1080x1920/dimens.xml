@@ -1,0 +1,4 @@
+<resources>
+    <dimen name="coverHeight">150dp</dimen>
+    <dimen name="bannerHeight">165dp</dimen>
+</resources>

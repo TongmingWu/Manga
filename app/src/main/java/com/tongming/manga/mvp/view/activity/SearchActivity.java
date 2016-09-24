@@ -1,20 +1,22 @@
 package com.tongming.manga.mvp.view.activity;
 
 import android.content.Intent;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.GridView;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.tongming.manga.R;
+import com.tongming.manga.cusview.SpaceItemDecoration;
 import com.tongming.manga.mvp.base.BaseActivity;
 import com.tongming.manga.mvp.bean.ComicCard;
 import com.tongming.manga.mvp.bean.Search;
 import com.tongming.manga.mvp.presenter.SearchPresenterImp;
-import com.tongming.manga.mvp.view.adapter.ComicAdapter;
+import com.tongming.manga.mvp.view.adapter.RVComicAdapter;
+import com.tongming.manga.util.CommonUtil;
 
 import java.util.List;
 
@@ -28,8 +30,10 @@ public class SearchActivity extends BaseActivity implements ISearchView {
     Toolbar toolbar;
     @BindView(R.id.progress)
     ProgressBar progress;
-    @BindView(R.id.gv_search)
-    GridView gvSearch;
+    //    @BindView(R.id.gv_search)
+//    GridView gvSearch;
+    @BindView(R.id.rv_search)
+    RecyclerView rvSearch;
     /*@BindView(R.id.tv_load_more)
     TextView tvMore;
     @BindView(R.id.pb_load_more)
@@ -38,7 +42,11 @@ public class SearchActivity extends BaseActivity implements ISearchView {
     private int select;
     private int type;
     private List<ComicCard> comicCards;
-    private ComicAdapter adapter;
+    //    private ComicAdapter adapter;
+    private RVComicAdapter adapter;
+    private boolean isLoading;
+    private GridLayoutManager manager;
+    private Search search;
 
     @Override
     protected int getLayoutId() {
@@ -47,84 +55,79 @@ public class SearchActivity extends BaseActivity implements ISearchView {
 
     @Override
     protected void initView() {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         initToolbar(toolbar);
         presenter = new SearchPresenterImp(this);
         Intent intent = getIntent();
         word = intent.getStringExtra("word");
-        int page = intent.getIntExtra("page", 1);
+        int page = intent.getIntExtra("page", 0);
         if (word == null) {
             select = intent.getIntExtra("select", 0);
             type = intent.getIntExtra("type", 1);
             String typeName = intent.getStringExtra("name");
             toolbar.setTitle(typeName);
-            ((SearchPresenterImp)presenter).getComicType(select, type, page);
+            ((SearchPresenterImp) presenter).getComicType(select, type, page);
         } else {
-            ((SearchPresenterImp)presenter).doSearch(word, page);
+            ((SearchPresenterImp) presenter).doSearch(word, page);
             toolbar.setTitle("搜索: " + word);
         }
-
+//        initGridView();
     }
 
     @Override
-    public void onSuccess(final Search search) {
+    public void onSuccess(Search search) {
+        isLoading = false;
+        this.search = search;
         if (comicCards == null) {
             comicCards = search.getResult();
-            adapter = new ComicAdapter(comicCards, this, ComicAdapter.NORAML_COMIC);
-            gvSearch.setAdapter(adapter);
+            initRecyclerView();
         } else {
-            comicCards.addAll(search.getResult());
-            adapter.notifyDataSetChanged();
+            for (ComicCard comic : search.getResult()) {
+                comicCards.add(comic);
+                adapter.notifyItemInserted(comicCards.size() - 1);
+            }
             /*if (pbMore.getVisibility() == View.VISIBLE) {
                 pbMore.setVisibility(View.GONE);
                 tvMore.setText("暂无更多");
                 tvMore.setTextColor(Color.DKGRAY);
             }*/
         }
-        gvSearch.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+    }
+
+    private void initRecyclerView() {
+        manager = new GridLayoutManager(this, 3);
+        rvSearch.setLayoutManager(manager);
+        rvSearch.addItemDecoration(new SpaceItemDecoration(CommonUtil.dip2px(this, 10), true));
+        adapter = new RVComicAdapter(comicCards, this, RVComicAdapter.NORMAL_COMIC);
+        rvSearch.setAdapter(adapter);
+        adapter.setOnItemClickListener(new RVComicAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(View view, int position) {
                 Intent intent = new Intent(SearchActivity.this, ComicDetailActivity.class);
                 intent.putExtra("url", comicCards.get(position).getComic_url());
                 intent.putExtra("name", comicCards.get(position).getComic_name());
                 startActivity(intent);
             }
         });
-        //GridView滑动到底部的监听事件
-        gvSearch.setOnScrollListener(new AbsListView.OnScrollListener() {
-            private int lastPosition = 0, lastPositonY = 0;
-
+        rvSearch.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-                if (scrollState == SCROLL_STATE_IDLE) {     //view静止的时候
-                    if (view.getLastVisiblePosition() == (view.getCount() - 1)) {   //滑动到底部
-                        View v = view.getChildAt(view.getChildCount() - 1);
-                        int[] location = new int[2];
-                        v.getLocationOnScreen(location);
-                        int y = location[1];    //获取当前view的y值
-                        if (view.getLastVisiblePosition() != lastPosition && y != lastPositonY) {
-                            //第一次滑动至底部
-                            lastPosition = view.getLastVisiblePosition();
-                            lastPositonY = y;
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                switch (newState) {
+                    case RecyclerView.SCROLL_STATE_IDLE:
+                        int position = manager.findLastCompletelyVisibleItemPosition();
+                        if (position == manager.getItemCount() - 1) {
                             if (search.isNext()) {
-                                loadMore(search.getCurrent_page() + 1); //加载更多
+                                loadMore(search.getCurrent_page() + 1);
                             } else {
                                 Toast.makeText(SearchActivity.this, "没有咯- -", Toast.LENGTH_SHORT).show();
                             }
-                            return;
-                        } else if (view.getLastVisiblePosition() == lastPosition && y == lastPositonY) {
-                            //第二次滑动至底部
-
                         }
-                    }
-                    //为滑动至底部或者第二次滑动至底部都重置
-                    lastPosition = 0;
-                    lastPositonY = 0;
+                        break;
+                    case RecyclerView.SCROLL_STATE_DRAGGING:
+                        break;
+                    case RecyclerView.SCROLL_STATE_SETTLING:
+                        break;
                 }
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-
             }
         });
     }
@@ -134,10 +137,11 @@ public class SearchActivity extends BaseActivity implements ISearchView {
         tvMore.setTextColor(Color.BLACK);
         pbMore.setVisibility(View.VISIBLE);*/
         if (word == null) {
-            ((SearchPresenterImp)presenter).getComicType(select, type, requestPage);
+            ((SearchPresenterImp) presenter).getComicType(select, type, requestPage);
         } else {
-            ((SearchPresenterImp)presenter).doSearch(word, requestPage);
+            ((SearchPresenterImp) presenter).doSearch(word, requestPage);
         }
+        isLoading = true;
     }
 
     @Override

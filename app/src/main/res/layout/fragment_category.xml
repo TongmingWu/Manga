@@ -25,6 +25,8 @@
                 android:layout_margin="8dp"
                 android:background="@null"
                 android:hint="请输入漫画名或作者"
+                android:imeOptions="actionSearch"
+                android:maxLines="1"
                 android:textColorHint="@android:color/darker_gray"
                 android:textCursorDrawable="@drawable/cursor" />
 

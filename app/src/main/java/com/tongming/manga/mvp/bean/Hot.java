@@ -6,20 +6,22 @@ import java.util.List;
  * Created by Tongming on 2016/8/9.
  */
 public class Hot {
+
     private ResultBean result;
     /**
-     * result : {"hot":[{"cover":"http://tkres.tuku.cc/cimg/2013/11469.jpg","comic_url":"/comic/11469/","newest_chapter":"第153话 漫长的一天","newest_chapter_url":"/comic/11469/n-1467606783-78273/","comic_name":"穿越西元3000后"},{"cover":"http://tkres.tuku.cc/images/upload/20140924/14115407934497.jpg","comic_url":"/comic/15170/","newest_chapter":"第66话 新秀拟战赛（3）","newest_chapter_url":"/comic/15170/n-1467697863-92937/","comic_name":"风起苍岚"},{"cover":"http://tkres.tuku.cc/cimg/2013/11489.jpg","comic_url":"/comic/11489/","newest_chapter":"第84话 魔神之子","newest_chapter_url":"/comic/11489/n-1469189881-41261/","comic_name":"神印王座"},{"cover":"http://tkres.tuku.cc/images/upload/20140916/14108544133743.jpg","comic_url":"/comic/15057/","newest_chapter":"第50话 金轮裂灵阵","newest_chapter_url":"/comic/15057/n-1467642123-48078/","comic_name":"大主宰"},{"cover":"http://tkres.tuku.cc/cimg/2013/11460.jpg","comic_url":"/comic/11460/","newest_chapter":"第459话 未来再见（大结局）","newest_chapter_url":"/comic/11460/n-1446693782-71677/","comic_name":"偷星九月天"},{"cover":"http://tkres.tuku.cc/cimg/2010/dldl.jpg","comic_url":"/comic/24/","newest_chapter":"第161话 四元素学院（上）","newest_chapter_url":"/comic/24/n-1468239841-10520/","comic_name":"斗罗大陆(漫画版)"},{"cover":"http://tkres.tuku.cc/images/upload/20140924/14115400545185.jpg","comic_url":"/comic/15169/","newest_chapter":"第119话 暂时的分别","newest_chapter_url":"/comic/15169/n-1467606902-43748/","comic_name":"寻找前世之旅"},{"cover":"http://tkres.tuku.cc/images/upload/20150801/14384422374739.jpg","comic_url":"/comic/17882/","newest_chapter":"第72话 破囚笼","newest_chapter_url":"/comic/17882/n-1464969002-98667/","comic_name":"斗罗大陆2绝世唐门"},{"cover":"http://tkres.tuku.cc/cimg/2013/11438.jpg","comic_url":"/comic/11438/","newest_chapter":"第167话 师徒恩情","newest_chapter_url":"/comic/11438/n-1469785022-76055/","comic_name":"斗破苍穹"}],"release":[{"cover":"http://tkres.tuku.cc/images/upload/20160715/14685468783851.JPG","comic_url":"/comic/21288/","newest_chapter":"第3话","newest_chapter_url":"/comic/21288/n-1470812282-55114/","comic_name":"今天也是晴天"},{"cover":"http://tkres.tuku.cc/images/upload/20160706/14678082888662.jpg","comic_url":"/comic/21239/","newest_chapter":"第21话","newest_chapter_url":"/comic/21239/n-1470812282-82214/","comic_name":"浪漫果味C-2"},{"cover":"http://tkres.tuku.cc/images/upload/20160521/14638223833036.jpg","comic_url":"/comic/20830/","newest_chapter":"第23话","newest_chapter_url":"/comic/20830/n-1470812282-42391/","comic_name":"武拳"},{"cover":"http://tkres.tuku.cc/images/upload/20150805/14387896175176.jpg","comic_url":"/comic/17938/","newest_chapter":"第32话","newest_chapter_url":"/comic/17938/n-1470812282-10167/","comic_name":"歪小子斯科特"},{"cover":"http://tkres.tuku.cc/images/upload/20140703/14043794975431.jpg","comic_url":"/comic/14270/","newest_chapter":"第6话","newest_chapter_url":"/comic/14270/n-1470812282-35920/","comic_name":"我就是无法说不要"},{"cover":"http://tkres.tuku.cc/images/upload/20160605/14651210675295.jpg","comic_url":"/comic/21039/","newest_chapter":"第8话","newest_chapter_url":"/comic/21039/n-1470812221-66907/","comic_name":"女子研"},{"cover":"http://tkres.tuku.cc/images/upload/20160528/14644217641398.jpg","comic_url":"/comic/20906/","newest_chapter":"第57话","newest_chapter_url":"/comic/20906/n-1470812221-61852/","comic_name":"祈灵"},{"cover":"","comic_url":"/comic/20841/","newest_chapter":"第23话","newest_chapter_url":"/comic/20841/n-1470812221-89162/","comic_name":"我的霸道萝莉"},{"cover":"http://tkres.tuku.cc/images/upload/20160121/14533823754265.jpg","comic_url":"/comic/19816/","newest_chapter":"第8话","newest_chapter_url":"/comic/19816/n-1470812221-80110/","comic_name":"喰姬"}],"hongkong":[{"cover":"http://tkres.tuku.cc/images/upload/20150201/14227939617693.jpg","comic_url":"/comic/16359/","newest_chapter":"第28话上","newest_chapter_url":"/comic/16359/n-1470549362-87984/","comic_name":"唐三葬"},{"cover":"http://tkres.tuku.cc/images/upload/20160729/14697758388557.jpg","comic_url":"/comic/21352/","newest_chapter":"第1话","newest_chapter_url":"/comic/21352/n-1469775844-61581/","comic_name":"梦游仙境"},{"cover":"http://tkres.tuku.cc/cimg/2012/xtjzh.jpg","comic_url":"/comic/8975/","newest_chapter":"第229话","newest_chapter_url":"/comic/8975/n-1469772815-74438/","comic_name":"新铁将纵横"},{"cover":"http://tkres.tuku.cc/cimg/2012/xinlong.jpg","comic_url":"/comic/32/","newest_chapter":"第843话","newest_chapter_url":"/comic/32/n-1469771626-17935/","comic_name":"新著龙虎门"},{"cover":"http://tkres.tuku.cc/cimg/guhuozai.jpg","comic_url":"/comic/14/","newest_chapter":"第1939话","newest_chapter_url":"/comic/14/n-1469771049-40747/","comic_name":"古惑仔"},{"cover":"http://tkres.tuku.cc/cimg/2012/huowuyaoyang.jpg","comic_url":"/comic/10527/","newest_chapter":"第870话","newest_chapter_url":"/comic/10527/n-1469770662-11467/","comic_name":"火武耀扬"},{"cover":"http://tkres.tuku.cc/cimg/2012/chunqiuz.jpg","comic_url":"/comic/40/","newest_chapter":"第340话","newest_chapter_url":"/comic/40/n-1469769285-10533/","comic_name":"春秋战雄"},{"cover":"http://tkres.tuku.cc/images/upload/20150615/14343420603736.jpg","comic_url":"/comic/17504/","newest_chapter":"第55话","newest_chapter_url":"/comic/17504/n-1469768901-93522/","comic_name":"西游"},{"cover":"http://tkres.tuku.cc/images/upload/20160712/14682534234306.jpg","comic_url":"/comic/21266/","newest_chapter":"短篇","newest_chapter_url":"/comic/21266/n-1468253457-49773/","comic_name":"RINSACHIIIYONE..."}],"update":[{"cover":"http://tkres.tuku.cc/images/upload/20151223/14508569642744.jpg","comic_url":"/comic/19446/","newest_chapter":"第63话","newest_chapter_url":"/comic/19446/n-1470812162-30412/","comic_name":"颜值恋"},{"cover":"http://tkres.tuku.cc/images/upload/20160110/14523978868538.jpg","comic_url":"/comic/19690/","newest_chapter":"第106话","newest_chapter_url":"/comic/19690/n-1470812162-37056/","comic_name":"人皮衣裳"},{"cover":"http://tkres.tuku.cc/images/upload/20160529/14645208709577.jpg","comic_url":"/comic/20927/","newest_chapter":"第28话","newest_chapter_url":"/comic/20927/n-1470812103-12852/","comic_name":"王爷你好贱"},{"cover":"http://tkres.tuku.cc/images/upload/20160518/14635570775058.jpg","comic_url":"/comic/20787/","newest_chapter":"第99话","newest_chapter_url":"/comic/20787/n-1470810123-87311/","comic_name":"哥变成魔法少女了？！"},{"cover":"http://tkres.tuku.cc/images/upload/20160721/14690680534910.jpg","comic_url":"/comic/21336/","newest_chapter":"第11话","newest_chapter_url":"/comic/21336/n-1470810062-30532/","comic_name":"声色深处"},{"cover":"http://tkres.tuku.cc/images/upload/20151031/14462653439333.jpg","comic_url":"/comic/18954/","newest_chapter":"第55话","newest_chapter_url":"/comic/18954/n-1470810062-51376/","comic_name":"百炼成神"},{"cover":"http://tkres.tuku.cc/images/upload/20151226/14511194473104.jpg","comic_url":"/comic/19498/","newest_chapter":"第252话","newest_chapter_url":"/comic/19498/n-1470801122-55057/","comic_name":"致幻毁灭者"},{"cover":"http://tkres.tuku.cc/images/upload/20160104/14518776955318.jpg","comic_url":"/comic/19589/","newest_chapter":"第125话","newest_chapter_url":"/comic/19589/n-1470801062-87509/","comic_name":"陈官快递"},{"cover":"http://tkres.tuku.cc/images/upload/20160412/14604729245374.jpg","comic_url":"/comic/20404/","newest_chapter":"第42话","newest_chapter_url":"/comic/20404/n-1470795242-88938/","comic_name":"无罪之城"},{"cover":"http://tkres.tuku.cc/images/upload/20141125/14169048606491.jpg","comic_url":"/comic/15781/","newest_chapter":"第103话","newest_chapter_url":"/comic/15781/n-1470795241-47496/","comic_name":"我为苍生那些年"},{"cover":"http://tkres.tuku.cc/images/upload/20160502/14621989426909.jpg","comic_url":"/comic/20588/","newest_chapter":"第7话","newest_chapter_url":"/comic/20588/n-1470795182-97047/","comic_name":"咖啡遇上香草"},{"cover":"http://tkres.tuku.cc/images/upload/20150926/14432819801796.jpg","comic_url":"/comic/18530/","newest_chapter":"第203话","newest_chapter_url":"/comic/18530/n-1470795124-29745/","comic_name":"一人之下（异人）"}]}
+     * result : {"hot":[{"comic_id":"wojiaobanbenwozuidiao","comic_url":"http://m.dmzj.com/info/wojiaobanbenwozuidiao.html","comic_author":"佐野菜见","comic_name":"我叫坂本我最屌","newest_chapter_date":"","cover":"http://images.dmzj.com/webpic/8/160131banbenfml.jpg","newest_chapter":""},{"comic_id":"wodeyingxiongxueyuan","comic_url":"http://m.dmzj.com/info/wodeyingxiongxueyuan.html","comic_author":"堀越耕平","comic_name":"我的英雄学院","newest_chapter_date":"","cover":"http://images.dmzj.com/webpic/11/160129yingxiongxueyuanfml.jpg","newest_chapter":""},{"comic_id":"sxzyys","comic_url":"http://m.dmzj.com/info/sxzyys.html","comic_author":"助野嘉昭","comic_name":"双星之阴阳师","newest_chapter_date":"","cover":"http://images.dmzj.com/webpic/8/160131shuangxing2fml.jpg","newest_chapter":""},{"comic_id":"dangnvhaiyudaoxiong","comic_url":"http://m.dmzj.com/info/dangnvhaiyudaoxiong.html","comic_author":"吉元ますめ","comic_name":"当女孩遇到熊","newest_chapter_date":"","cover":"http://images.dmzj.com/webpic/0/xiongwunv2222.jpg","newest_chapter":""},{"comic_id":"jojo","comic_url":"http://m.dmzj.com/info/jojo.html","comic_author":"荒木飞吕彦","comic_name":"JoJo的奇妙冒险","newest_chapter_date":"","cover":"http://images.dmzj.com/webpic/18/jojoxin.jpg","newest_chapter":""},{"comic_id":"xsyxdlpbknsns","comic_url":"http://m.dmzj.com/info/xsyxdlpbknsns.html","comic_author":"石神一威/听猫芝居","comic_name":"线上游戏的老婆不可能是女生？","newest_chapter_date":"","cover":"http://images.dmzj.com/webpic/15/160512xianshangyouxifml.jpg","newest_chapter":""}],"release":[{"comic_id":"38831","comic_url":"http://m.dmzj.com/info/38831.html","comic_author":"裘茜琳","comic_name":"怖之声","newest_chapter_date":"","cover":"http://images.dmzj.com/img/webpic/15/1009523951474437854.jpg","newest_chapter":""},{"comic_id":"38830","comic_url":"http://m.dmzj.com/info/38830.html","comic_author":"DC Comics","comic_name":"水行侠V8","newest_chapter_date":"","cover":"http://images.dmzj.com/webpic/11/160921Aquaman.jpg","newest_chapter":""},{"comic_id":"38829","comic_url":"http://m.dmzj.com/info/38829.html","comic_author":"DC Comics","comic_name":"蝙蝠女V5","newest_chapter_date":"","cover":"http://images.dmzj.com/webpic/2/160921Batgirl.jpg","newest_chapter":""},{"comic_id":"38828","comic_url":"http://m.dmzj.com/info/38828.html","comic_author":"Marvel Comics","comic_name":"蜘蛛侠：吻","newest_chapter_date":"","cover":"http://images.dmzj.com/webpic/13/wenxin.png","newest_chapter":""},{"comic_id":"38827","comic_url":"http://m.dmzj.com/info/38827.html","comic_author":"DC Comics","comic_name":"超人V4","newest_chapter_date":"","cover":"http://images.dmzj.com/webpic/17/160921Superman.jpg","newest_chapter":""},{"comic_id":"38826","comic_url":"http://m.dmzj.com/info/38826.html","comic_author":"くま","comic_name":"半兽人的女骑士养成计划","newest_chapter_date":"","cover":"http://images.dmzj.com/webpic/15/bsrdnqsycjh5689426l.jpg","newest_chapter":""}],"recommend":[{"comic_id":"jiaoxiudetashichangtouyaoguai","comic_url":"http://m.dmzj.com/info/jiaoxiudetashichangtouyaoguai.html","comic_author":"二駅ずい","comic_name":"娇羞的她是长头妖怪","newest_chapter_date":"","cover":"http://images.dmzj.com/webpic/13/jiaoxiudetashichangtouyaoguaiV2.jpg","newest_chapter":""},{"comic_id":"asebiyutiankongshijiedemaoxianzhe","comic_url":"http://m.dmzj.com/info/asebiyutiankongshijiedemaoxianzhe.html","comic_author":"梅木泰祐","comic_name":"阿瑟比与天空世界的冒险者","newest_chapter_date":"","cover":"http://images.dmzj.com/webpic/6/asbytksjdmxzV2.jpg","newest_chapter":""},{"comic_id":"baiyinzhiyao","comic_url":"http://m.dmzj.com/info/baiyinzhiyao.html","comic_author":"荒川弘","comic_name":"白银之匙","newest_chapter_date":"","cover":"http://images.dmzj.com/webpic/12/yinzhishao00.jpg","newest_chapter":""},[]],"local":[{"comic_id":"mowangmaoyuqishigou","comic_url":"http://m.dmzj.com/info/mowangmaoyuqishigou.html","comic_author":"ziggy","comic_name":"魔王猫与骑士狗","newest_chapter_date":"","cover":"http://images.dmzj.com/img/webpic/15/1013202351470910648.jpg","newest_chapter":""},{"comic_id":"shenqilishangpian","comic_url":"http://m.dmzj.com/info/shenqilishangpian.html","comic_author":"L.DART","comic_name":"神契黎殇篇","newest_chapter_date":"","cover":"http://images.dmzj.com/img/webpic/15/1466763343.jpg","newest_chapter":""},{"comic_id":"liurenzhentan","comic_url":"http://m.dmzj.com/info/liurenzhentan.html","comic_author":"便利店的熊","comic_name":"六人侦探","newest_chapter_date":"","cover":"http://images.dmzj.com/img/webpic/0/1003188601463287688.jpg","newest_chapter":""},{"comic_id":"renxingzhibo","comic_url":"http://m.dmzj.com/info/renxingzhibo.html","comic_author":"shin先生","comic_name":"人性直播","newest_chapter_date":"","cover":"http://images.dmzj.com/img/webpic/17/1018237971470885475.jpg","newest_chapter":""},{"comic_id":"feichaihuajie","comic_url":"http://m.dmzj.com/info/feichaihuajie.html","comic_author":"轻想连载","comic_name":"废柴狐阿桔","newest_chapter_date":"","cover":"http://images.dmzj.com/img/webpic/8/1018059681469525788.jpg","newest_chapter":""},{"comic_id":"benghuai3rd","comic_url":"http://m.dmzj.com/info/benghuai3rd.html","comic_author":"上海米哈游","comic_name":"崩坏3rd","newest_chapter_date":"","cover":"http://images.dmzj.com/img/webpic/16/1469195972.jpg","newest_chapter":""}]}
+     * banner : [{"comic_id":"renxingzhibo","img":"http://images.dmzj.com/tuijian/750_480/0922renxing02.jpg","comic_url":"http://m.dmzj.com/info/renxingzhibo.html","title":"用投票决定命运、是公正之举还是罪恶的根源？"},{"comic_id":"aiura","img":"http://images.dmzj.com/tuijian/750_480/160919aiuratj1.jpg","comic_url":"http://m.dmzj.com/info/aiura.html","title":"女子高中生的日常"}]
      * code : 200
-     * message : 操作成功
-     * banner : [{"comic_url":"http://www.tuku.cc/comic/20000/","img":"http://tkres.tuku.cc/images/upload/20160410/14602915361532.jpg","title":"妖神记"},{"comic_url":"http://www.tuku.cc/comic/17504/n-1447317694-86588/","img":"http://tkres.tuku.cc/images/upload/20151113/14474259204722.jpg","title":"《西游》第22话 忘我"},{"comic_url":"http://www.tuku.cc/comic/40/n-1447318301-87132/","img":"http://tkres.tuku.cc/images/upload/20151113/14474258709516.jpg","title":"《春秋战雄》第304话 明鬼战罪神"}]
+     * message : 获取成功
      */
 
     private int code;
     private String message;
     /**
-     * comic_url : http://www.tuku.cc/comic/20000/
-     * img : http://tkres.tuku.cc/images/upload/20160410/14602915361532.jpg
-     * title : 妖神记
+     * comic_id : renxingzhibo
+     * img : http://images.dmzj.com/tuijian/750_480/0922renxing02.jpg
+     * comic_url : http://m.dmzj.com/info/renxingzhibo.html
+     * title : 用投票决定命运、是公正之举还是罪恶的根源？
      */
 
     private List<BannerBean> banner;
@@ -57,14 +59,50 @@ public class Hot {
     }
 
     public static class ResultBean {
+        /**
+         * comic_id : wojiaobanbenwozuidiao
+         * comic_url : http://m.dmzj.com/info/wojiaobanbenwozuidiao.html
+         * comic_author : 佐野菜见
+         * comic_name : 我叫坂本我最屌
+         * newest_chapter_date :
+         * cover : http://images.dmzj.com/webpic/8/160131banbenfml.jpg
+         * newest_chapter :
+         */
 
         private List<ComicCard> hot;
+        /**
+         * comic_id : 38831
+         * comic_url : http://m.dmzj.com/info/38831.html
+         * comic_author : 裘茜琳
+         * comic_name : 怖之声
+         * newest_chapter_date :
+         * cover : http://images.dmzj.com/img/webpic/15/1009523951474437854.jpg
+         * newest_chapter :
+         */
 
         private List<ComicCard> release;
+        /**
+         * comic_id : jiaoxiudetashichangtouyaoguai
+         * comic_url : http://m.dmzj.com/info/jiaoxiudetashichangtouyaoguai.html
+         * comic_author : 二駅ずい
+         * comic_name : 娇羞的她是长头妖怪
+         * newest_chapter_date :
+         * cover : http://images.dmzj.com/webpic/13/jiaoxiudetashichangtouyaoguaiV2.jpg
+         * newest_chapter :
+         */
 
-        private List<ComicCard> hongkong;
+        private List<ComicCard> recommend;
+        /**
+         * comic_id : mowangmaoyuqishigou
+         * comic_url : http://m.dmzj.com/info/mowangmaoyuqishigou.html
+         * comic_author : ziggy
+         * comic_name : 魔王猫与骑士狗
+         * newest_chapter_date :
+         * cover : http://images.dmzj.com/img/webpic/15/1013202351470910648.jpg
+         * newest_chapter :
+         */
 
-        private List<ComicCard> update;
+        private List<ComicCard> local;
 
         public List<ComicCard> getHot() {
             return hot;
@@ -82,35 +120,35 @@ public class Hot {
             this.release = release;
         }
 
-        public List<ComicCard> getHongkong() {
-            return hongkong;
+        public List<ComicCard> getRecommend() {
+            return recommend;
         }
 
-        public void setHongkong(List<ComicCard> hongkong) {
-            this.hongkong = hongkong;
+        public void setRecommend(List<ComicCard> recommend) {
+            this.recommend = recommend;
         }
 
-        public List<ComicCard> getUpdate() {
-            return update;
+        public List<ComicCard> getLocal() {
+            return local;
         }
 
-        public void setUpdate(List<ComicCard> update) {
-            this.update = update;
+        public void setLocal(List<ComicCard> local) {
+            this.local = local;
         }
-
     }
 
     public static class BannerBean {
-        private String comic_url;
+        private String comic_id;
         private String img;
+        private String comic_url;
         private String title;
 
-        public String getComic_url() {
-            return comic_url;
+        public String getComic_id() {
+            return comic_id;
         }
 
-        public void setComic_url(String comic_url) {
-            this.comic_url = comic_url;
+        public void setComic_id(String comic_id) {
+            this.comic_id = comic_id;
         }
 
         public String getImg() {
@@ -119,6 +157,14 @@ public class Hot {
 
         public void setImg(String img) {
             this.img = img;
+        }
+
+        public String getComic_url() {
+            return comic_url;
+        }
+
+        public void setComic_url(String comic_url) {
+            this.comic_url = comic_url;
         }
 
         public String getTitle() {

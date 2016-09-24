@@ -10,6 +10,16 @@ public class ComicCard {
     private String cover;
     private String comic_name;
     private String newest_chapter;
+    private String comic_id;
+
+    public void setComic_id(String comic_id) {
+        this.comic_id = comic_id;
+    }
+
+    public String getComic_id() {
+
+        return comic_id;
+    }
 
     public String getComic_url() {
         return comic_url;

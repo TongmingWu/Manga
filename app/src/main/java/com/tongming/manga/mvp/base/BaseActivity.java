@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.LinearLayout;
 
 import com.tongming.manga.util.CommonUtil;
@@ -29,7 +28,6 @@ public abstract class BaseActivity extends AppCompatActivity {
             getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         }
         setContentView(getLayoutId());
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         ButterKnife.bind(this);
         initView();
     }
@@ -38,9 +36,11 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected abstract void initView();
 
+
+
     protected void initToolbar(View view) {
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) view.getLayoutParams();
-        int height = CommonUtil.getDeviceHeight(this);
+        int height = CommonUtil.getScreenHeight(this);
         params.setMargins(0, height / 32, 0, 0);
         if (view instanceof Toolbar) {
             setSupportActionBar((Toolbar) view);

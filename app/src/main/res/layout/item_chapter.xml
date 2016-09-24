@@ -7,7 +7,7 @@
     <TextView
         android:id="@+id/tv_item_chapter_name"
         android:layout_width="80dp"
-        android:layout_height="40dp"
+        android:layout_height="32dp"
         android:layout_centerInParent="true"
         android:background="@drawable/select_chapter"
         android:ellipsize="end"

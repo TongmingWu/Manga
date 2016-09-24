@@ -41,7 +41,7 @@ public class SystemModel implements ISystemModel {
                 .subscribe(new Subscriber<UserInfo>() {
                     @Override
                     public void onCompleted() {
-                        Logger.d("在线获取用户成功");
+//                        Logger.d("在线获取用户成功");
                     }
 
                     @Override
@@ -58,7 +58,7 @@ public class SystemModel implements ISystemModel {
 
     @Override
     public void readUser() {
-        Logger.d("readUser");
+//        Logger.d("readUser");
         //从本地读取User
         new Thread(new Runnable() {
             File file = new File(BaseApplication.getContext().getFilesDir() + "/data.dat");

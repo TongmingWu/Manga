@@ -22,9 +22,11 @@
                 android:layout_width="320dp"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_margin="8dp"
+                android:layout_margin="5dp"
                 android:background="@null"
+                android:textSize="14sp"
                 android:hint="请输入漫画名或作者"
+                android:maxLines="1"
                 android:textColorHint="@android:color/darker_gray"
                 android:textCursorDrawable="@drawable/cursor" />
 

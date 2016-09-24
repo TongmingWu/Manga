@@ -17,7 +17,9 @@ import android.os.Environment;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -27,8 +29,10 @@ import android.widget.EditText;
 import com.orhanobut.logger.Logger;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -43,6 +47,23 @@ public class CommonUtil {
         context.startActivity(new Intent(Intent.ACTION_CALL,
                 Uri.parse("tel:"+phoneNumber)));
     }*/
+
+    /**
+     * 检测服务是否启动
+     */
+    public static boolean isServiceStarted(Activity activity, String className) {
+        ActivityManager myManager = (ActivityManager) activity
+                .getApplicationContext().getSystemService(
+                        Context.ACTIVITY_SERVICE);
+        ArrayList<ActivityManager.RunningServiceInfo> runningService = (ArrayList<ActivityManager.RunningServiceInfo>) myManager
+                .getRunningServices(30);
+        for (ActivityManager.RunningServiceInfo info : runningService) {
+            if (info.service.getClassName().equals(className)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     //跳转至拨号界面
     public static void callDial(Context context, String phoneNumber) {
@@ -158,19 +179,64 @@ public class CommonUtil {
         return telephony.getPhoneType() != TelephonyManager.PHONE_TYPE_NONE;
     }
 
-    //获取当前设备宽高，单位px
+    /**
+     * 获取当前屏幕宽，不包括虚拟键，单位px
+     */
     @SuppressWarnings("deprecation")
-    public static int getDeviceWidth(Context context) {
+    public static int getScreenWidth(Context context) {
         WindowManager manager = (WindowManager) context
                 .getSystemService(Context.WINDOW_SERVICE);
         return manager.getDefaultDisplay().getWidth();
     }
 
+    /**
+     * 获取当前屏幕高，不包括虚拟键，单位px
+     */
     @SuppressWarnings("deprecation")
-    public static int getDeviceHeight(Context context) {
+    public static int getScreenHeight(Context context) {
         WindowManager manager = (WindowManager) context
                 .getSystemService(Context.WINDOW_SERVICE);
         return manager.getDefaultDisplay().getHeight();
+    }
+
+    /**
+     * 获取设备实际高度
+     * 返回 px
+     */
+    public static int getDeviceHeight(Activity activity) {
+        int px = 0;
+        Display display = activity.getWindowManager().getDefaultDisplay();
+        DisplayMetrics dm = new DisplayMetrics();
+        @SuppressWarnings("rawtypes")
+        Class c;
+        try {
+            c = Class.forName("android.view.Display");
+            @SuppressWarnings("unchecked")
+            Method method = c.getMethod("getRealMetrics", DisplayMetrics.class);
+            method.invoke(display, dm);
+            px = dm.heightPixels;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return px;
+    }
+
+    public static int getDeviceWidth(Activity activity) {
+        int px = 0;
+        Display display = activity.getWindowManager().getDefaultDisplay();
+        DisplayMetrics dm = new DisplayMetrics();
+        @SuppressWarnings("rawtypes")
+        Class c;
+        try {
+            c = Class.forName("android.view.Display");
+            @SuppressWarnings("unchecked")
+            Method method = c.getMethod("getRealMetrics", DisplayMetrics.class);
+            method.invoke(display, dm);
+            px = dm.widthPixels;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return px;
     }
 
     //获取当前设备的IMEI，需要与上面的isPhone()一起使用

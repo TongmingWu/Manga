@@ -10,6 +10,7 @@ public class Search {
     private int code;
     private String message;
     private boolean next;
+    private String comic_id;
     /**
      * comic_url : /comic/13813/
      * newest_chapter_date : 2014-05-19
@@ -61,5 +62,13 @@ public class Search {
         this.result = result;
     }
 
+    public void setComic_id(String comic_id) {
+        this.comic_id = comic_id;
+    }
+
+    public String getComic_id() {
+
+        return comic_id;
+    }
 }
 

@@ -14,8 +14,18 @@ public class CollectedComic implements Serializable {
     private int status;
     private long lastTime;
     private String url;
+    private String comic_id;
     private String cover;
 
+
+    public void setComic_id(String comic_id) {
+        this.comic_id = comic_id;
+    }
+
+    public String getComic_id() {
+
+        return comic_id;
+    }
 
     public void setName(String name) {
         this.name = name;

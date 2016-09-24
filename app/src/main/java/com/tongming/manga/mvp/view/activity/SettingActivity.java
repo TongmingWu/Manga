@@ -207,7 +207,7 @@ public class SettingActivity extends BaseActivity implements ICacheView {
         final Window window = alertDialog.getWindow();
         WindowManager.LayoutParams params = window != null ? window.getAttributes() : null;
         params.gravity = Gravity.TOP;
-        params.y = CommonUtil.getDeviceHeight(this) / 4;    //监听软键盘
+        params.y = CommonUtil.getScreenHeight(this) / 4;    //监听软键盘
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         alertDialog.show();
     }

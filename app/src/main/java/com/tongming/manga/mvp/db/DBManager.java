@@ -7,6 +7,7 @@ import com.squareup.sqlbrite.SqlBrite;
 import com.tongming.manga.mvp.bean.CollectedComic;
 import com.tongming.manga.mvp.bean.ComicInfo;
 import com.tongming.manga.mvp.bean.HistoryComic;
+import com.tongming.manga.server.DownloadInfo;
 
 import java.util.List;
 
@@ -20,9 +21,10 @@ public class DBManager {
 
     private BriteDatabase briteDatabase;
     private static DBManager instance;
+    private final SQLiteHelper helper;
 
     public DBManager(Context context) {
-        SQLiteHelper helper = new SQLiteHelper(context);
+        helper = new SQLiteHelper(context);
         briteDatabase = SqlBrite.create().wrapDatabaseHelper(helper, Schedulers.io());
     }
 
@@ -33,6 +35,14 @@ public class DBManager {
         }
         return instance;
     }*/
+
+    public void openDB() {
+        briteDatabase = SqlBrite.create().wrapDatabaseHelper(helper, Schedulers.io());
+    }
+
+    public void closeDB() {
+        briteDatabase.close();
+    }
 
     public Observable<List<HistoryComic>> queryAllHistory() {
         //查询所有历史记录
@@ -91,14 +101,109 @@ public class DBManager {
                 .mapToList(CollectionTable.COMIC_MAPPER);
     }
 
-    //删除指定收藏
+    /**
+     * 删除指定收藏
+     */
     public int deleteCollectByName(final String name) {
         return briteDatabase.delete(CollectionTable.TABLE_NAME, CollectionTable.COLUMN_NAME + " = ?", name);
     }
 
-    //删除所有收藏
+    /**
+     * 删除所有收藏
+     */
     public int deleteAllCollect() {
         return briteDatabase.delete(CollectionTable.TABLE_NAME,
                 "DELETE * FROM " + CollectionTable.TABLE_NAME);
     }
+
+    /**
+     * 查询下载信息,ComicDetailActivity
+     *
+     * @param name   漫画名
+     * @param status 下载状态
+     */
+    public Observable<List<DownloadInfo>> queryDownloadInfo(String name, int status) {
+        return briteDatabase.createQuery(DownloadTable.TABLE_NAME, "SELECT * FROM "
+                        + DownloadTable.TABLE_NAME
+                        + " WHERE "
+                        + DownloadTable.COMIC_NAME
+                        + " = ? AND "
+                        + DownloadTable.STATUS
+                        + " = "
+                        + status
+                , name)
+                .mapToList(DownloadTable.COMIC_MAPPER);
+    }
+
+    /**
+     * 查询下载信息,SelectActivity使用
+     */
+    public Observable<List<DownloadInfo>> queryDownloadInfoByCid(String cid) {
+        return briteDatabase.createQuery(DownloadTable.TABLE_NAME, "SELECT * FROM "
+                + DownloadTable.TABLE_NAME
+                + " WHERE "
+                + DownloadTable.COMIC_ID
+                + " = ?", cid)
+                .mapToList(DownloadTable.COMIC_MAPPER);
+    }
+
+    /**
+     * 查询下载信息
+     *
+     * @param info DownloadInfo
+     */
+    public Observable<List<DownloadInfo>> queryDownloadInfo(DownloadInfo info) {
+        return briteDatabase.createQuery(DownloadTable.TABLE_NAME, "SELECT * FROM "
+                        + DownloadTable.TABLE_NAME
+                        + " WHERE "
+                        + DownloadTable.COMIC_NAME
+                        + " = ? "
+                , info.getComic_name())
+                .mapToList(DownloadTable.COMIC_MAPPER);
+    }
+
+    /**
+     * 查询单个下载信息
+     */
+    public Observable<List<DownloadInfo>> queryDownloadInfo(String chapterUrl) {
+        return briteDatabase.createQuery(DownloadTable.TABLE_NAME, "SELECT * FROM "
+                        + DownloadTable.TABLE_NAME
+                        + " WHERE "
+                        + DownloadTable.CHAPTER_URL
+                        + " = ? "
+                , chapterUrl)
+                .mapToList(DownloadTable.COMIC_MAPPER);
+    }
+
+    /**
+     * 查询所有下载信息
+     */
+    public Observable<List<DownloadInfo>> queryAllDownloadInfo() {
+        return briteDatabase.createQuery(DownloadTable.TABLE_NAME, "SELECT * FROM " + DownloadTable.TABLE_NAME)
+                .mapToList(DownloadTable.COMIC_MAPPER);
+    }
+
+    /**
+     * 修改下载信息
+     */
+    public int updateDownloadInfo(DownloadInfo info) {
+        return briteDatabase.update(DownloadTable.TABLE_NAME, DownloadTable.toContentValues(info),
+                DownloadTable.CHAPTER_URL + " = ?", info.getChapter_url());
+    }
+
+    /**
+     * 添加下载信息
+     */
+    public int insertDownloadInfo(DownloadInfo info) {
+        return (int) briteDatabase.insert(DownloadTable.TABLE_NAME, DownloadTable.toContentValues(info));
+    }
+
+    /**
+     * 删除下载信息
+     */
+    public int deleteDownloadInfo(DownloadInfo info) {
+        return briteDatabase.delete(DownloadTable.TABLE_NAME, DownloadTable.CHAPTER_URL + " = ?", info.getChapter_url());
+    }
+
+
 }

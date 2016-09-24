@@ -65,7 +65,7 @@ public class User implements Serializable {
                     try {
                         if (objectOutputStream != null) {
                             objectOutputStream.close();
-                            Logger.d("保存成功");
+//                            Logger.d("保存成功");
                         }
                     } catch (IOException e) {
                         e.printStackTrace();

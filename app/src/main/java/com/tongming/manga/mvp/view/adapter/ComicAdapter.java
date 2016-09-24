@@ -1,17 +1,23 @@
 package com.tongming.manga.mvp.view.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.tongming.manga.R;
 import com.tongming.manga.mvp.bean.CollectedComic;
 import com.tongming.manga.mvp.bean.ComicCard;
+import com.tongming.manga.mvp.bean.DownloadComic;
 import com.tongming.manga.mvp.bean.HistoryComic;
+import com.tongming.manga.mvp.download.DownloadTaskQueue;
+import com.tongming.manga.server.DownloadInfo;
+import com.tongming.manga.util.HeaderGlide;
 
 import java.util.List;
 
@@ -23,27 +29,31 @@ import butterknife.ButterKnife;
  */
 public class ComicAdapter extends BaseAdapter {
 
-    public static final int NORAML_COMIC = 0;
+    public static final int NORMAL_COMIC = 0;
     public static final int HISTORY_COMIC = 1;
     public static final int COLLECTION_COMIC = 2;
+    public static final int DOWNLOAD_COMIC = 3;
     private List<ComicCard> comicList;
     private List<HistoryComic> historyComics;
     private List<CollectedComic> collectedComics;
+    private List<DownloadComic> downloadComicList;
     private List<?> list;
     private Context mContext;
 
     public ComicAdapter(List<?> list, Context mContext, int type) {
         this.list = list;
         switch (type) {
-            case 0:
+            case NORMAL_COMIC:
                 comicList = (List<ComicCard>) this.list;
                 break;
-            case 1:
+            case HISTORY_COMIC:
                 historyComics = (List<HistoryComic>) this.list;
                 break;
-            case 2:
+            case COLLECTION_COMIC:
                 collectedComics = (List<CollectedComic>) this.list;
                 break;
+            case DOWNLOAD_COMIC:
+                downloadComicList = (List<DownloadComic>) this.list;
         }
         this.mContext = mContext;
     }
@@ -51,9 +61,9 @@ public class ComicAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        if (list.size() > 6 && list.size() < 10 && comicList != null) {
+        /*if (list.size() > 6 && list.size() < 12 && comicList != null) {
             return 6;
-        }
+        }*/
         return list.size();
     }
 
@@ -65,6 +75,41 @@ public class ComicAdapter extends BaseAdapter {
     @Override
     public long getItemId(int position) {
         return 0;
+    }
+
+    public void setQueueStatus(String cid, int status) {
+        if (downloadComicList != null) {
+            for (DownloadComic comic : downloadComicList) {
+                if (cid.equals(comic.getComic_id())) {
+                    comic.setStatus(status);
+                    break;
+                }
+            }
+        }
+    }
+
+    public void setDownloadInfo(String cid, DownloadInfo info) {
+        if (downloadComicList != null) {
+            for (DownloadComic comic : downloadComicList) {
+                if (cid.equals(comic.getComic_id())) {
+                    comic.setCurrentName(info.getChapter_name());
+                    comic.setCurrentPosition(info.getPosition());
+                    comic.setCurrentTotal(info.getTotal());
+                    break;
+                }
+            }
+        }
+    }
+
+    public void removeQueue(String cid) {
+        if (downloadComicList != null) {
+            for (DownloadComic comic : downloadComicList) {
+                if (cid.equals(comic.getComic_id())) {
+                    downloadComicList.remove(comic);
+                    break;
+                }
+            }
+        }
     }
 
     @Override
@@ -79,28 +124,65 @@ public class ComicAdapter extends BaseAdapter {
         }
         if (comicList != null) {
             ComicCard bean = comicList.get(position);
-            Glide.with(mContext)
-                    .load(bean.getCover())
-                    .crossFade()
-                    .into(holder.cover);
+            String cover = bean.getCover();
+            if (!TextUtils.isEmpty(cover)) {
+                HeaderGlide.loadImage(mContext, bean.getCover(), holder.cover);
+            }
             holder.comicName.setText(bean.getComic_name());
-            holder.chapterName.setText(bean.getNewest_chapter());
+            if ("".equals(bean.getNewest_chapter())) {
+                /*holder.chapterName.setVisibility(View.GONE);
+                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) holder.comicName.getLayoutParams();
+                params.bottomMargin = CommonUtil.dip2px(mContext, 3);*/
+                holder.chapterName.setText(bean.getComic_author().trim());
+            } else {
+                holder.chapterName.setText(bean.getNewest_chapter());
+            }
         } else if (historyComics != null) {
             HistoryComic comic = historyComics.get(position);
-            Glide.with(mContext)
-                    .load(comic.getCover())
-                    .crossFade()
-                    .into(holder.cover);
+            if (!TextUtils.isEmpty(comic.getCover())) {
+                HeaderGlide.loadImage(mContext, comic.getCover(), holder.cover);
+            }
             holder.comicName.setText(comic.getName());
             holder.chapterName.setText(comic.getHistoryName());
-        } else {
+        } else if (collectedComics != null) {
             CollectedComic comic = collectedComics.get(position);
-            Glide.with(mContext)
-                    .load(comic.getCover())
-                    .crossFade()
-                    .into(holder.cover);
+            if (!TextUtils.isEmpty(comic.getCover())) {
+                HeaderGlide.loadImage(mContext, comic.getCover(), holder.cover);
+            }
             holder.comicName.setText(comic.getName());
             holder.chapterName.setText(comic.getAuthor());
+        } else {
+            DownloadComic comic = downloadComicList.get(position);
+            if (!TextUtils.isEmpty(comic.getCover())) {
+                HeaderGlide.loadImage(mContext, comic.getCover(), holder.cover);
+            }
+            /*Glide.with(mContext)
+                    .load(comic.getCover())
+                    .into(holder.cover);*/
+            holder.comicName.setText(comic.getName());
+            holder.comicName.setTextSize(15);
+            holder.comicName.setTextColor(mContext.getResources().getColor(R.color.normalText, null));
+            switch (comic.getStatus()) {
+                case DownloadTaskQueue.DOWNLOAD:
+                    holder.rlDownload.setVisibility(View.VISIBLE);
+//                    holder.chapterName.setText("下载中");
+                    holder.chapterName.setText(comic.getCurrentName() + " " + comic.getCurrentPosition() + "/" + comic.getCurrentTotal());
+                    break;
+                case DownloadTaskQueue.WAIT:
+                    holder.rlDownload.setVisibility(View.GONE);
+                    holder.chapterName.setText("等待中");
+                    break;
+                case DownloadTaskQueue.PAUSE:
+                    holder.rlDownload.setVisibility(View.GONE);
+                    holder.chapterName.setText("暂停中");
+                    break;
+                case DownloadTaskQueue.COMPLETE:
+                    holder.rlDownload.setVisibility(View.GONE);
+                    holder.chapterName.setText("已完成(" + comic.getCount() + ")");
+                    break;
+            }
+            holder.chapterName.setTextColor(Color.GRAY);
+            holder.chapterName.setTextSize(12);
         }
         return convertView;
     }
@@ -113,6 +195,8 @@ public class ComicAdapter extends BaseAdapter {
         TextView comicName;
         @BindView(R.id.tv_chapter_name)
         TextView chapterName;
+        @BindView(R.id.rl_download)
+        RelativeLayout rlDownload;
 
         public ViewHolder(View itemView) {
             this.itemView = itemView;

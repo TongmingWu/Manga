@@ -26,25 +26,31 @@ import rx.schedulers.Schedulers;
 public class CollectModel implements ICollectModel {
 
     private OnCollectListener collectListener;
+    private Context mContext;
 
-    public CollectModel(OnCollectListener collectListener) {
+    public CollectModel(Context context, OnCollectListener collectListener) {
+        mContext = context;
         this.collectListener = collectListener;
     }
 
     @Override
     public Subscription queryAllCollect(Context context) {
-        return new DBManager(context).queryAllCollected()
+        final DBManager manager = new DBManager(mContext);
+        manager.openDB();
+        return manager.queryAllCollected()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<List<CollectedComic>>() {
                     @Override
                     public void onCompleted() {
                         this.unsubscribe();
+                        manager.closeDB();
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         collectListener.onFail(e);
+                        manager.closeDB();
                     }
 
                     @Override
@@ -56,14 +62,20 @@ public class CollectModel implements ICollectModel {
 
     @Override
     public void deleteCollectByName(Context context, String name) {
-        int state = new DBManager(context).deleteCollectByName(name);
+        DBManager manager = new DBManager(mContext);
+        manager.openDB();
+        int state = manager.deleteCollectByName(name);
+        manager.closeDB();
         collectListener.onDeleteByName(state);
 
     }
 
     @Override
     public void deleteAllCollect(Context context) {
-        int state = new DBManager(context).deleteAllCollect();
+        DBManager manager = new DBManager(mContext);
+        manager.openDB();
+        int state = manager.deleteAllCollect();
+        manager.closeDB();
         collectListener.onDeleteAll(state);
     }
 

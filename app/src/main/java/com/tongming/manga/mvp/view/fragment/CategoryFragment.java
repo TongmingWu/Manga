@@ -2,6 +2,7 @@ package com.tongming.manga.mvp.view.fragment;
 
 import android.content.Intent;
 import android.text.TextUtils;
+import android.util.SparseArray;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -33,6 +34,7 @@ public class CategoryFragment extends BaseFragment {
     GridView gvNormalCategory;
     @BindView(R.id.iv_search)
     ImageView ivSearch;
+    boolean isSearch;
 
     @Override
     protected int getLayoutId() {
@@ -41,11 +43,13 @@ public class CategoryFragment extends BaseFragment {
 
     @Override
     protected void initView() {
-        initGridView();
+//        initGridView();
+        initNewGV();
+        etSearch.setImeOptions(EditorInfo.IME_ACTION_SEND);
         etSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                if (actionId == EditorInfo.IME_ACTION_SEND || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
                     doSearch();
                     return true;
                 }
@@ -62,13 +66,33 @@ public class CategoryFragment extends BaseFragment {
 
     private void doSearch() {
         if (!TextUtils.isEmpty(etSearch.getText())) {
-            int page = 1;
-            String word = etSearch.getText().toString();
-            Intent intent = new Intent(getActivity(), SearchActivity.class);
-            intent.putExtra("page", page);
-            intent.putExtra("word", word);
-            startActivity(intent);
+            if (!isSearch) {
+                int page = 0;
+                String word = etSearch.getText().toString();
+                Intent intent = new Intent(getActivity(), SearchActivity.class);
+                intent.putExtra("page", page);
+                intent.putExtra("word", word);
+                startActivity(intent);
+                isSearch = true;
+            }
         }
+    }
+
+    private void initNewGV() {
+        SparseArray<String> array = new SparseArray<>();
+        List<Integer> picList = new ArrayList<>();
+        String[] category = new String[]{
+                "最近更新", "排行榜", "完结", "连载中", "韩国", "港台", "欧美", "国漫",
+                "日本", "青年", "少女", "少年", "搞笑", "轻小说", "节操", "奇幻", "职场", "武侠",
+                "治愈", "萌系", "后宫", "耽美", "伪娘", "百合", "生活", "恐怖", "悬疑", "校园", "魔法",
+                "竞技", "爱情", "科幻", "格斗", "欢乐", "冒险"
+
+        };
+        for (int i = 35; i > 0; i--) {
+            array.put(i, category[i - 1]);
+        }
+        gvSpecialCategory.setAdapter(new CategoryAdapter(picList, array, getContext()));
+        gvNormalCategory.setVisibility(View.GONE);
     }
 
     private void initGridView() {
@@ -108,5 +132,11 @@ public class CategoryFragment extends BaseFragment {
         }
         Collections.addAll(normalNameList, names);
         gvNormalCategory.setAdapter(new CategoryAdapter(normalPicList, normalNameList, normalTypeList, getActivity()));
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        isSearch = false;
     }
 }

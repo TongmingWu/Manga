@@ -13,8 +13,8 @@
 
     <application
         android:name=".mvp.base.BaseApplication"
-        android:fullBackupContent="true"
         android:allowBackup="true"
+        android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
@@ -54,7 +54,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".mvp.view.activity.SearchActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/SelectActivityTheme" />
         <activity
             android:name=".mvp.view.activity.ComicDetailActivity"
             android:screenOrientation="portrait" />
@@ -71,6 +72,27 @@
         <activity
             android:name=".mvp.view.activity.SettingActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".mvp.view.activity.SelectActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/SelectActivityTheme" />
+        <activity
+            android:name=".mvp.view.activity.DownloadManagerActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".mvp.view.activity.DownloadDetailActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/SelectActivityTheme" />
+        <activity
+            android:name=".mvp.view.activity.LocalActivity"
+            android:screenOrientation="portrait" />
+
+        <service android:name=".mvp.download.DownloadManager">
+            <intent-filter>
+                <action android:name="com.tongming.manga.mvp.download.DownloadManager" />
+            </intent-filter>
+        </service>
+        <receiver android:name=".mvp.receiver.DownloadBroadcastReceiver" />
     </application>
 
 </manifest>

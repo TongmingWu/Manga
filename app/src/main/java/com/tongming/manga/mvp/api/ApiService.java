@@ -10,6 +10,7 @@ import com.tongming.manga.mvp.bean.UserInfo;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.HTTP;
@@ -19,6 +20,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import retrofit2.http.Url;
 import rx.Observable;
 
 /**
@@ -26,39 +28,46 @@ import rx.Observable;
  * Date: 2016/8/9
  */
 interface ApiService {
-    @GET("/cc")
+    //TODO 资源整合
+    /*@GET("/cc")
+    Observable<Hot> getHot();*/
+
+    @GET("/dmzj")
     Observable<Hot> getHot();
 
-    @GET("/cc/comic/detail")
+    /*@GET("/cc/comic/detail")
+    Observable<ComicInfo> getComicInfo(@Query("comic_url") String comicUrl);*/
+
+    @GET("/dmzj/comic/detail")
     Observable<ComicInfo> getComicInfo(@Query("comic_url") String comicUrl);
 
-    @GET("/cc/comic/view")
+    /*@GET("/cc/comic/view")
+    Observable<ComicPage> getComicPage(@Query("chapter_url") String chapterUrl);*/
+
+    @GET("/dmzj/comic/view")
     Observable<ComicPage> getComicPage(@Query("chapter_url") String chapterUrl);
 
-    @GET("/cc/comic/category")
-    Observable<Search> getComicType(@Query("select") int select, @Query("type") int type, @Query("page") int page);
+    /*@GET("/cc/comic/category")
+    Observable<Search> getComicType(@Query("select") int select, @Query("type") int type, @Query("page") int page);*/
 
-    @GET("/cc/search")
+    @GET("/dmzj/comic/category")
+    Observable<Search> getComicType(@Query("type") int type, @Query("page") int page);
+
+    /*@GET("/cc/search")
+    Observable<Search> doSearch(@Query("word") String word, @Query("page") int page);*/
+
+    @GET("/dmzj/search")
     Observable<Search> doSearch(@Query("word") String word, @Query("page") int page);
 
 
-    //@Query("appId") String appId, @Query("appKey") String appKey, @Query("phone") String phone
     @Headers("Content-Type:application/json")
     @POST("/sms")
     Observable<Result> requestSms(@Body RequestBody body);
 
-    //@Query("appId") String appId, @Query("appKey") String appKey, @Query("phone") String phone, @Query("code") String code
-    /*@Headers("Content-Type:application/json")
-    @POST("/verifySms")
-    Observable<Result> verifySms(@Body RequestBody body);*/
-
-    //@Query("phone") String phone, @Query("password") String password
     @Headers("Content-Type:application/json")
     @POST("/login")
     Observable<MangaToken> login(@Body RequestBody body);
 
-    //@Query("phone") String phone, @Query("password") String password, @Query("name") String name
-    //@Query("appId") String appId, @Query("appKey") String appKey, @Query("code") String code
     @Headers("Content-Type:application/json")
     @POST("/logon")
     Observable<Result> logon(@Body RequestBody body);
@@ -84,4 +93,8 @@ interface ApiService {
 
     @GET("/collection")
     Observable<Result> queryCollection(@Query("uid") int uid, @Query("name") String name);
+
+    @Headers("Referer:http://m.dmzj.com/")
+    @GET
+    Observable<ResponseBody> downloadImage(@Url String url);
 }

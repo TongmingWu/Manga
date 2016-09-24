@@ -11,22 +11,24 @@ import rx.functions.Func1;
 /**
  * Created by Tongming on 2016/8/17.
  */
-public class CollectionTable {
-    public static final String TABLE_NAME = "collect_comic";
+class CollectionTable {
+    static final String TABLE_NAME = "collect_comic";
 
     // 表字段
-    public static final String ID = "_id";
-    public static final String COLUMN_NAME = "name";
-    public static final String COLUMN_AUTHOR = "author";
-    public static final String COLUMN_AREA = "area";
-    public static final String COLUMN_TYPE = "category";
-    public static final String COLUMN_URL = "url";
-    public static final String COLUMN_STATUS = "status";
-    public static final String COLUMN_COVER = "cover";
-    public static final String COLUMN_TIME = "last_time";
+    static final String ID = "_id";
+    static final String COMIC_ID = "comic_id";
+    static final String COLUMN_NAME = "name";
+    static final String COLUMN_AUTHOR = "author";
+    static final String COLUMN_AREA = "area";
+    static final String COLUMN_TYPE = "category";
+    static final String COLUMN_URL = "url";
+    static final String COLUMN_STATUS = "status";
+    static final String COLUMN_COVER = "cover";
+    static final String COLUMN_TIME = "last_time";
 
-    public static final String CREATE = "CREATE TABLE " + TABLE_NAME + "("
+    static final String CREATE = "CREATE TABLE " + TABLE_NAME + "("
             + ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + COMIC_ID + " TEXT,"
             + COLUMN_NAME + " TEXT,"
             + COLUMN_AUTHOR + " TEXT,"
             + COLUMN_AREA + " TEXT,"
@@ -38,9 +40,10 @@ public class CollectionTable {
             + ")";
 
     // 对象转字段,放入表中
-    public static ContentValues toContentValues(ComicInfo info) {
+    static ContentValues toContentValues(ComicInfo info) {
         ContentValues values = new ContentValues();
         values.put(COLUMN_NAME, info.getComic_name());
+        values.put(COMIC_ID, info.getComic_id());
         values.put(COLUMN_AUTHOR, info.getComic_author());
         values.put(COLUMN_AREA, info.getComic_area());
         values.put(COLUMN_TYPE, info.getComic_type());
@@ -56,8 +59,10 @@ public class CollectionTable {
         @Override
         public CollectedComic call(Cursor cursor) {
             CollectedComic comic = new CollectedComic();
-            String name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME));
+            String name = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
             comic.setName(name);
+            String comicId = cursor.getString(cursor.getColumnIndex(COMIC_ID));
+            comic.setComic_id(comicId);
             String author = cursor.getString(cursor.getColumnIndex(COLUMN_AUTHOR));
             comic.setAuthor(author);
             String area = cursor.getString(cursor.getColumnIndex(COLUMN_AREA));

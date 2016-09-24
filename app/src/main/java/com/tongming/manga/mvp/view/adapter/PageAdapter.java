@@ -1,6 +1,8 @@
 package com.tongming.manga.mvp.view.adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +11,10 @@ import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import com.bumptech.glide.load.model.GlideUrl;
+import com.bumptech.glide.load.model.LazyHeaders;
+import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 import com.tongming.manga.R;
 import com.tongming.manga.util.CommonUtil;
 
@@ -20,7 +26,7 @@ import butterknife.ButterKnife;
 /**
  * Created by Tongming on 2016/8/11.
  */
-public class PageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements onCalculateListener {
+public class PageAdapter extends RecyclerView.Adapter<PageAdapter.PageHolder> {
 
     private List<String> picList;
     private Context mContext;
@@ -30,44 +36,45 @@ public class PageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     public PageAdapter(List<String> picList, Context mContext) {
         this.picList = picList;
         this.mContext = mContext;
-        height = CommonUtil.getDeviceHeight(mContext);
-        width = CommonUtil.getDeviceWidth(mContext);
+        height = CommonUtil.getDeviceHeight((Activity) mContext);
+        width = CommonUtil.getDeviceWidth((Activity) mContext);
     }
 
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public PageAdapter.PageHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = View.inflate(mContext, R.layout.item_page, null);
         return new PageHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
-        /*Glide.with(mContext)
-                .load(picList.get(position))
-                .asBitmap()
-                .diskCacheStrategy(DiskCacheStrategy.ALL)   //确保从缓存中获取图片
-                .into(new SimpleTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                        float scale = (float) resource.getHeight() / (float) resource.getWidth();
-                        PageAdapter.this.onCalculateComplete(scale, position, holder);
-                    }
-                });*/
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) ((PageHolder) holder).ivPage.getLayoutParams();
-        if (height < width) {
-            params.height = (int) (width * 1.6);
-        } else {
-            params.height = height;
-        }
-        params.width = width;
+    public void onBindViewHolder(final PageAdapter.PageHolder holder, final int position) {
+        scaleImageView(1.78f, holder);
+//        HeaderGlide.loadPage(mContext, picList.get(position), holder.ivPage);
+
+        GlideUrl glideUrl = new GlideUrl(picList.get(position), new LazyHeaders.Builder()
+                .addHeader("Referer", "http://m.dmzj.com/")
+                .build());
         Glide.with(mContext)
-                .load(picList.get(position))
-                .crossFade()
-                .placeholder(R.drawable.bg_page)
+                .load(glideUrl)
+                .dontAnimate()
+                .placeholder(R.color.gray)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .fitCenter()
-                .into(((PageHolder) holder).ivPage);
+                .bitmapTransform(new BitmapTransformation(mContext) {
+                    @Override
+                    protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
+                        float scale = (float) toTransform.getHeight() / (float) toTransform.getWidth();
+                        scaleImageView(scale, holder);
+                        return toTransform;
+                    }
+
+                    @Override
+                    public String getId() {
+                        return PageAdapter.class.getSimpleName();
+                    }
+                })
+                .into(holder.ivPage);
     }
 
     @Override
@@ -75,24 +82,10 @@ public class PageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         return picList.size();
     }
 
-    @Override
-    public void onCalculateComplete(float scale, int position, RecyclerView.ViewHolder holder) {
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) ((PageHolder) holder).ivPage.getLayoutParams();
-        if (height < width) {
-            params.height = (int) (width * scale);
-            ((PageHolder) holder).ivPage.setScaleType(ImageView.ScaleType.FIT_XY);
-        } else {
-            params.height = height;
-            ((PageHolder) holder).ivPage.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        }
+    private void scaleImageView(float scale, PageAdapter.PageHolder holder) {
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) holder.ivPage.getLayoutParams();
+        params.height = (int) (width * scale);
         params.width = width;
-        Glide.with(mContext)
-                .load(picList.get(position))
-                .centerCrop()
-                .placeholder(R.drawable.bg_page)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(((PageHolder) holder).ivPage);
-
     }
 
     class PageHolder extends RecyclerView.ViewHolder {

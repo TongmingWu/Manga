@@ -9,7 +9,7 @@ import java.util.List;
  */
 public interface IPageView {
     void onSuccess(ComicPage page);
-    void onFail();
+    void onFail(Throwable throwable);
     void showProgress();
     void hideProgress();
     void onPageCompleted(List<String> imgList);

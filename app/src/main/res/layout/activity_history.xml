@@ -28,9 +28,13 @@
                 toolbar:titleTextColor="@android:color/white" />
         </android.support.design.widget.AppBarLayout>
 
-        <GridView
+        <!--<GridView
             android:id="@+id/gv_history"
             style="@style/GridView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />-->
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_history"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>

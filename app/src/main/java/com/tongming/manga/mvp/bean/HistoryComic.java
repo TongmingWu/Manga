@@ -3,8 +3,9 @@ package com.tongming.manga.mvp.bean;
 /**
  * Created by Tongming on 2016/8/15.
  */
-public class HistoryComic {
+public class HistoryComic implements Comparable<HistoryComic> {
     private int id;
+    private String comic_id;
     private String name;
     private String author;
     private String type;
@@ -16,6 +17,15 @@ public class HistoryComic {
     private long lastTime;
     private int status;
     private int chapterNum;
+
+    public void setComic_id(String comic_id) {
+        this.comic_id = comic_id;
+    }
+
+    public String getComic_id() {
+
+        return comic_id;
+    }
 
     public void setLastTime(long lastTime) {
         this.lastTime = lastTime;
@@ -133,5 +143,10 @@ public class HistoryComic {
                 ", status=" + status +
                 ", chapterNum=" + chapterNum +
                 '}';
+    }
+
+    @Override
+    public int compareTo(HistoryComic comic) {
+        return (int) (comic.lastTime - this.lastTime);
     }
 }

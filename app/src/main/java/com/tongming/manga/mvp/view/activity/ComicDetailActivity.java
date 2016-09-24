@@ -2,7 +2,6 @@ package com.tongming.manga.mvp.view.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.design.widget.AppBarLayout;
@@ -18,10 +17,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.Priority;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.orhanobut.logger.Logger;
 import com.tongming.manga.R;
 import com.tongming.manga.mvp.base.BaseActivity;
@@ -29,9 +24,12 @@ import com.tongming.manga.mvp.bean.ComicInfo;
 import com.tongming.manga.mvp.bean.User;
 import com.tongming.manga.mvp.bean.UserInfo;
 import com.tongming.manga.mvp.presenter.DetailPresenterImp;
+import com.tongming.manga.mvp.presenter.DownloadPresenterImp;
 import com.tongming.manga.mvp.view.adapter.ChapterAdapter;
-import com.tongming.manga.util.FastBlur;
+import com.tongming.manga.server.DownloadInfo;
+import com.tongming.manga.util.HeaderGlide;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -39,8 +37,9 @@ import butterknife.BindView;
 /**
  * Created by Tongming on 2016/8/10.
  */
-public class ComicDetailActivity extends BaseActivity implements IDetailView {
+public class ComicDetailActivity extends BaseActivity implements IDetailView, IQueryDownloadView {
     public static final int REQUEST_CHAPTER_CODE = 0x15;
+    public static final int REQUEST_DOWNLOAD_CODE = 0x8856;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.appbar)
@@ -90,6 +89,8 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView {
     private int historyPos;
     private boolean isRead;
     private boolean isCollected;
+    private List<Integer> downloadPos;
+    private List<DownloadInfo> downloadInfoList;
 
     @Override
     protected int getLayoutId() {
@@ -108,7 +109,10 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView {
         } else {
             ((DetailPresenterImp) presenter).queryCollectOnNet(name);
         }
+        //读取已下载的信息
+        new DownloadPresenterImp(this).queryDownloadInfo(this, name, DownloadInfo.COMPLETE);
         initToolbar(toolbar);
+        toolbar.setTitle(name);
         ((DetailPresenterImp) presenter).getDetail(getIntent().getStringExtra("url"));
         slContent.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
@@ -123,11 +127,15 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView {
     @Override
     public void onGetData(final ComicInfo info) {
         this.info = info;
-        Glide.with(this)
+        String cover = info.getCover();
+        if (!TextUtils.isEmpty(cover)) {
+            HeaderGlide.loadImage(this, cover, ivCover);
+            HeaderGlide.loadBitmap(this, cover, ivBlur);
+        }
+        /*Glide.with(this)
                 .load(info.getCover())
-                .priority(Priority.LOW)
-                .into(ivCover);
-        Glide.with(this)
+                .into(ivCover);*/
+        /*Glide.with(this)
                 .load(info.getCover())
                 .asBitmap()
                 .into(new SimpleTarget<Bitmap>() {
@@ -135,11 +143,14 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView {
                     public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                         ivBlur.setImageBitmap(FastBlur.doBlur(resource, 5, false));
                     }
-                });
+                });*/
         tvComicName.setText(info.getComic_name());
         tvComicAuthor.setText("作者:  " + info.getComic_author());
         tvComicStatus.setText("状态:  " + info.getStatus());
-        tvComicType.setText("地区:  " + info.getComic_area());
+        String area = info.getComic_area();
+        if (!TextUtils.isEmpty(area)) {
+            tvComicType.setText("地区:  " + area);
+        }
         tvNewestChapter.setText(" 更新于 " + info.getNewest_chapter_date().split(" ")[0]);
         tvDesc.setText("  " + info.getDesc());
         tvSelect.setText("共" + info.getChapter_list().size() + "话");
@@ -157,8 +168,18 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView {
                 }*/
                 //得到历史记录的位置
                 historyPos = getHistoryPos(historyUrl);
-                Logger.d(historyPos);
                 adapter = new ChapterAdapter(chapterList, historyPos, this);
+                if (downloadPos == null) {
+                    downloadPos = new ArrayList<>();
+                }
+                if (downloadInfoList != null) {
+                    for (DownloadInfo downloadInfo : downloadInfoList) {
+                        downloadPos.add(getHistoryPos(downloadInfo.getChapter_url()));
+                    }
+                }
+                if (downloadPos.size() > 0) {
+                    adapter.setDownloadPos(downloadPos);
+                }
             }
             gvChapter.setAdapter(adapter);
             gvChapter.setSelector(new ColorDrawable(Color.TRANSPARENT));
@@ -218,7 +239,9 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView {
         ivDownload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(ComicDetailActivity.this, SelectActivity.class);
+                intent.putExtra("info", info);
+                startActivityForResult(intent, REQUEST_DOWNLOAD_CODE);
             }
         });
 
@@ -238,11 +261,10 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView {
     private int getHistoryPos(String historyUrl) {
         for (int i = 0; i < chapterList.size(); i++) {
             if (chapterList.get(i).getChapter_url().equals(historyUrl)) {
-                Logger.d("计算的url=" + chapterList.get(i).getChapter_url());
                 return i;
             }
         }
-        return -1;
+        return -2;
     }
 
     @Override
@@ -327,14 +349,16 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView {
                 Logger.d("添加阅读记录");
             }
             Logger.d("返回的url=" + historyUrl);
-            adapter = new ChapterAdapter(chapterList, getHistoryPos(historyUrl), this);
-            gvChapter.setAdapter(adapter);
+            /*adapter = new ChapterAdapter(chapterList, getHistoryPos(historyUrl), this);
+            gvChapter.setAdapter(adapter);*/
+            adapter.setHistoryPos(getHistoryPos(historyUrl));
+            adapter.notifyDataSetChanged();
         }
     }
 
     @Override
     public void onFail() {
-        Toast.makeText(ComicDetailActivity.this, "服务器出错", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(ComicDetailActivity.this, "服务器出错", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -351,5 +375,23 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView {
         if (rlContent.getVisibility() == View.INVISIBLE) {
             rlContent.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    public void onQueryDownloadInfo(List<DownloadInfo> infoList) {
+        if (infoList.size() == 0) {
+            return;
+        }
+        downloadInfoList = infoList;
+    }
+
+    @Override
+    public void onFail(Throwable throwable) {
+        Logger.e(throwable.getMessage());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }

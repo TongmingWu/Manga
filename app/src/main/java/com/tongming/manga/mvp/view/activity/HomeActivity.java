@@ -17,6 +17,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -97,6 +98,7 @@ public class HomeActivity extends BaseActivity implements ISystemView, ICacheVie
 
     @Override
     protected void initView() {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkPermission();
         }
@@ -163,6 +165,7 @@ public class HomeActivity extends BaseActivity implements ISystemView, ICacheVie
                         viewPager.setCurrentItem(1);
                         break;
                     case R.id.menu_local:
+                        startActivityForResult(new Intent(HomeActivity.this, LocalActivity.class), REQUEST_PERMISSION_CODE);
                         break;
                     case R.id.menu_history:
                         startActivityForResult(new Intent(HomeActivity.this, HistoryActivity.class), REQUEST_PERMISSION_CODE);
@@ -171,6 +174,7 @@ public class HomeActivity extends BaseActivity implements ISystemView, ICacheVie
                         viewPager.setCurrentItem(0);
                         break;
                     case R.id.menu_download:
+                        startActivityForResult(new Intent(HomeActivity.this, DownloadManagerActivity.class), REQUEST_PERMISSION_CODE);
                         break;
                     case R.id.menu_setting:
                         startActivityForResult(new Intent(HomeActivity.this, SettingActivity.class), REQUEST_PERMISSION_CODE);
@@ -231,7 +235,6 @@ public class HomeActivity extends BaseActivity implements ISystemView, ICacheVie
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         //栈内复用
-        Logger.d("onNewIntent");
         //登录界面跳转过来
         setIntent(intent);
         initUser();
@@ -241,7 +244,7 @@ public class HomeActivity extends BaseActivity implements ISystemView, ICacheVie
     public void onReadUser() {
         User user = User.getInstance();
         initAvatar();
-        Logger.d("本地读取用户信息成功");
+//        Logger.d("本地读取用户信息成功");
         getUser(user.getToken());
     }
 

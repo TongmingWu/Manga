@@ -26,14 +26,17 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(HistoryTable.CREATE);
         db.execSQL(CollectionTable.CREATE);
+        db.execSQL(DownloadTable.CREATE);
         Logger.d("数据库创建完成");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // 一般在实际项目中是不能这么做的，正确的做法是在更新数据表结构时，还要考虑用户存放于数据库中的数据不丢失
-        /*db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
-        onCreate(db);*/
+        db.execSQL("DROP TABLE IF EXISTS " + HistoryTable.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + CollectionTable.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + DownloadTable.TABLE_NAME);
+        onCreate(db);
         Logger.d("更新数据库");
     }
 

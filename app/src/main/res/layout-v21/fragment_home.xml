@@ -11,6 +11,7 @@
         android:layout_height="wrap_content">
 
         <LinearLayout
+            android:id="@+id/ll_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:focusable="true"
@@ -20,143 +21,194 @@
             <com.bigkoo.convenientbanner.ConvenientBanner
                 android:id="@+id/banner"
                 android:layout_width="match_parent"
-                android:layout_height="180dp"
+                android:layout_height="@dimen/bannerHeight"
                 android:layout_marginBottom="8dp"
                 app:canLoop="true" />
 
-            <LinearLayout
-                android:id="@+id/ll_content"
+            <RelativeLayout
+                android:id="@+id/rl_hot"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:padding="12dp">
 
-                <RelativeLayout
-                    android:id="@+id/rl_hot"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="12dp">
-
-                    <ImageView
-                        android:id="@+id/iv_hot"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_centerVertical="true"
-                        android:background="@drawable/cb_icon_hot_normal" />
-
-                    <TextView
-                        style="@style/ComicName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="8dp"
-                        android:layout_toRightOf="@id/iv_hot"
-                        android:text="热门连载"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:background="@drawable/rectangle_into"
-                        android:text="进去看看"
-                        android:textColor="@android:color/white" />
-                </RelativeLayout>
-
-                <GridView
-                    android:id="@+id/gv_hot"
-                    style="@style/GridView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="420dp"
-                    tools:ignore="NestedScrolling" />
-
-                <RelativeLayout
-                    android:id="@+id/rl_update"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="12dp">
-
-                    <ImageView
-                        android:id="@+id/iv_update"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_centerVertical="true"
-                        android:background="@drawable/ic_hourglass_full_white_24dp"
-                        android:backgroundTint="@color/colorPrimary" />
-
-                    <TextView
-                        style="@style/ComicName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="8dp"
-                        android:layout_toRightOf="@id/iv_update"
-                        android:text="更新提醒"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:background="@drawable/rectangle_into"
-                        android:text="进去看看"
-                        android:textColor="@android:color/white" />
-                </RelativeLayout>
-
-                <GridView
-                    android:id="@+id/gv_update"
-                    style="@style/GridView"
-                    android:layout_width="match_parent"
-                    android:layout_height="420dp"
-                    tools:ignore="NestedScrolling" />
-
-                <RelativeLayout
-                    android:id="@+id/rl_newest"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="12dp">
-
-                    <ImageView
-                        android:id="@+id/iv_newest"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_centerVertical="true"
-                        android:background="@drawable/ic_newest"
-                        android:backgroundTint="#FF4081" />
-
-                    <TextView
-                        style="@style/ComicName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="8dp"
-                        android:layout_toRightOf="@id/iv_newest"
-                        android:text="最新上架"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:background="@drawable/rectangle_into"
-                        android:text="进去看看"
-                        android:textColor="@android:color/white" />
-                </RelativeLayout>
-
-                <GridView
-                    android:id="@+id/gv_newest"
-                    style="@style/GridView"
-                    android:layout_width="match_parent"
-                    android:layout_height="420dp"
-                    tools:ignore="NestedScrolling" />
+                <ImageView
+                    android:id="@+id/iv_hot"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/cb_icon_hot_normal" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp" />
-            </LinearLayout>
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="8dp"
+                    android:layout_toRightOf="@id/iv_hot"
+                    android:text="热门连载"
+                    android:textColor="@color/normalText"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/rectangle_into"
+                    android:text="进去看看"
+                    android:textColor="@android:color/white" />
+            </RelativeLayout>
+
+            <!--<com.tongming.manga.cusview.CusGridView
+                android:id="@+id/gv_hot"
+                style="@style/GridView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />-->
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_hot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false" />
+
+            <RelativeLayout
+                android:id="@+id/rl_recommend"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="12dp">
+
+                <ImageView
+                    android:id="@+id/iv_recommend"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/ic_recommend" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="8dp"
+                    android:layout_toRightOf="@id/iv_recommend"
+                    android:text="精彩推荐"
+                    android:textColor="@color/normalText"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/rectangle_into"
+                    android:text="进去看看"
+                    android:textColor="@android:color/white" />
+            </RelativeLayout>
+
+            <!--<com.tongming.manga.cusview.CusGridView
+                android:id="@+id/gv_recommend"
+                style="@style/GridView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />-->
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_recommend"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false" />
+
+            <RelativeLayout
+                android:id="@+id/rl_local"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="12dp">
+
+                <ImageView
+                    android:id="@+id/iv_local"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/ic_local" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="8dp"
+                    android:layout_toRightOf="@id/iv_local"
+                    android:text="精选国漫"
+                    android:textColor="@color/normalText"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/rectangle_into"
+                    android:text="进去看看"
+                    android:textColor="@android:color/white" />
+            </RelativeLayout>
+
+            <!--<com.tongming.manga.cusview.CusGridView
+                android:id="@+id/gv_local"
+                style="@style/GridView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />-->
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_local"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false" />
+
+            <RelativeLayout
+                android:id="@+id/rl_release"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="12dp">
+
+                <ImageView
+                    android:id="@+id/iv_release"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/ic_newest"
+                    android:backgroundTint="#FF4081" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="8dp"
+                    android:layout_toRightOf="@id/iv_release"
+                    android:text="最新上架"
+                    android:textColor="@color/normalText"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/rectangle_into"
+                    android:text="进去看看"
+                    android:textColor="@android:color/white" />
+            </RelativeLayout>
+
+            <!--<com.tongming.manga.cusview.CusGridView
+                android:id="@+id/gv_release"
+                style="@style/GridView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />-->
+            <!--tools:ignore="NestedScrolling"-->
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_release"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false" />
+
+            <TextView
+                android:id="@+id/tv_line"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:visibility="gone" />
         </LinearLayout>
     </ScrollView>
 </android.support.v4.widget.SwipeRefreshLayout>

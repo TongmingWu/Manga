@@ -129,6 +129,6 @@ public class DetailPresenterImp extends BasePresenter implements IDetailPresente
     public void onFail(Throwable throwable) {
         detailView.hideProgress();
         detailView.onFail();
-        Logger.e(throwable.getMessage());
+        Logger.e(throwable.fillInStackTrace().toString());
     }
 }

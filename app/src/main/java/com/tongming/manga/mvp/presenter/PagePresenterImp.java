@@ -48,6 +48,6 @@ public class PagePresenterImp extends BasePresenter implements IPagePresenter, P
     @Override
     public void onFail(Throwable throwable) {
         pageView.hideProgress();
-        pageView.onFail();
+        pageView.onFail(throwable);
     }
 }
