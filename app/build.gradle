@@ -4,14 +4,7 @@ android {
     compileSdkVersion 24
     buildToolsVersion "24.0.2"
 
-    signingConfigs {
-        release {
-            keyAlias 'TongmingKey'
-            keyPassword 'wtm19951028'
-            storeFile file('D:/AndroidStudioProjects/AppKey.jks')
-            storePassword 'wtm19951028'
-        }
-    }
+
     defaultConfig {
         applicationId "com.tongming.manga"
         minSdkVersion 19

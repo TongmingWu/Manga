@@ -27,6 +27,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(HistoryTable.CREATE);
         db.execSQL(CollectionTable.CREATE);
         db.execSQL(DownloadTable.CREATE);
+        db.execSQL(SearchTable.CREATE);
         Logger.d("数据库创建完成");
     }
 

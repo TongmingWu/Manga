@@ -56,13 +56,13 @@
                 android:layout_height="160dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="90dp"
-                android:background="@drawable/bg_cover"
                 android:padding="3dp">
 
                 <ImageView
                     android:id="@+id/iv_cover"
                     android:layout_width="120dp"
                     android:layout_height="160dp"
+                    android:background="@drawable/bg_cover"
                     android:scaleType="centerCrop"
                     android:transitionName="@string/coverName" />
             </RelativeLayout>
@@ -74,6 +74,7 @@
                 android:layout_alignTop="@id/rl_cover"
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="10dp"
+                android:textStyle="bold"
                 android:layout_toRightOf="@id/rl_cover"
                 android:textColor="@android:color/white"
                 android:textSize="16sp"
@@ -105,7 +106,7 @@
                 android:layout_alignLeft="@id/tv_comic_name"
                 android:layout_below="@id/tv_comic_status"
                 android:layout_marginTop="5dp"
-                android:text="地区:  未知"
+                tools:text="地区:  未知"
                 android:textColor="@android:color/white" />
 
             <ImageView

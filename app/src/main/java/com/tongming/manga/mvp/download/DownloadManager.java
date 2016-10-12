@@ -8,10 +8,13 @@ import android.support.annotation.Nullable;
 
 import com.orhanobut.logger.Logger;
 import com.tongming.manga.mvp.bean.ComicInfo;
+import com.tongming.manga.mvp.presenter.DownloadPresenterImp;
+import com.tongming.manga.mvp.view.activity.IQueryDownloadView;
 import com.tongming.manga.server.DownloadInfo;
 import com.tongming.manga.server.IDownloadInterface;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -21,13 +24,21 @@ import java.util.TreeSet;
  * Date: 2016/9/9
  */
 
-public class DownloadManager extends Service implements IDownloadManager {
+public class DownloadManager extends Service implements IDownloadManager, IQueryDownloadView {
 
     public static final int WAIT_QUEUE = 0;
     public static final int START_QUEUE = 1;
     public static final int PAUSE_QUEUE = 2;
     public static final int RESUME_QUEUE = 3;
     public static final int STOP_QUEUE = 4;
+
+    private int status;
+
+    public static final int WAIT = 0x00010;
+    public static final int DOWNLOAD = 0x00020;
+    public static final int PAUSE = 0x00030;
+    public static final int COMPLETE = 0x00040;
+    public static final int STOP = 0x00050;
 
     private Set<DownloadTaskQueue> queueList;
     private DownloadBinder binder;
@@ -39,33 +50,70 @@ public class DownloadManager extends Service implements IDownloadManager {
     @Override
     public IBinder onBind(Intent intent) {
         binder = new DownloadBinder();
+        String cid = intent.getStringExtra("cid");
+        DownloadInfo download = intent.getParcelableExtra("download");
+        if (cid != null) {
+            //查询下载信息
+            new DownloadPresenterImp(this).queryDownloadInfo(getApplicationContext(), cid);
+        } else if (download != null) {
+            //根据单个downloadInfo建立下载队列
+            ArrayList<DownloadInfo> list = new ArrayList<>();
+            list.add(download);
+            addQueue(download.getComic_id(), list);
+        }
         return binder;
     }
 
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        ComicInfo info = intent.getParcelableExtra("info");
-        List<Integer> pos = intent.getIntegerArrayListExtra("pos");
-        //加入下载队列
-        if (info != null && pos != null) {
-            String cid = info.getComic_id();
-            DownloadTaskQueue queue = checkQueue(cid);
-            if (queue != null) {
-                //已存在下载队列
-                queue.addTask(convertToDownload(info, pos));
-            } else {
-                queue = createQueue(cid, convertToDownload(info, pos));
-            }
-            //检测是否有下载中的队列,启动下载任务
-            if (!hasDownloadQueue()) {
-                queue.startQueue();
+        if (intent != null) {
+            ComicInfo info = intent.getParcelableExtra("info");
+            List<Integer> pos = intent.getIntegerArrayListExtra("pos");
+            if (info != null && pos != null) {
+                String comicId = info.getComic_id();
+                List<DownloadInfo> list = convertToDownload(info, pos);
+                addQueue(comicId, list);
             }
         }
         return super.onStartCommand(intent, flags, startId);
     }
 
-    private DownloadTaskQueue createQueue(String cid, List<DownloadInfo> infoList) {
+    private void addQueue(String cid, List<DownloadInfo> list) {
+        DownloadTaskQueue queue = checkQueue(cid);
+        if (queue != null) {
+            //已存在对应的下载队列
+            Logger.d("追加任务");
+            queue.addTask(list);
+        } else {
+            Logger.d("创建队列");
+            queue = createQueue(cid, list);
+        }
+        //检测是否有下载中的队列,启动下载任务
+        if (!hasDownloadQueue()) {
+            queue.startQueue();
+            status = DOWNLOAD;
+        } else {
+            queue.waitQueue();
+        }
+    }
+
+    @Override
+    public void onQueryDownloadInfo(List<DownloadInfo> infoList) {
+        if (infoList.size() > 0) {
+            Iterator<DownloadInfo> iterator = infoList.iterator();
+            while (iterator.hasNext()) {
+                DownloadInfo info = iterator.next();
+                if (info.getStatus() == DownloadInfo.COMPLETE) {
+                    iterator.remove();
+                }
+                info.setStatus(DownloadInfo.WAIT);
+            }
+            addQueue(infoList.get(0).getComic_id(), infoList);
+        }
+    }
+
+    public DownloadTaskQueue createQueue(String cid, List<DownloadInfo> infoList) {
         DownloadTaskQueue queue = new DownloadTaskQueue(this, cid, infoList);
         queueList.add(queue);
         return queue;
@@ -76,7 +124,7 @@ public class DownloadManager extends Service implements IDownloadManager {
      *
      * @param cid 漫画id
      */
-    private DownloadTaskQueue checkQueue(String cid) {
+    public DownloadTaskQueue checkQueue(String cid) {
         if (queueList == null) {
             queueList = new TreeSet<>();
             return null;
@@ -92,7 +140,7 @@ public class DownloadManager extends Service implements IDownloadManager {
         return null;
     }
 
-    private boolean hasDownloadQueue() {
+    public boolean hasDownloadQueue() {
         if (queueList != null) {
             for (DownloadTaskQueue queue : queueList) {
                 if (queue.getStatus() == DownloadTaskQueue.DOWNLOAD) {
@@ -127,6 +175,7 @@ public class DownloadManager extends Service implements IDownloadManager {
         if (onQueueListener != null) {
             onQueueListener.onQueueComplete(cid);
         }
+        //移除已下载完成的Queue
         //检查是否还有其它队列,队列中是否有等待的任务,根据优先级开始队列的下载任务
         for (DownloadTaskQueue queue : queueList) {
             if (!queue.getCid().equals(cid) && queue.getStatus() == DownloadTaskQueue.WAIT) {
@@ -135,7 +184,9 @@ public class DownloadManager extends Service implements IDownloadManager {
                 return;
             }
         }
+        status = COMPLETE;
         Logger.d("已没有等待中的队列");
+//        stopSelf();
     }
 
     @Override
@@ -143,6 +194,7 @@ public class DownloadManager extends Service implements IDownloadManager {
         if (onQueueListener != null) {
             onQueueListener.onQueueWait(cid);
         }
+
     }
 
     @Override
@@ -150,6 +202,7 @@ public class DownloadManager extends Service implements IDownloadManager {
         if (onQueueListener != null) {
             onQueueListener.onQueueStart(cid, info);
         }
+        status = DOWNLOAD;
     }
 
     @Override
@@ -157,12 +210,25 @@ public class DownloadManager extends Service implements IDownloadManager {
         if (onQueueListener != null) {
             onQueueListener.onQueuePause(cid);
         }
+        status = PAUSE;
+        int pauseSize = 0;
         //某一队列暂停之后,manager检测是否有等待中的队列
         for (DownloadTaskQueue queue : queueList) {
-            if (queue.getStatus() == DownloadTaskQueue.WAIT) {
-                queue.startQueue();
-                break;
+            switch (queue.getStatus()) {
+                case DownloadTaskQueue.PAUSE:
+                    pauseSize++;
+                    break;
+                case DownloadTaskQueue.WAIT:
+                    if (status != DOWNLOAD) {
+                        queue.startQueue();
+                        status = DOWNLOAD;
+                    }
+                    break;
             }
+        }
+        if (pauseSize == queueList.size()) {
+            status = PAUSE;
+            //所有未完成的队列已暂停,停止service
         }
     }
 
@@ -171,6 +237,7 @@ public class DownloadManager extends Service implements IDownloadManager {
         if (onQueueListener != null) {
             onQueueListener.onQueueResume(cid);
         }
+        status = DOWNLOAD;
     }
 
     @Override
@@ -243,6 +310,11 @@ public class DownloadManager extends Service implements IDownloadManager {
         }
     }
 
+    @Override
+    public void onFail(Throwable throwable) {
+
+    }
+
     public class DownloadBinder extends IDownloadInterface.Stub {
 
         public DownloadManager getManager() {
@@ -306,6 +378,7 @@ public class DownloadManager extends Service implements IDownloadManager {
 
         private void controlQueue(String cid, int action) {
             if (queueList != null) {
+                //先判断Queue是否存在,不存在则添加
                 for (DownloadTaskQueue queue : queueList) {
                     if (queue.getCid().equals(cid)) {
                         switch (action) {
@@ -313,13 +386,23 @@ public class DownloadManager extends Service implements IDownloadManager {
                                 queue.waitQueue();
                                 break;
                             case START_QUEUE:
-                                queue.startQueue();
+                                if (status != DOWNLOAD) {
+                                    queue.startQueue();
+                                    status = DOWNLOAD;
+                                } else {
+                                    queue.waitQueue();
+                                }
                                 break;
                             case PAUSE_QUEUE:
                                 queue.pauseQueue();
                                 break;
                             case RESUME_QUEUE:
-                                queue.resumeQueue();
+                                if (status != DOWNLOAD) {
+                                    queue.resumeQueue();
+                                    status = DOWNLOAD;
+                                } else {
+                                    queue.waitQueue();
+                                }
                                 break;
                             case STOP_QUEUE:
                                 queue.stopQueue();
@@ -335,20 +418,51 @@ public class DownloadManager extends Service implements IDownloadManager {
 
         private void controlTask(DownloadInfo info, int action) {
             if (queueList != null) {
+                //检测task所在的Queue是否存在,不存在则添加
+                boolean isQueueExist = false;
                 for (DownloadTaskQueue queue : queueList) {
                     if (info.getComic_id().equals(queue.getCid())) {
+                        isQueueExist = true;
                         switch (action) {
                             case DownloadTaskQueue.WAIT_TASK:
                                 queue.waitTask(info);
                                 break;
                             case DownloadTaskQueue.START_TASK:
-                                queue.startTask(info);
+                                if (status != DOWNLOAD) {
+                                    queue.startTask(info);
+                                    status = DOWNLOAD;
+                                } else {
+                                    queue.waitQueue();
+                                }
                                 break;
                             case DownloadTaskQueue.PAUSE_TASK:
                                 queue.pauseTask(info);
                                 break;
                             case DownloadTaskQueue.RESUME_TASK:
-                                queue.resumeTask(info);
+                                //检测task所在的Queue是否存在,不存在则添加
+                                //并且是否在Queue中,不存在则添加
+                                for (DownloadTaskQueue q : queueList) {
+                                    if (q.getCid().equals(info.getComic_id())) {
+                                        isQueueExist = true;
+                                    }
+                                }
+                                boolean isExist = false;
+                                for (DownloadTask task : queue.getTaskList()) {
+                                    if (task.hashCode() == info.hashCode()) {
+                                        isExist = true;
+                                    }
+                                }
+                                if (!isExist) {
+                                    ArrayList<DownloadInfo> list = new ArrayList<>();
+                                    list.add(info);
+                                    queue.addTask(list);
+                                }
+                                if (status != DOWNLOAD) {
+                                    queue.resumeTask(info);
+                                    status = DOWNLOAD;
+                                } else {
+                                    queue.waitTask(info);
+                                }
                                 break;
                             case DownloadTaskQueue.RESTART_TASK:
                                 queue.restartTask(info);
@@ -359,8 +473,30 @@ public class DownloadManager extends Service implements IDownloadManager {
                         break;
                     }
                 }
+                if (!isQueueExist) {
+                    //Queue不存在的情况
+                    Logger.d("Queue不存在");
+                    ArrayList<DownloadInfo> list = new ArrayList<>();
+                    list.add(info);
+                    DownloadTaskQueue taskQueue = new DownloadTaskQueue(DownloadManager.this, info.getComic_id(), list);
+                    queueList.add(taskQueue);
+                    if (status != DOWNLOAD) {
+                        taskQueue.resumeTask(info);
+                        status = DOWNLOAD;
+                    } else {
+                        taskQueue.waitTask(info);
+                    }
+                }
             }
         }
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public int getStatus() {
+        return status;
     }
 
     /**

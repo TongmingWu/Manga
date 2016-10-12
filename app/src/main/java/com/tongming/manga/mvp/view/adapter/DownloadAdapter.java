@@ -1,10 +1,10 @@
 package com.tongming.manga.mvp.view.adapter;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -68,22 +68,34 @@ public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.Downlo
                 if (holder.progressBar.getVisibility() == View.GONE) {
                     holder.progressBar.setVisibility(View.VISIBLE);
                 }
-                holder.ivAction.setVisibility(View.VISIBLE);
+                holder.tvAction.setVisibility(View.VISIBLE);
                 holder.tvWatch.setVisibility(View.GONE);
-                holder.ivAction.setImageResource(R.drawable.ic_download_pause);
+                Drawable pauseDrawable = mContext.getDrawable(R.drawable.ic_download_pause);
+                pauseDrawable.setBounds(0, 0, (int) (pauseDrawable.getIntrinsicWidth() / 0.9f), (int) (pauseDrawable.getIntrinsicHeight() / 0.9f));
+                holder.tvAction.setCompoundDrawables(null, pauseDrawable, null, null);
+                holder.tvAction.setTextColor(mContext.getColor(R.color.colorPrimary));
+                holder.tvAction.setText("暂停");
                 break;
             case DownloadInfo.WAIT:
                 holder.tvStatus.setText("等待中");
-                holder.ivAction.setImageResource(R.drawable.ic_download_waiting);
+                Drawable waitDrawable = mContext.getDrawable(R.drawable.ic_download_waiting);
+                waitDrawable.setBounds(0, 0, (int) (waitDrawable.getIntrinsicWidth() / 0.9f), (int) (waitDrawable.getIntrinsicHeight() / 0.9f));
+                holder.tvAction.setCompoundDrawables(null, waitDrawable, null, null);
+                holder.tvAction.setTextColor(mContext.getColor(R.color.gray));
+                holder.tvAction.setText("等待");
                 break;
             case DownloadInfo.PAUSE:
                 holder.tvStatus.setText("已暂停");
-                holder.ivAction.setImageResource(R.drawable.ic_download_continue);
+                Drawable drawable = mContext.getDrawable(R.drawable.ic_download_continue);
+                drawable.setBounds(0, 0, (int) (drawable.getIntrinsicWidth() / 0.9f), (int) (drawable.getIntrinsicHeight() / 0.9f));
+                holder.tvAction.setCompoundDrawables(null, drawable, null, null);
+                holder.tvAction.setTextColor(mContext.getColor(R.color.downloadBorder));
+                holder.tvAction.setText("继续");
                 break;
             case DownloadInfo.COMPLETE:
                 holder.tvStatus.setText("已完成");
                 holder.progressBar.setVisibility(View.GONE);
-                holder.ivAction.setVisibility(View.GONE);
+                holder.tvAction.setVisibility(View.GONE);
                 holder.tvWatch.setVisibility(View.VISIBLE);
                 break;
         }
@@ -115,8 +127,8 @@ public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.Downlo
         TextView tvStatus;
         @BindView(R.id.progress)
         ProgressBar progressBar;
-        @BindView(R.id.iv_action)
-        ImageView ivAction;
+        @BindView(R.id.tv_action)
+        TextView tvAction;
         @BindView(R.id.tv_watch)
         TextView tvWatch;
 
@@ -126,10 +138,18 @@ public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.Downlo
         }
 
         public void updateItem(DownloadInfo info) {
-            if (progressBar.getVisibility() == View.GONE) {
+            if (progressBar.getVisibility() == View.GONE
+                    || tvWatch.getVisibility() == View.VISIBLE
+                    || tvAction.getVisibility() == View.GONE) {
                 progressBar.setVisibility(View.VISIBLE);
+                tvWatch.setVisibility(View.GONE);
+                tvAction.setVisibility(View.VISIBLE);
             }
-            ivAction.setImageResource(R.drawable.ic_download_pause);
+            Drawable drawable = itemView.getContext().getDrawable(R.drawable.ic_download_pause);
+            drawable.setBounds(0, 0, (int) (drawable.getIntrinsicWidth() / 0.9f), (int) (drawable.getIntrinsicHeight() / 0.9f));
+            tvAction.setCompoundDrawables(null, drawable, null, null);
+            tvAction.setTextColor(itemView.getResources().getColor(R.color.colorPrimary, null));
+            tvAction.setText("暂停");
             progressBar.setProgress(info.getPosition());
             progressBar.setMax(info.getTotal());
             tvStatus.setText("下载中");

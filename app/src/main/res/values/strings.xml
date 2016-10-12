@@ -5,4 +5,5 @@
         <item>竖屏模式</item>
         <item>横屏模式</item>
     </string-array>
+    <string name="coverName">cover</string>
 </resources>

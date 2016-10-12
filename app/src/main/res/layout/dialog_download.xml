@@ -8,8 +8,9 @@
     <TextView
         android:id="@+id/tv_manager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:layout_marginTop="15dp"
+        android:gravity="center_vertical"
         android:text="章节管理"
         android:textColor="@color/normalText"
         android:textSize="16sp" />
@@ -17,8 +18,8 @@
     <TextView
         android:id="@+id/tv_start"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
+        android:layout_height="40dp"
+        android:gravity="center_vertical"
         android:text="开始"
         android:textColor="@color/normalText"
         android:textSize="16sp"
@@ -27,8 +28,8 @@
     <TextView
         android:id="@+id/tv_delete"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
+        android:layout_height="40dp"
+        android:gravity="center_vertical"
         android:text="删除"
         android:textColor="@color/normalText"
         android:textSize="16sp" />

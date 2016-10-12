@@ -1,6 +1,5 @@
 package com.tongming.manga.mvp.view.activity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.RemoteException;
 import android.support.v7.app.AlertDialog;
@@ -46,6 +45,7 @@ public class DownloadManagerActivity extends BaseActivity implements IQueryDownl
     private List<DownloadComic> comicList;
     private boolean serviceStarted;
     private DownloadManager.DownloadBinder binder;
+    private List<DownloadInfo> infoList;
 
     @Override
     protected int getLayoutId() {
@@ -55,23 +55,25 @@ public class DownloadManagerActivity extends BaseActivity implements IQueryDownl
     @Override
     protected void initView() {
         initToolbar(toolbar);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         new DownloadPresenterImp(this).queryAllDownloadInfo(this);
         serviceStarted = CommonUtil.isServiceStarted(this, DownloadManager.class.getName());
-        if (serviceStarted) {
+        if (serviceStarted && conn == null) {
             //绑定Service
             Intent intent = new Intent(this, DownloadManager.class);
-            if (conn == null) {
-                conn = new DownloadConnection(this, DownloadConnection.DOWNLOAD_QUEUE);
-            }
-            bindService(intent, conn, Context.BIND_AUTO_CREATE);
-        } else {
-            Logger.d("manager未启动");
+            conn = new DownloadConnection(this, DownloadConnection.DOWNLOAD_QUEUE);
+            bindService(intent, conn, BIND_AUTO_CREATE);
         }
     }
 
     @Override
     public void onQueryDownloadInfo(List<DownloadInfo> infoList) {
-        calculateComic(infoList);
+        this.infoList = infoList;
+        calculateComic(this.infoList);
         Collections.sort(comicList);
         initRecyclerView();
     }
@@ -132,13 +134,38 @@ public class DownloadManagerActivity extends BaseActivity implements IQueryDownl
                                 if (serviceStarted) {
                                     Logger.d("继续队列");
                                     try {
-                                        binder.resumeQueue(cid);
+                                        DownloadManager manager = binder.getManager();
+                                        if (manager.checkQueue(cid) == null) {
+                                            //队列不存在,新建队列
+                                            ArrayList<DownloadInfo> list = new ArrayList<>();
+                                            for (DownloadInfo info : infoList) {
+                                                if (info.getComic_id().equals(cid)) {
+                                                    list.add(info);
+                                                }
+                                            }
+                                            DownloadTaskQueue queue = manager.createQueue(cid, list);
+                                            if (manager.hasDownloadQueue()) {
+                                                queue.waitQueue();
+                                            } else {
+                                                queue.startQueue();
+                                                manager.setStatus(DownloadManager.DOWNLOAD);
+                                            }
+                                        } else {
+                                            binder.resumeQueue(cid);
+                                        }
                                     } catch (RemoteException e) {
                                         e.printStackTrace();
                                     }
                                 } else {
                                     //开启service并绑定
-
+                                    Intent intent = new Intent(DownloadManagerActivity.this, DownloadManager.class);
+                                    intent.putExtra("cid", cid);
+                                    startService(intent);
+                                    serviceStarted = true;
+                                    if (conn == null) {
+                                        conn = new DownloadConnection(DownloadManagerActivity.this, DownloadConnection.DOWNLOAD_QUEUE);
+                                        bindService(intent, conn, BIND_AUTO_CREATE);
+                                    }
                                 }
                             }
                             dialog.dismiss();
@@ -173,7 +200,7 @@ public class DownloadManagerActivity extends BaseActivity implements IQueryDownl
             public void onQueueComplete(String cid) {
                 if (adapter != null) {
                     notifyItemChanged(cid, DownloadTaskQueue.COMPLETE, null);
-                    Logger.d(cid + "队列下载完成");
+                    Logger.d(cid + "暂停下载");
                 }
             }
 
@@ -181,7 +208,6 @@ public class DownloadManagerActivity extends BaseActivity implements IQueryDownl
             public void onQueueWait(String cid) {
                 if (adapter != null) {
                     notifyItemChanged(cid, DownloadTaskQueue.WAIT, null);
-                    Logger.d(cid + "进入等待");
                 }
             }
 
@@ -196,7 +222,6 @@ public class DownloadManagerActivity extends BaseActivity implements IQueryDownl
             public void onQueuePause(String cid) {
                 if (adapter != null) {
                     notifyItemChanged(cid, DownloadTaskQueue.PAUSE, null);
-                    Logger.d(cid + "暂停下载");
                 }
             }
 
@@ -204,7 +229,6 @@ public class DownloadManagerActivity extends BaseActivity implements IQueryDownl
             public void onQueueResume(String cid) {
                 if (adapter != null) {
                     notifyItemChanged(cid, DownloadTaskQueue.DOWNLOAD, null);
-                    Logger.d(cid + "继续下载");
                 }
             }
 
@@ -213,7 +237,6 @@ public class DownloadManagerActivity extends BaseActivity implements IQueryDownl
                 if (adapter != null) {
 //                    adapter.removeQueue(cid);
                     notifyItemChanged(cid, DownloadTaskQueue.STOP, null);
-                    Logger.d(cid + "停止下载");
                 }
             }
 

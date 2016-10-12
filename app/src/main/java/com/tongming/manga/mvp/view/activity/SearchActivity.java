@@ -1,11 +1,13 @@
 package com.tongming.manga.mvp.view.activity;
 
 import android.content.Intent;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -14,6 +16,7 @@ import com.tongming.manga.cusview.SpaceItemDecoration;
 import com.tongming.manga.mvp.base.BaseActivity;
 import com.tongming.manga.mvp.bean.ComicCard;
 import com.tongming.manga.mvp.bean.Search;
+import com.tongming.manga.mvp.bean.SearchRecord;
 import com.tongming.manga.mvp.presenter.SearchPresenterImp;
 import com.tongming.manga.mvp.view.adapter.RVComicAdapter;
 import com.tongming.manga.util.CommonUtil;
@@ -66,7 +69,7 @@ public class SearchActivity extends BaseActivity implements ISearchView {
             type = intent.getIntExtra("type", 1);
             String typeName = intent.getStringExtra("name");
             toolbar.setTitle(typeName);
-            ((SearchPresenterImp) presenter).getComicType(select, type, page);
+            ((SearchPresenterImp) presenter).doSearch(select, type, page);
         } else {
             ((SearchPresenterImp) presenter).doSearch(word, page);
             toolbar.setTitle("搜索: " + word);
@@ -92,6 +95,7 @@ public class SearchActivity extends BaseActivity implements ISearchView {
                 tvMore.setTextColor(Color.DKGRAY);
             }*/
         }
+        hideProgress();
     }
 
     private void initRecyclerView() {
@@ -104,9 +108,13 @@ public class SearchActivity extends BaseActivity implements ISearchView {
             @Override
             public void onItemClick(View view, int position) {
                 Intent intent = new Intent(SearchActivity.this, ComicDetailActivity.class);
-                intent.putExtra("url", comicCards.get(position).getComic_url());
-                intent.putExtra("name", comicCards.get(position).getComic_name());
-                startActivity(intent);
+                ComicCard card = comicCards.get(position);
+                intent.putExtra("url", card.getComic_url())
+                        .putExtra("name", card.getComic_name())
+                        .putExtra("cover", card.getCover());
+                ImageView ivCover = (ImageView) view.findViewById(R.id.iv_cover);
+                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(SearchActivity.this, ivCover, getString(R.string.coverName));
+                startActivity(intent, options.toBundle());
             }
         });
         rvSearch.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -137,7 +145,7 @@ public class SearchActivity extends BaseActivity implements ISearchView {
         tvMore.setTextColor(Color.BLACK);
         pbMore.setVisibility(View.VISIBLE);*/
         if (word == null) {
-            ((SearchPresenterImp) presenter).getComicType(select, type, requestPage);
+            ((SearchPresenterImp) presenter).doSearch(select, type, requestPage);
         } else {
             ((SearchPresenterImp) presenter).doSearch(word, requestPage);
         }
@@ -154,6 +162,11 @@ public class SearchActivity extends BaseActivity implements ISearchView {
         if (progress.getVisibility() == View.VISIBLE) {
             progress.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void onQuery(List<SearchRecord> recordList) {
+
     }
 
     @Override

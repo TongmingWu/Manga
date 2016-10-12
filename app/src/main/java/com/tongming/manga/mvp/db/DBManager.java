@@ -7,6 +7,7 @@ import com.squareup.sqlbrite.SqlBrite;
 import com.tongming.manga.mvp.bean.CollectedComic;
 import com.tongming.manga.mvp.bean.ComicInfo;
 import com.tongming.manga.mvp.bean.HistoryComic;
+import com.tongming.manga.mvp.bean.SearchRecord;
 import com.tongming.manga.server.DownloadInfo;
 
 import java.util.List;
@@ -203,6 +204,35 @@ public class DBManager {
      */
     public int deleteDownloadInfo(DownloadInfo info) {
         return briteDatabase.delete(DownloadTable.TABLE_NAME, DownloadTable.CHAPTER_URL + " = ?", info.getChapter_url());
+    }
+
+    /**
+     * 添加搜索记录
+     */
+    public int insertSearchRecord(String name, String url) {
+        return (int) briteDatabase.insert(SearchTable.TABLE_NAME, SearchTable.toContentValues(name, url));
+    }
+
+    public int updateSearchRecord(String name, String url) {
+        return briteDatabase.update(SearchTable.TABLE_NAME, SearchTable.toContentValues(name, url),
+                SearchTable.COLUMN_URL + " = ?", url);
+    }
+
+    /**
+     * 查询搜索记录
+     */
+    public Observable<List<SearchRecord>> querySearchRecord() {
+        return briteDatabase.createQuery(SearchTable.TABLE_NAME, "SELECT * FROM " + SearchTable.TABLE_NAME)
+                .mapToList(SearchTable.COMIC_MAPPER);
+    }
+
+    public Observable<List<SearchRecord>> querySearchRecord(String url) {
+        return briteDatabase.createQuery(SearchTable.TABLE_NAME, "SELECT * FROM "
+                + SearchTable.TABLE_NAME
+                + " WHERE "
+                + SearchTable.COLUMN_URL
+                + " = ?", url)
+                .mapToList(SearchTable.COMIC_MAPPER);
     }
 
 

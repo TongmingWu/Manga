@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
+    android:foreground="?android:attr/selectableItemBackground"
     android:orientation="vertical"
     android:padding="10dp">
 
@@ -42,13 +43,26 @@
         android:layout_below="@id/tv_status"
         android:layout_marginTop="5dp" />
 
-    <ImageView
+    <!--<ImageView
         android:id="@+id/iv_action"
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:src="@drawable/ic_download_continue" />
+        android:src="@drawable/ic_download_continue" />-->
+
+    <TextView
+        android:id="@+id/tv_action"
+        android:layout_width="45dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:drawablePadding="3dp"
+        android:layout_marginRight="8dp"
+        android:gravity="center"
+        android:drawableTop="@drawable/ic_download_continue"
+        android:text="继续"
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/tv_watch"

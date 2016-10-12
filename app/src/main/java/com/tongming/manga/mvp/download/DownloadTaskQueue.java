@@ -4,7 +4,6 @@ import com.orhanobut.logger.Logger;
 import com.tongming.manga.server.DownloadInfo;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -32,6 +31,8 @@ public class DownloadTaskQueue implements IDownloadTaskQueue, Comparable {
     private List<DownloadInfo> infoList;
     private List<DownloadTask> taskList;
     private int status = 0x01;
+    private boolean isPauseAll;
+    private boolean isPauseOne;
 
     /**
      * 构造一个Queue
@@ -95,10 +96,15 @@ public class DownloadTaskQueue implements IDownloadTaskQueue, Comparable {
             return;
         }
         for (DownloadTask task : taskList) {
+            //判断有问题
             if (task.getStatus() == DownloadInfo.WAIT) {
-                task.startTask();
-                Logger.d("开始任务");
-                break;
+                if (status != DOWNLOAD) {
+                    task.startTask();
+                    status = DOWNLOAD;
+                    Logger.d("开始任务");
+                } else {
+                    task.waitTask();
+                }
             }
         }
     }
@@ -108,6 +114,7 @@ public class DownloadTaskQueue implements IDownloadTaskQueue, Comparable {
         if (taskList == null || taskList.size() == 0) {
             return;
         }
+        isPauseAll = true;
         for (DownloadTask task : taskList) {
             task.pauseTask();
         }
@@ -120,11 +127,12 @@ public class DownloadTaskQueue implements IDownloadTaskQueue, Comparable {
             return;
         }
         int position = Integer.MAX_VALUE;
-        for (DownloadTask task : taskList) {
+        for (int index = 0; index < taskList.size(); index++) {
             //继续第一个暂停中的任务,其他暂停任务改为等待
+            DownloadTask task = taskList.get(index);
             if (task.getStatus() == DownloadInfo.PAUSE) {
-                task.setStatus(DownloadInfo.WAIT);
-                position = task.getPosition() < position ? task.getPosition() : position;
+                task.waitTask();
+                position = index < position ? index : position;
             }
         }
         if (position < taskList.size()) {
@@ -144,79 +152,6 @@ public class DownloadTaskQueue implements IDownloadTaskQueue, Comparable {
         taskList.clear();
         infoList.clear();
         Logger.d("stopQueue");
-    }
-
-    @Override
-    public void waitTask(int position) {
-        controlTask(position, WAIT_TASK);
-        Logger.d("waitTask");
-    }
-
-    @Override
-    public void startTask(int position) {
-        controlTask(position, START_TASK);
-        Logger.d("startTask");
-    }
-
-    @Override
-    public void pauseTask(int position) {
-        controlTask(position, PAUSE_TASK);
-        Logger.d("pauseTask");
-    }
-
-    @Override
-    public void resumeTask(int position) {
-        controlTask(position, RESUME_TASK);
-        Logger.d("resumeTask");
-    }
-
-    @Override
-    public void stopTask(int position) {
-        controlTask(position, STOP_TASK);
-        Logger.d("stopTask");
-    }
-
-    @Override
-    public void restartTask(int position) {
-        controlTask(position, RESTART_TASK);
-        Logger.d("restartTask");
-    }
-
-    private void controlTask(int position, int action) {
-        if (taskList == null || taskList.size() <= position) {
-            return;
-        }
-        Iterator<DownloadTask> iterator = taskList.iterator();
-        int index = 0;
-        while (iterator.hasNext()) {
-            if (index == position) {
-                DownloadTask task = iterator.next();
-                switch (action) {
-                    case WAIT_TASK:
-                        task.waitTask();
-                        break;
-                    case START_TASK:
-                        task.startTask();
-                        break;
-                    case PAUSE_TASK:
-                        task.pauseTask();
-                        break;
-                    case RESUME_TASK:
-                        task.resumeTask();
-                        break;
-                    case STOP_TASK:
-                        task.stopTask();
-                        break;
-                    case RESTART_TASK:
-                        task.restartTask();
-                        break;
-                    default:
-                        break;
-                }
-                break;
-            }
-            index++;
-        }
     }
 
     @Override
@@ -252,8 +187,28 @@ public class DownloadTaskQueue implements IDownloadTaskQueue, Comparable {
     @Override
     public void onTaskWait(DownloadInfo info) {
         manager.onTaskWait(info);
-        manager.onQueueWait(info.getComic_id());
-        setStatus(WAIT);
+        //队列中没有DOWNLOAD的task的话,那么队列为等待状态
+        int waitSize = 0;
+        int pauseSize = 0;
+        boolean isDownload = false;
+        for (DownloadTask task : taskList) {
+            switch (task.getStatus()) {
+                case DownloadInfo.DOWNLOAD:
+                    isDownload = true;
+                    break;
+                case DownloadInfo.WAIT:
+                    waitSize++;
+                    break;
+                case DownloadInfo.PAUSE:
+                    pauseSize++;
+                    break;
+            }
+        }
+        if (!isDownload && waitSize == taskList.size() - pauseSize) {
+            Logger.d("全部等待");
+            manager.onQueueWait(info.getComic_id());
+            setStatus(WAIT);
+        }
     }
 
     @Override
@@ -264,29 +219,29 @@ public class DownloadTaskQueue implements IDownloadTaskQueue, Comparable {
     }
 
     @Override
-    public void onTaskPause(DownloadInfo info) {
+    public synchronized void onTaskPause(DownloadInfo info) {
         manager.onTaskPause(info);
-        setStatus(PAUSE);
         //检测队列中是否有等待中的任务,有的话继续下载
         int pauseSize = 0;
-        int size = 0;
         for (DownloadTask task : taskList) {
             switch (task.getStatus()) {
                 case DownloadInfo.PAUSE:
                     pauseSize++;
                     break;
                 case DownloadInfo.WAIT:
-                    if (status != DOWNLOAD) {
-                        task.startTask();
-                        setStatus(DOWNLOAD);
+                    if (!isPauseAll && isPauseOne) {
+                        task.startTask();   //单个暂停出现所有等待中的任务开始下载
+                        status = DOWNLOAD;
+                        isPauseOne = false;
                     }
-                default:
-                    size++;
                     break;
             }
         }
-        if (pauseSize == taskList.size() - size) {
+        if (status != PAUSE && pauseSize == taskList.size()) {
             //所有task暂停
+            Logger.d("所有任务暂停");
+            setStatus(PAUSE);
+            isPauseAll = false;
             manager.onQueuePause(cid);
         }
     }
@@ -311,7 +266,13 @@ public class DownloadTaskQueue implements IDownloadTaskQueue, Comparable {
 
     @Override
     public void onTaskComplete(DownloadInfo info) {
-        //一个任务下载完成,检测是否有等待中的任务,有的话优先从前面开始
+        //一个任务下载完成,将其移出队列,检测是否有等待中的任务,有的话优先从前面开始
+        for (DownloadTask task : taskList) {
+            if (info.hashCode() == task.hashCode()) {
+                taskList.remove(task);
+                break;
+            }
+        }
         manager.onTaskComplete(info);
         nextTask();
     }
@@ -347,13 +308,24 @@ public class DownloadTaskQueue implements IDownloadTaskQueue, Comparable {
                         task.waitTask();
                         break;
                     case START_TASK:
-                        task.startTask();
+                        if (status != DOWNLOAD) {
+                            task.startTask();
+                            setStatus(DOWNLOAD);
+                        } else {
+                            task.waitTask();
+                        }
                         break;
                     case PAUSE_TASK:
+                        isPauseOne = true;
                         task.pauseTask();
                         break;
                     case RESUME_TASK:
-                        task.restartTask();
+                        if (status != DOWNLOAD) {
+                            task.resumeTask();
+                            setStatus(DOWNLOAD);
+                        } else {
+                            task.waitTask();
+                        }
                         break;
                     case STOP_TASK:
                         task.stopTask();
@@ -367,6 +339,10 @@ public class DownloadTaskQueue implements IDownloadTaskQueue, Comparable {
                 break;
             }
         }
+    }
+
+    public List<DownloadTask> getTaskList() {
+        return taskList;
     }
 
     public String getCid() {

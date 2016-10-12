@@ -2,12 +2,15 @@ package com.tongming.manga.mvp.view.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.orhanobut.logger.Logger;
 import com.tongming.manga.R;
@@ -103,8 +106,16 @@ public class HistoryActivity extends BaseActivity implements IHistoryView {
                 Intent intent = new Intent(HistoryActivity.this, ComicDetailActivity.class);
                 HistoryComic comic = comics.get(position);
                 String name = comic.getName();
-                intent.putExtra("url", comic.getUrl()).putExtra("name", name.endsWith("漫画") ? name.replace("漫画", "") : name);
-                startActivity(intent);
+                intent.putExtra("url", comic.getUrl())
+                        .putExtra("name", name.endsWith("漫画") ? name.replace("漫画", "") : name)
+                        .putExtra("cover", comic.getCover());
+                if (Build.VERSION.SDK_INT >= 20) {
+                    ImageView ivCover = (ImageView) view.findViewById(R.id.iv_cover);
+                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(HistoryActivity.this, ivCover, getString(R.string.coverName));
+                    startActivity(intent, options.toBundle());
+                } else {
+                    startActivity(intent);
+                }
             }
         });
         adapter.setOnItemLongClickListener(new RVComicAdapter.OnItemLongClickListener() {

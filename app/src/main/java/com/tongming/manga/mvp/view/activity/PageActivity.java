@@ -8,9 +8,7 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatSeekBar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -131,11 +129,6 @@ public class PageActivity extends BaseActivity implements IPageView {
     private boolean isActionDown;
     private long downTime;
     private boolean isLoadNone;
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Override
     protected int getLayoutId() {
@@ -323,7 +316,8 @@ public class PageActivity extends BaseActivity implements IPageView {
                     //不返回true,不拦截此处的事件 :( 绕了好久,为什么要这么傻去拦截...
                 }
                 //加载上一话
-                if (manager.findFirstCompletelyVisibleItemPosition() == 0
+                //TODO 如果图片大于屏幕的高度,出现问题
+                if ((manager.findFirstVisibleItemPosition() == 0)
                         || (!sp.getBoolean("isPortrait", true) && manager.findFirstVisibleItemPosition() == 0)) {
                     if (sp.getBoolean("isPortrait", true)) {
                         if ((isVertical && (ev.getRawY() - firstY) > 20f)
@@ -480,16 +474,21 @@ public class PageActivity extends BaseActivity implements IPageView {
             isFirstLoad = false;
             Logger.d("第一次加载成功");
         } else {
+            int itemCount = imgList.size();
+            int startPos = 0;
             if (isLoadNext) {
                 Logger.d("加载下一话成功");
                 isLoadNext = false;
+                startPos = this.imgList.size();
                 this.imgList.addAll(imgList);
-                adapter.notifyDataSetChanged();
+//                adapter.notifyDataSetChanged();
+                adapter.notifyItemRangeInserted(startPos, itemCount);
             } else if (isLoadPre) {
                 Logger.d("加载上一话成功");
                 isLoadPre = false;
                 this.imgList.addAll(0, imgList);
-                adapter.notifyDataSetChanged();
+//                adapter.notifyDataSetChanged();
+                adapter.notifyItemRangeInserted(startPos, itemCount);
                 manager.scrollToPosition(imgList.size());
             }
             /*sbPage.setMax(manager.getItemCount());

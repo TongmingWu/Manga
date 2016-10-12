@@ -31,19 +31,20 @@
                 android:layout_height="wrap_content"
                 android:padding="12dp">
 
-                <ImageView
+                <!--<ImageView
                     android:id="@+id/iv_hot"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_centerVertical="true"
-                    android:background="@drawable/cb_icon_hot_normal" />
+                    android:background="@drawable/cb_icon_hot_normal" />-->
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="30dp"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="8dp"
-                    android:layout_toRightOf="@id/iv_hot"
+                    android:drawableLeft="@drawable/cb_icon_hot_normal"
+                    android:drawablePadding="8dp"
+                    android:gravity="center"
                     android:text="热门连载"
                     android:textColor="@color/normalText"
                     android:textSize="16sp" />
@@ -75,19 +76,20 @@
                 android:layout_height="wrap_content"
                 android:padding="12dp">
 
-                <ImageView
+                <!--<ImageView
                     android:id="@+id/iv_recommend"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_centerVertical="true"
-                    android:background="@drawable/ic_recommend" />
+                    android:background="@drawable/ic_recommend" />-->
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="30dp"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="8dp"
-                    android:layout_toRightOf="@id/iv_recommend"
+                    android:drawableLeft="@drawable/ic_recommend"
+                    android:drawablePadding="8dp"
+                    android:gravity="center"
                     android:text="精彩推荐"
                     android:textColor="@color/normalText"
                     android:textSize="16sp" />
@@ -119,19 +121,20 @@
                 android:layout_height="wrap_content"
                 android:padding="12dp">
 
-                <ImageView
+                <!--<ImageView
                     android:id="@+id/iv_local"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_centerVertical="true"
-                    android:background="@drawable/ic_local" />
+                    android:background="@drawable/ic_local" />-->
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="30dp"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="8dp"
-                    android:layout_toRightOf="@id/iv_local"
+                    android:drawableLeft="@drawable/ic_local"
+                    android:drawablePadding="8dp"
+                    android:gravity="center"
                     android:text="精选国漫"
                     android:textColor="@color/normalText"
                     android:textSize="16sp" />
@@ -165,8 +168,8 @@
 
                 <ImageView
                     android:id="@+id/iv_release"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:layout_centerVertical="true"
                     android:background="@drawable/ic_newest"
                     android:backgroundTint="#FF4081" />

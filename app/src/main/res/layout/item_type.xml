@@ -6,12 +6,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <ImageView
+    <!--<ImageView
         android:id="@+id/iv_category"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_gravity="center_horizontal"
-        android:background="@drawable/default_avatar" />
+        android:background="@drawable/default_avatar" />-->
 
     <!--android:drawableTop="@drawable/default_avatar"-->
     <TextView

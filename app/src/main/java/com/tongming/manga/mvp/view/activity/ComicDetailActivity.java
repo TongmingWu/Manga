@@ -8,6 +8,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.transition.Transition;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -80,7 +81,7 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
     RelativeLayout rlCover;
     @BindView(R.id.iv_share)
     ImageView ivShare;
-    private ComicInfo info;
+    private ComicInfo comicInfo;
     private ChapterAdapter adapter;
     private List<ComicInfo.ChapterListBean> chapterList;
     private SharedPreferences sp;
@@ -91,6 +92,9 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
     private boolean isCollected;
     private List<Integer> downloadPos;
     private List<DownloadInfo> downloadInfoList;
+    private boolean isCover;
+    private boolean isLoad;
+    private Intent intent;
 
     @Override
     protected int getLayoutId() {
@@ -101,19 +105,62 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
     protected void initView() {
         sp = getSharedPreferences("config", MODE_PRIVATE);
         presenter = new DetailPresenterImp(this);
+        intent = getIntent();
+        initToolbar(toolbar);
+        toolbar.setTitle(intent.getStringExtra("name"));
+        String cover = intent.getStringExtra("cover");
+        if (!TextUtils.isEmpty(cover)) {
+            HeaderGlide.loadImage(this, cover, ivCover);
+            HeaderGlide.loadBitmap(this, cover, ivBlur);
+            isCover = true;
+        }
+        if (TextUtils.isEmpty(cover)) {
+            getData();
+        }else {
+            getWindow().getSharedElementEnterTransition().addListener(new Transition.TransitionListener() {
+                @Override
+                public void onTransitionStart(Transition transition) {
+
+                }
+
+                @Override
+                public void onTransitionEnd(Transition transition) {
+                    if (!isLoad) {
+                        getData();
+                        isLoad = true;
+                    }
+                }
+
+                @Override
+                public void onTransitionCancel(Transition transition) {
+
+                }
+
+                @Override
+                public void onTransitionPause(Transition transition) {
+
+                }
+
+                @Override
+                public void onTransitionResume(Transition transition) {
+
+                }
+            });
+        }
+    }
+
+    private void getData() {
         //先从数据库读取阅读记录,如果有阅读过的话返回historyUrl,跟list进行匹配得到position,在设置item的背景
-        String name = getIntent().getStringExtra("name");
-        ((DetailPresenterImp) presenter).queryHistoryByName(this, name);
+        String name = intent.getStringExtra("name");
+        ((DetailPresenterImp) presenter).queryHistoryByName(ComicDetailActivity.this, name);
         if (!sp.getBoolean("isLogin", false)) {
-            ((DetailPresenterImp) presenter).queryCollectByName(this, name);
+            ((DetailPresenterImp) presenter).queryCollectByName(ComicDetailActivity.this, name);
         } else {
             ((DetailPresenterImp) presenter).queryCollectOnNet(name);
         }
         //读取已下载的信息
-        new DownloadPresenterImp(this).queryDownloadInfo(this, name, DownloadInfo.COMPLETE);
-        initToolbar(toolbar);
-        toolbar.setTitle(name);
-        ((DetailPresenterImp) presenter).getDetail(getIntent().getStringExtra("url"));
+        new DownloadPresenterImp(ComicDetailActivity.this).queryDownloadInfo(ComicDetailActivity.this, name, DownloadInfo.COMPLETE);
+        ((DetailPresenterImp) presenter).getDetail(intent.getStringExtra("url"));
         slContent.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
             public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
@@ -125,40 +172,30 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
     }
 
     @Override
-    public void onGetData(final ComicInfo info) {
-        this.info = info;
-        String cover = info.getCover();
-        if (!TextUtils.isEmpty(cover)) {
+    public void onGetData(ComicInfo info) {
+        if (this.comicInfo == null) {
+            this.comicInfo = info;
+        }
+        String cover = comicInfo.getCover();
+        if (!TextUtils.isEmpty(cover) && !isCover) {
             HeaderGlide.loadImage(this, cover, ivCover);
             HeaderGlide.loadBitmap(this, cover, ivBlur);
         }
-        /*Glide.with(this)
-                .load(info.getCover())
-                .into(ivCover);*/
-        /*Glide.with(this)
-                .load(info.getCover())
-                .asBitmap()
-                .into(new SimpleTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                        ivBlur.setImageBitmap(FastBlur.doBlur(resource, 5, false));
-                    }
-                });*/
-        tvComicName.setText(info.getComic_name());
-        tvComicAuthor.setText("作者:  " + info.getComic_author());
-        tvComicStatus.setText("状态:  " + info.getStatus());
-        String area = info.getComic_area();
+        tvComicName.setText(this.comicInfo.getComic_name());
+        tvComicAuthor.setText("作者:  " + comicInfo.getComic_author());
+        tvComicStatus.setText("状态:  " + comicInfo.getStatus());
+        String area = comicInfo.getComic_area();
         if (!TextUtils.isEmpty(area)) {
             tvComicType.setText("地区:  " + area);
         }
-        tvNewestChapter.setText(" 更新于 " + info.getNewest_chapter_date().split(" ")[0]);
-        tvDesc.setText("  " + info.getDesc());
-        tvSelect.setText("共" + info.getChapter_list().size() + "话");
-        if (info.getChapter_list().size() == 0) {
+        tvNewestChapter.setText(" 更新于 " + comicInfo.getNewest_chapter_date().split(" ")[0]);
+        tvDesc.setText("  " + comicInfo.getDesc());
+        tvSelect.setText("共" + comicInfo.getChapter_list().size() + "话");
+        if (comicInfo.getChapter_list().size() == 0) {
             Toast.makeText(ComicDetailActivity.this, "此漫画不支持上架", Toast.LENGTH_SHORT).show();
         } else {
             if (adapter == null) {
-                chapterList = info.getChapter_list();
+                chapterList = comicInfo.getChapter_list();
                 /*boolean isReverse = sp.getBoolean("isReverse", false);
                 if (!isReverse) {
                     ivSort.setImageResource(R.drawable.ic_front);
@@ -187,7 +224,7 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Intent intent = new Intent(ComicDetailActivity.this, PageActivity.class);
-                    intent.putExtra("url", info.getChapter_list().get(position).getChapter_url());
+                    intent.putExtra("url", comicInfo.getChapter_list().get(position).getChapter_url());
                     startActivityForResult(intent, REQUEST_CHAPTER_CODE);
                 }
             });
@@ -218,17 +255,17 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
                 if (!sp.getBoolean("isLogin", false)) {
                     //未登录
                     if (isCollected) {
-                        ((DetailPresenterImp) presenter).deleteCollectByName(ComicDetailActivity.this, info.getComic_name());
+                        ((DetailPresenterImp) presenter).deleteCollectByName(ComicDetailActivity.this, comicInfo.getComic_name());
                     } else {
-                        ((DetailPresenterImp) presenter).collectComic(ComicDetailActivity.this, info);
+                        ((DetailPresenterImp) presenter).collectComic(ComicDetailActivity.this, comicInfo);
                     }
                 } else {
                     //已登录
                     if (isCollected) {
-                        ((DetailPresenterImp) presenter).deleteCollectOnNet(info);
+                        ((DetailPresenterImp) presenter).deleteCollectOnNet(comicInfo);
                         ivFav.setImageResource(R.drawable.select_collect);
                     } else {
-                        ((DetailPresenterImp) presenter).collectComicOnNet(info);
+                        ((DetailPresenterImp) presenter).collectComicOnNet(comicInfo);
                         ivFav.setImageResource(R.drawable.ic_collected);
                     }
                 }
@@ -240,7 +277,7 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(ComicDetailActivity.this, SelectActivity.class);
-                intent.putExtra("info", info);
+                intent.putExtra("info", comicInfo);
                 startActivityForResult(intent, REQUEST_DOWNLOAD_CODE);
             }
         });
@@ -251,11 +288,12 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
             public void onClick(View v) {
                 Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_SEND);
-                intent.putExtra(Intent.EXTRA_TEXT, info.getComic_name() + "http://m.tuku.cc" + info.getComic_url());
+                intent.putExtra(Intent.EXTRA_TEXT, comicInfo.getComic_url());
                 intent.setType("text/plain");
                 startActivity(Intent.createChooser(intent, "分享到"));
             }
         });
+        hideProgress();
     }
 
     private int getHistoryPos(String historyUrl) {
@@ -341,10 +379,10 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
             historyName = data.getStringExtra("name");
             historyUrl = data.getStringExtra("url");
             if (isRead) {
-                ((DetailPresenterImp) presenter).updateHistory(ComicDetailActivity.this, info, historyName, historyUrl);
+                ((DetailPresenterImp) presenter).updateHistory(ComicDetailActivity.this, comicInfo, historyName, historyUrl);
                 Logger.d("更新阅读记录");
             } else {
-                ((DetailPresenterImp) presenter).addHistory(ComicDetailActivity.this, info, historyName, historyUrl);
+                ((DetailPresenterImp) presenter).addHistory(ComicDetailActivity.this, comicInfo, historyName, historyUrl);
                 isRead = true;
                 Logger.d("添加阅读记录");
             }
@@ -363,7 +401,7 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
 
     @Override
     public void showProgress() {
-        rlContent.setVisibility(View.INVISIBLE);
+//        rlContent.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);
     }
 
@@ -388,6 +426,12 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
     @Override
     public void onFail(Throwable throwable) {
         Logger.e(throwable.getMessage());
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finishAfterTransition();
     }
 
     @Override

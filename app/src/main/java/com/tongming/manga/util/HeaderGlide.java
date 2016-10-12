@@ -27,6 +27,8 @@ public class HeaderGlide {
                 .build());
         Glide.with(context)
                 .load(glideUrl)
+//                .placeholder(R.drawable.comic_placeholder)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .crossFade()
                 .into(view);
     }
@@ -38,10 +40,11 @@ public class HeaderGlide {
         Glide.with(context)
                 .load(glideUrl)
                 .asBitmap()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                        view.setImageBitmap(FastBlur.doBlur(resource, 5, false));
+                        view.setImageBitmap(FastBlur.doBlur(resource, 15, false));
                     }
                 });
     }

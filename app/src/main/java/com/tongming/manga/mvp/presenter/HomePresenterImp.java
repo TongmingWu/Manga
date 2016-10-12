@@ -27,7 +27,7 @@ public class HomePresenterImp extends BasePresenter implements IHomePresenter, H
 
     @Override
     public void onSuccess(Hot hot) {
-        homeView.hideRefresh();
+//        homeView.hideRefresh();
         homeView.onLoad(hot);
     }
 

@@ -76,7 +76,7 @@ public class DetailPresenterImp extends BasePresenter implements IDetailPresente
 
     @Override
     public void onGetData(ComicInfo info) {
-        detailView.hideProgress();
+//        detailView.hideProgress();
         detailView.onGetData(info);
     }
 

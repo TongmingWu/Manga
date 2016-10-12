@@ -61,6 +61,7 @@ public class DownloadTask implements IDownloadTask, Comparable {
                             this.unsubscribe();
                         } else {
                             Logger.d("存在");
+                            updateDownloadInfo();
                             info.setPosition(infoList.get(0).getPosition());
                             this.unsubscribe();
                         }
@@ -71,11 +72,14 @@ public class DownloadTask implements IDownloadTask, Comparable {
     @Override
     public void waitTask() {
         setStatus(DownloadInfo.WAIT);
+        updateDownloadInfo();
         queue.onTaskWait(info);
     }
 
     @Override
     public void startTask() {
+        setStatus(DownloadInfo.DOWNLOAD);
+        updateDownloadInfo();
         ApiManager.getInstance()
                 .getComicPage(info.getChapter_url())
                 .map(new Func1<ComicPage, List<String>>() {
@@ -102,9 +106,8 @@ public class DownloadTask implements IDownloadTask, Comparable {
                     public void onNext(List<String> list) {
                         if (status != DownloadInfo.WAIT || status != DownloadInfo.FAIL || status != DownloadInfo.PAUSE) {
                             info.setTotal(list.size());
-                            setStatus(DownloadInfo.DOWNLOAD);
+//                            setStatus(DownloadInfo.DOWNLOAD);
                             updateDownloadInfo();
-                            Logger.d("size = " + list.size());
                             imgs = list;
                             downloadImage();
                             queue.onTaskStart(info);
@@ -195,6 +198,7 @@ public class DownloadTask implements IDownloadTask, Comparable {
     @Override
     public void restartTask() {
         setStatus(DownloadInfo.DOWNLOAD);
+        updateDownloadInfo();
         queue.onTaskRestart(info);
     }
 

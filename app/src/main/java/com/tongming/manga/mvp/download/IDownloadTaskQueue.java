@@ -18,18 +18,6 @@ public interface IDownloadTaskQueue {
 
     void stopQueue();
 
-    void waitTask(int position);
-
-    void startTask(int position);
-
-    void pauseTask(int position);
-
-    void resumeTask(int position);
-
-    void stopTask(int position);
-
-    void restartTask(int position);
-
     void waitTask(DownloadInfo info);
 
     void startTask(DownloadInfo info);

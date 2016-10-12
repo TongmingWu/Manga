@@ -41,7 +41,7 @@
             android:gravity="center">
 
             <TextView
-                android:id="@+id/tv_select_all"
+                android:id="@+id/tv_control_all"
                 android:layout_width="120dp"
                 android:layout_height="40dp"
                 android:layout_marginRight="20dp"
@@ -51,12 +51,12 @@
                 android:textColor="@color/colorPrimary" />
 
             <TextView
-                android:id="@+id/tv_download"
+                android:id="@+id/tv_directory"
                 android:layout_width="120dp"
                 android:layout_height="40dp"
-                android:layout_alignBottom="@id/tv_select_all"
+                android:layout_alignBottom="@id/tv_control_all"
                 android:layout_marginLeft="20dp"
-                android:layout_toRightOf="@id/tv_select_all"
+                android:layout_toRightOf="@id/tv_control_all"
                 android:background="@drawable/btn_logon_bg"
                 android:gravity="center"
                 android:text="查看目录"

@@ -2,11 +2,11 @@ package com.tongming.manga.mvp.view.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -115,12 +115,16 @@ public class CategoryAdapter extends BaseAdapter {
         LinearLayout root;
         @BindView(R.id.tv_category)
         TextView tvCategory;
-        @BindView(R.id.iv_category)
-        ImageView ivCategory;
+        /*@BindView(R.id.iv_category)
+        ImageView ivCategory;*/
 
         public ViewHolder(View itemView) {
             this.itemView = itemView;
             ButterKnife.bind(this, itemView);
+            Drawable drawable = itemView.getContext().getDrawable(R.drawable.default_avatar);
+            drawable.setBounds(0, 0, (int) (drawable.getIntrinsicWidth() / 1.3f), (int) (drawable.getIntrinsicHeight() / 1.3f));
+            tvCategory.setCompoundDrawables(null, drawable, null, null);
+            tvCategory.setCompoundDrawablePadding(10);
         }
     }
 }

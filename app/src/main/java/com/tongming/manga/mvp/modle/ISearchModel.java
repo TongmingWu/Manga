@@ -6,7 +6,11 @@ import rx.Subscription;
  * Created by Tongming on 2016/8/11.
  */
 public interface ISearchModel {
-    Subscription getComicType(int select, int type, int page);
+    Subscription doSearch(int select, int type, int page);
 
     Subscription doSearch(String word, int page);
+
+    void recordSearch(String name, String url);
+
+    void querySearchRecord();
 }

@@ -31,7 +31,6 @@ public class DownloadConnection implements ServiceConnection {
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
-        Logger.d("连接成功");
         binder = (DownloadManager.DownloadBinder) service;
         manager = binder.getManager();
         switch (flag) {

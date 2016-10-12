@@ -4,10 +4,13 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.orhanobut.logger.Logger;
@@ -116,8 +119,16 @@ public class CollectionFragment extends BaseFragment implements ICollectView {
                         Intent intent = new Intent(getActivity(), ComicDetailActivity.class);
                         CollectedComic comic = comics.get(position);
                         String name = comic.getName();
-                        intent.putExtra("url", comic.getUrl()).putExtra("name", name.endsWith("漫画") ? name.replace("漫画", "") : name);
-                        startActivity(intent);
+                        intent.putExtra("url", comic.getUrl())
+                                .putExtra("name", name.endsWith("漫画") ? name.replace("漫画", "") : name)
+                                .putExtra("cover", comic.getCover());
+                        if (Build.VERSION.SDK_INT >= 20) {
+                            ImageView ivCover = (ImageView) view.findViewById(R.id.iv_cover);
+                            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), ivCover, getString(R.string.coverName));
+                            startActivity(intent, options.toBundle());
+                        } else {
+                            startActivity(intent);
+                        }
                     }
                 });
                 adapter.setOnItemLongClickListener(new RVComicAdapter.OnItemLongClickListener() {
@@ -148,7 +159,9 @@ public class CollectionFragment extends BaseFragment implements ICollectView {
         } else {
             this.comics.clear();
             this.comics.addAll(comicList);
-            adapter.notifyDataSetChanged();
+            if (adapter != null) {
+                adapter.notifyDataSetChanged();
+            }
         }
     }
 
