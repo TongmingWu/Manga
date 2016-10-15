@@ -8,7 +8,7 @@ import java.util.List;
  * Created by Tongming on 2016/8/11.
  */
 interface IPagePresenter {
-    void getPage(String chapterUrl);
+    void getPage(String source, String chapterUrl);
 
     void cacheImg(Context mContext, List<String> imgList, boolean isLast);
 }

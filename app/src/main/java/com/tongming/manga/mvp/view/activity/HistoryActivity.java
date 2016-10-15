@@ -64,33 +64,6 @@ public class HistoryActivity extends BaseActivity implements IHistoryView {
                         }).setNegativeButton("取消", null).show();
             }
         });
-        /*gvHistory.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(HistoryActivity.this, ComicDetailActivity.class);
-                HistoryComic comic = comics.get(position);
-                String name = comic.getName();
-                intent.putExtra("url", comic.getUrl()).putExtra("name", name.endsWith("漫画") ? name.replace("漫画", "") : name);
-                startActivity(intent);
-            }
-        });
-        gvHistory.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                new AlertDialog.Builder(HistoryActivity.this)
-                        .setTitle("注意")
-                        .setMessage("确定要删除" + comics.get(position).getName() + "吗?")
-                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                ((HistoryPresenterImp) presenter).deleteHistoryByName(HistoryActivity.this, comics.get(position).getName());
-                            }
-                        }).setNegativeButton("取消", null)
-                        .show();
-                return true;
-            }
-        });*/
-
     }
 
     private void initRecyclerView() {
@@ -108,6 +81,7 @@ public class HistoryActivity extends BaseActivity implements IHistoryView {
                 String name = comic.getName();
                 intent.putExtra("url", comic.getUrl())
                         .putExtra("name", name.endsWith("漫画") ? name.replace("漫画", "") : name)
+                        .putExtra("source", comic.getComic_source())
                         .putExtra("cover", comic.getCover());
                 if (Build.VERSION.SDK_INT >= 20) {
                     ImageView ivCover = (ImageView) view.findViewById(R.id.iv_cover);

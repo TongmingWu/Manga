@@ -129,6 +129,7 @@ public class PageActivity extends BaseActivity implements IPageView {
     private boolean isActionDown;
     private long downTime;
     private boolean isLoadNone;
+    private String source;
 
     @Override
     protected int getLayoutId() {
@@ -159,13 +160,14 @@ public class PageActivity extends BaseActivity implements IPageView {
         handler.postDelayed(runnable, 1000 * 60);      //时间定时器
         sp = getSharedPreferences("config", MODE_PRIVATE);
         isVertical = sp.getBoolean("isVertical", true);
+        source = getIntent().getStringExtra("source");
         setOrientation();     //进来时初始化横竖屏
         setWindowBright();
         initNetTime();
         if (!isFirstLoad) {
             isFirstLoad = true;
             presenter = new PagePresenterImp(this);
-            ((PagePresenterImp) presenter).getPage(getIntent().getStringExtra("url"));
+            ((PagePresenterImp) presenter).getPage(source, getIntent().getStringExtra("url"));
         }
         initRecycle();
         sbPage.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -361,7 +363,7 @@ public class PageActivity extends BaseActivity implements IPageView {
 
     private void loadPre() {
         if (!isLoadPre && !TextUtils.isEmpty(preUrl)) {
-            ((PagePresenterImp) presenter).getPage(preUrl);
+            ((PagePresenterImp) presenter).getPage(source, preUrl);
             Logger.d("开始加载上一话");
             isLoadPre = true;
         } else if (TextUtils.isEmpty(preUrl)) {
@@ -372,7 +374,7 @@ public class PageActivity extends BaseActivity implements IPageView {
     private void loadNext() {
         if (!TextUtils.isEmpty(nextUrl) && !isLoadNext && !isFirstLoad) {
             Logger.d("开始加载下一章");
-            ((PagePresenterImp) presenter).getPage(nextUrl);
+            ((PagePresenterImp) presenter).getPage(source, nextUrl);
             isLoadNext = true;
         } else if (TextUtils.isEmpty(nextUrl)) {
             //只显示一次

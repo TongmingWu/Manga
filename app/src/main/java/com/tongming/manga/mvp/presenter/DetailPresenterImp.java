@@ -24,9 +24,9 @@ public class DetailPresenterImp extends BasePresenter implements IDetailPresente
     }
 
     @Override
-    public void getDetail(String comicUrl) {
+    public void getDetail(String source, String comicUrl) {
         detailView.showProgress();
-        addSubscription(detailModel.getDetail(comicUrl));
+        addSubscription(detailModel.getDetail(source, comicUrl));
     }
 
     @Override

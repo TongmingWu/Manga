@@ -80,8 +80,7 @@ public class HomeFragment extends BaseFragment implements IHomeView {
         if (CommonUtil.getDeviceHeight(getActivity()) - CommonUtil.getScreenHeight(getContext()) > 0) {
             tvLine.setVisibility(View.VISIBLE);
         }
-        presenter = new HomePresenterImp(this);
-        ((HomePresenterImp) presenter).getData();
+        getData();
         refresh.setColorSchemeResources(R.color.colorPrimary);
         refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -106,6 +105,13 @@ public class HomeFragment extends BaseFragment implements IHomeView {
         rvRelease.addItemDecoration(new SpaceItemDecoration(CommonUtil.dip2px(getContext(), 10), true));
     }
 
+    public void getData() {
+        if (presenter == null) {
+            presenter = new HomePresenterImp(this);
+        }
+        ((HomePresenterImp) presenter).getData();
+    }
+
     @Override
     public void onLoad(final Hot hot) {
         this.hot = hot;
@@ -126,6 +132,7 @@ public class HomeFragment extends BaseFragment implements IHomeView {
                 Intent intent = new Intent(getActivity(), ComicDetailActivity.class);
                 intent.putExtra("url", comicUrl)
                         .putExtra("name", hot.getResult().getHot().get(position).getComic_name())
+                        .putExtra("source", hot.getResult().getHot().get(position).getComic_source())
                         .putExtra("cover", hot.getResult().getHot().get(position).getCover());
                 if (Build.VERSION.SDK_INT >= 20) {
                     ImageView ivCover = (ImageView) view.findViewById(R.id.iv_cover);
@@ -146,6 +153,7 @@ public class HomeFragment extends BaseFragment implements IHomeView {
                 Intent intent = new Intent(getActivity(), ComicDetailActivity.class);
                 intent.putExtra("url", comicUrl)
                         .putExtra("name", hot.getResult().getRecommend().get(position).getComic_name())
+                        .putExtra("source", hot.getResult().getRecommend().get(position).getComic_source())
                         .putExtra("cover", hot.getResult().getRecommend().get(position).getCover());
                 if (Build.VERSION.SDK_INT >= 20) {
                     ImageView ivCover = (ImageView) view.findViewById(R.id.iv_cover);
@@ -166,6 +174,7 @@ public class HomeFragment extends BaseFragment implements IHomeView {
                 Intent intent = new Intent(getActivity(), ComicDetailActivity.class);
                 intent.putExtra("url", comicUrl)
                         .putExtra("name", hot.getResult().getLocal().get(position).getComic_name())
+                        .putExtra("source", hot.getResult().getLocal().get(position).getComic_source())
                         .putExtra("cover", hot.getResult().getLocal().get(position).getCover());
                 if (Build.VERSION.SDK_INT >= 20) {
                     ImageView ivCover = (ImageView) view.findViewById(R.id.iv_cover);
@@ -186,6 +195,7 @@ public class HomeFragment extends BaseFragment implements IHomeView {
                 Intent intent = new Intent(getActivity(), ComicDetailActivity.class);
                 intent.putExtra("url", comicUrl)
                         .putExtra("name", hot.getResult().getRelease().get(position).getComic_name())
+                        .putExtra("source", hot.getResult().getRelease().get(position).getComic_source())
                         .putExtra("cover", hot.getResult().getRelease().get(position).getCover());
                 if (Build.VERSION.SDK_INT >= 20) {
                     ImageView ivCover = (ImageView) view.findViewById(R.id.iv_cover);
@@ -232,10 +242,11 @@ public class HomeFragment extends BaseFragment implements IHomeView {
         convenientBanner.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                String comicUrl = hot.getBanner().get(position).getComic_url();
+                Hot.BannerBean bean = hot.getBanner().get(position);
                 Intent intent = new Intent(getActivity(), ComicDetailActivity.class);
-                intent.putExtra("url", comicUrl);
-                intent.putExtra("name", hot.getBanner().get(position).getTitle());
+                intent.putExtra("url", bean.getComic_url());
+                intent.putExtra("source", bean.getComic_source());
+                intent.putExtra("name", bean.getTitle());
                 startActivity(intent);
             }
         });
@@ -244,12 +255,10 @@ public class HomeFragment extends BaseFragment implements IHomeView {
 
     @OnClick({R.id.rl_hot, R.id.rl_recommend, R.id.rl_local, R.id.rl_release})
     public void onClick(View view) {
-        int select = 0;
-        int page = 0;
+        int page = 1;
         int type;
         Intent intent = new Intent(getActivity(), SearchActivity.class);
-        intent.putExtra("select", select)
-                .putExtra("page", page);
+        intent.putExtra("page", page);
         switch (view.getId()) {
             /*
                 @param select = 0

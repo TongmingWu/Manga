@@ -1,4 +1,4 @@
-package com.tongming.manga.server;
+package com.tongming.manga;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -8,23 +8,15 @@ import android.os.Parcelable;
  * Date: 2016/9/7
  */
 
-public class DownloadInfo implements Parcelable, Comparable {
-
-    public static final int WAIT = 0;
-    public static final int DOWNLOAD = 1;
-    public static final int PAUSE = 2;
-    public static final int COMPLETE = 3;
-    public static final int STOP = 4;
-    public static final int FAIL = 5;
-
+public class DownloadInfo implements Parcelable {
     private int _id;
-    private String comic_id;
+    private int comic_id;
     private String comic_name;
     private String comic_url;
     private String chapter_name;
     private String chapter_url;
-    private String comic_source;
     private String cover;
+    private String comic_source;
     private int status;
     private int position;
     private int total;
@@ -39,11 +31,11 @@ public class DownloadInfo implements Parcelable, Comparable {
         return comic_source;
     }
 
-    public void setComic_id(String comic_id) {
+    public void setComic_id(int comic_id) {
         this.comic_id = comic_id;
     }
 
-    public String getComic_id() {
+    public int getComic_id() {
 
         return comic_id;
     }
@@ -138,7 +130,7 @@ public class DownloadInfo implements Parcelable, Comparable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(this._id);
-        dest.writeString(this.comic_id);
+        dest.writeInt(this.comic_id);
         dest.writeString(this.comic_name);
         dest.writeString(this.comic_url);
         dest.writeString(this.chapter_name);
@@ -150,26 +142,12 @@ public class DownloadInfo implements Parcelable, Comparable {
         dest.writeInt(this.create_time);
     }
 
-    public void readFromParcel(Parcel source) {
-        this._id = source.readInt();
-        this.comic_id = source.readString();
-        this.comic_name = source.readString();
-        this.comic_url = source.readString();
-        this.chapter_name = source.readString();
-        this.chapter_url = source.readString();
-        this.cover = source.readString();
-        this.status = source.readInt();
-        this.position = source.readInt();
-        this.total = source.readInt();
-        this.create_time = source.readInt();
-    }
-
     public DownloadInfo() {
     }
 
     protected DownloadInfo(Parcel in) {
         this._id = in.readInt();
-        this.comic_id = in.readString();
+        this.comic_id = in.readInt();
         this.comic_name = in.readString();
         this.comic_url = in.readString();
         this.chapter_name = in.readString();
@@ -181,7 +159,7 @@ public class DownloadInfo implements Parcelable, Comparable {
         this.create_time = in.readInt();
     }
 
-    public static final Parcelable.Creator<DownloadInfo> CREATOR = new Parcelable.Creator<DownloadInfo>() {
+    public static final Creator<DownloadInfo> CREATOR = new Creator<DownloadInfo>() {
         @Override
         public DownloadInfo createFromParcel(Parcel source) {
             return new DownloadInfo(source);
@@ -192,27 +170,4 @@ public class DownloadInfo implements Parcelable, Comparable {
             return new DownloadInfo[size];
         }
     };
-
-    @Override
-    public int compareTo(Object o) {
-        DownloadInfo info = (DownloadInfo) o;
-        return info.create_time - this.create_time;
-    }
-
-    @Override
-    public int hashCode() {
-        return chapter_url.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!(obj instanceof DownloadInfo)) {
-            throw new ClassCastException("类型异常");
-        }
-        DownloadInfo info = (DownloadInfo) obj;
-        return this.chapter_url.equals(info.chapter_url) && this.chapter_name.equals(info.chapter_name);
-    }
 }

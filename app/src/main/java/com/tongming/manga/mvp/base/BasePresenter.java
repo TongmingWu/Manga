@@ -1,5 +1,7 @@
 package com.tongming.manga.mvp.base;
 
+import com.orhanobut.logger.Logger;
+
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 
@@ -20,6 +22,7 @@ public class BasePresenter {
     public void clearSubscription() {
         if (compositeSubscription != null && compositeSubscription.isUnsubscribed()) {
             compositeSubscription.unsubscribe();
+            Logger.d("清除请求");
         }
     }
 }

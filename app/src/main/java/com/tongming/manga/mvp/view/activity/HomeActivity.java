@@ -2,6 +2,7 @@ package com.tongming.manga.mvp.view.activity;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -13,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -20,6 +22,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +32,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.orhanobut.logger.Logger;
 import com.tongming.manga.R;
 import com.tongming.manga.cusview.GlideGircleTransform;
+import com.tongming.manga.mvp.api.ApiManager;
 import com.tongming.manga.mvp.base.BaseActivity;
 import com.tongming.manga.mvp.base.BaseFragment;
 import com.tongming.manga.mvp.bean.User;
@@ -38,6 +42,7 @@ import com.tongming.manga.mvp.presenter.SystemPresenterImp;
 import com.tongming.manga.mvp.view.fragment.CategoryFragment;
 import com.tongming.manga.mvp.view.fragment.CollectionFragment;
 import com.tongming.manga.mvp.view.fragment.HomeFragment;
+import com.tongming.manga.util.CommonUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,14 +77,19 @@ public class HomeActivity extends BaseActivity implements ISystemView, ICacheVie
     DrawerLayout drawerLayout;
     @BindView(R.id.rl_bar)
     RelativeLayout rlBar;
+    @BindView(R.id.ll_source)
+    LinearLayout llSource;
+    @BindView(R.id.tv_source)
+    TextView tvSource;
     private SharedPreferences sp;
     private Button btnRegister;
     private ImageView navAvatar;
     private TextView tvUserName;
     private CachePresenterImp cachePresenterImp;
     private List<BaseFragment> fragments;
+    private AlertDialog sourceDialog;
 
-    @OnClick({R.id.iv_nav, R.id.iv_avatar})
+    @OnClick({R.id.iv_nav, R.id.iv_avatar, R.id.ll_source})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_nav:
@@ -87,6 +97,9 @@ public class HomeActivity extends BaseActivity implements ISystemView, ICacheVie
                 break;
             case R.id.iv_avatar:
                 drawerLayout.openDrawer(Gravity.LEFT);
+                break;
+            case R.id.ll_source:
+                changeSource();
                 break;
         }
     }
@@ -123,6 +136,26 @@ public class HomeActivity extends BaseActivity implements ISystemView, ICacheVie
                 return fragments.get(position);
             }
         });
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                CommonUtil.hideSoftInput(HomeActivity.this);
+                if (position != 2) {
+                    CategoryFragment fragment = (CategoryFragment) fragments.get(2);
+                    fragment.hideHint();
+                }
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
         tab.setupWithViewPager(viewPager);
         for (int i = 0; i < tabPics.length; i++) {
             tab.getTabAt(i).setIcon(tabPics[i]);
@@ -154,6 +187,15 @@ public class HomeActivity extends BaseActivity implements ISystemView, ICacheVie
         presenter = new SystemPresenterImp(this);
         cachePresenterImp = new CachePresenterImp(this);
         initDrawerView();
+        String[] shortArray = getResources().getStringArray(R.array.source_short);
+        String[] allArray = getResources().getStringArray(R.array.source_all);
+        String source = sp.getString("source", ApiManager.SOURCE_DMZJ);
+        for (int index = 0; index < shortArray.length; index++) {
+            if (source.equals(shortArray[index])) {
+                tvSource.setText(allArray[index]);
+                break;
+            }
+        }
     }
 
     private void initDrawerView() {
@@ -244,7 +286,6 @@ public class HomeActivity extends BaseActivity implements ISystemView, ICacheVie
     public void onReadUser() {
         User user = User.getInstance();
         initAvatar();
-//        Logger.d("本地读取用户信息成功");
         getUser(user.getToken());
     }
 
@@ -285,6 +326,36 @@ public class HomeActivity extends BaseActivity implements ISystemView, ICacheVie
                 break;
         }
         initUser();
+    }
+
+    private void changeSource() {
+        int sourcePos = 0;
+        final String[] array = getResources().getStringArray(R.array.source_short);
+        String source = sp.getString("source", ApiManager.SOURCE_DMZJ);
+        for (int index = 0; index < array.length; index++) {
+            if (source.equals(array[index])) {
+                sourcePos = index;
+                break;
+            }
+        }
+        final int finalSourcePos = sourcePos;
+        sourceDialog = new AlertDialog.Builder(this)
+                .setTitle("请选择数据源")
+                .setSingleChoiceItems(R.array.source_all, sourcePos, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (which != finalSourcePos) {
+                            sp.edit().putString("source", array[which]).apply();
+                            //刷新HomeFragment和CategoryFragment
+                            tvSource.setText(getResources().getStringArray(R.array.source_all)[which]);
+                            ((HomeFragment) fragments.get(1)).getData();
+                            ((CategoryFragment) fragments.get(2)).getCategory();
+                        }
+                        sourceDialog.dismiss();
+                    }
+                })
+                .setNegativeButton("取消", null)
+                .show();
     }
 
     private void clearCache() {

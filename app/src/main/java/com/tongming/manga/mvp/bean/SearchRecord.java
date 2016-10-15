@@ -9,7 +9,17 @@ public class SearchRecord {
 
     private String comic_name;
     private String comic_url;
+    private String comic_source;
     private int last_time;
+
+    public void setComic_source(String comic_source) {
+        this.comic_source = comic_source;
+    }
+
+    public String getComic_source() {
+
+        return comic_source;
+    }
 
     public void setLast_time(int last_time) {
         this.last_time = last_time;

@@ -7,10 +7,20 @@ public class ComicCard {
     private String comic_url;
     private String newest_chapter_date;
     private String comic_author;
+    private String comic_source;
     private String cover;
     private String comic_name;
     private String newest_chapter;
     private String comic_id;
+
+    public void setComic_source(String comic_source) {
+        this.comic_source = comic_source;
+    }
+
+    public String getComic_source() {
+
+        return comic_source;
+    }
 
     public void setComic_id(String comic_id) {
         this.comic_id = comic_id;

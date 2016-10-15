@@ -121,6 +121,7 @@ public class CollectionFragment extends BaseFragment implements ICollectView {
                         String name = comic.getName();
                         intent.putExtra("url", comic.getUrl())
                                 .putExtra("name", name.endsWith("漫画") ? name.replace("漫画", "") : name)
+                                .putExtra("source", comic.getComic_source())
                                 .putExtra("cover", comic.getCover());
                         if (Build.VERSION.SDK_INT >= 20) {
                             ImageView ivCover = (ImageView) view.findViewById(R.id.iv_cover);

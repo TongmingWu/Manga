@@ -2,6 +2,7 @@ package com.tongming.manga.mvp.db;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+
 import com.tongming.manga.server.DownloadInfo;
 
 import rx.functions.Func1;
@@ -20,6 +21,7 @@ class DownloadTable {
     static final String COMIC_URL = "comic_url";
     static final String CHAPTER_NAME = "chapter_name";
     static final String CHAPTER_URL = "chapter_url";
+    static final String COMIC_SOURCE = "comic_source";
     static final String COVER = "cover";
     static final String STATUS = "status";
     static final String POSITION = "position";  //当前下载页
@@ -31,6 +33,7 @@ class DownloadTable {
             + COMIC_ID + " TEXT,"
             + COMIC_NAME + " TEXT,"
             + COMIC_URL + " TEXT,"
+            + COMIC_SOURCE + " TEXT,"
             + CHAPTER_NAME + " TEXT,"
             + CHAPTER_URL + " TEXT,"
             + COVER + " TEXT,"
@@ -48,6 +51,7 @@ class DownloadTable {
         values.put(CHAPTER_NAME, info.getChapter_name());
         values.put(CHAPTER_URL, info.getChapter_url());
         values.put(COVER, info.getCover());
+        values.put(COMIC_SOURCE, info.getComic_source());
         values.put(STATUS, info.getStatus());
         values.put(POSITION, info.getPosition());
         values.put(TOTAL, info.getTotal());
@@ -63,6 +67,7 @@ class DownloadTable {
             info.setComic_id(cursor.getString(cursor.getColumnIndex(COMIC_ID)));
             info.setComic_url(cursor.getString(cursor.getColumnIndex(COMIC_URL)));
             info.setChapter_name(cursor.getString(cursor.getColumnIndex(CHAPTER_NAME)));
+            info.setComic_source(cursor.getString(cursor.getColumnIndex(COMIC_SOURCE)));
             info.setChapter_url(cursor.getString(cursor.getColumnIndex(CHAPTER_URL)));
             info.setCover(cursor.getString(cursor.getColumnIndex(COVER)));
             info.setStatus(cursor.getInt(cursor.getColumnIndex(STATUS)));

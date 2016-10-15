@@ -13,10 +13,19 @@ public class CollectedComic implements Serializable {
     private String type;
     private int status;
     private long lastTime;
+    private String comic_source;
     private String url;
     private String comic_id;
     private String cover;
 
+
+    public void setComic_source(String comic_source) {
+        this.comic_source = comic_source;
+    }
+
+    public String getComic_source() {
+        return comic_source;
+    }
 
     public void setComic_id(String comic_id) {
         this.comic_id = comic_id;

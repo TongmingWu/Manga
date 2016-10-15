@@ -24,9 +24,9 @@ public class PagePresenterImp extends BasePresenter implements IPagePresenter, P
     }
 
     @Override
-    public void getPage(String chapterUrl) {
+    public void getPage(String source, String chapterUrl) {
         pageView.showProgress();
-        addSubscription(pageModel.getPage(chapterUrl));
+        addSubscription(pageModel.getPage(source, chapterUrl));
     }
 
     @Override

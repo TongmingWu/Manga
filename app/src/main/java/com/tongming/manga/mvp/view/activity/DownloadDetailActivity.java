@@ -158,6 +158,7 @@ public class DownloadDetailActivity extends BaseActivity implements IQueryDownlo
                             //跳转到PageActivity
                             Intent intent = new Intent(DownloadDetailActivity.this, PageActivity.class);
                             intent.putExtra("url", info.getChapter_url());
+                            intent.putExtra("source", info.getComic_source());
                             startActivity(intent);
                             break;
                     }

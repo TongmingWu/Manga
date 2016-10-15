@@ -2,15 +2,18 @@ package com.tongming.manga.mvp.view.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.tongming.manga.R;
+import com.tongming.manga.cusview.GlideGircleTransform;
+import com.tongming.manga.mvp.bean.Category;
 import com.tongming.manga.mvp.view.activity.SearchActivity;
 
 import java.util.List;
@@ -29,6 +32,8 @@ public class CategoryAdapter extends BaseAdapter {
     private Context mContext;
     private SparseArray<String> array;
 
+    private List<Category.CategoryBean> beanList;
+
     public CategoryAdapter(List<Integer> picList, List<String> nameList, List<Integer> typeList, Context mContext) {
         this.picList = picList;
         this.nameList = nameList;
@@ -41,20 +46,19 @@ public class CategoryAdapter extends BaseAdapter {
         this.array = array;
     }
 
+    public CategoryAdapter(List<Category.CategoryBean> beanList, Context mContext) {
+        this.beanList = beanList;
+        this.mContext = mContext;
+    }
+
     @Override
     public int getCount() {
-        if (array == null) {
-            return nameList.size();
-        }
-        return array.size();
+        return beanList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        if (array == null) {
-            return nameList.get(position);
-        }
-        return array.get(position);
+        return beanList.get(position);
     }
 
     @Override
@@ -72,40 +76,27 @@ public class CategoryAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        /*Glide.with(mContext)
-                .load(picList.get(position))
-                .into(holder.ivCategory);*/
-        if (array == null) {
-            holder.tvCategory.setText(nameList.get(position));
-            holder.root.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int type = typeList.get(position);
-                    int page = 0;
-                    int select = typeList.size() < 10 ? 0 : 1;
-                    Intent intent = new Intent(mContext, SearchActivity.class);
-                    intent.putExtra("type", type)
-                            .putExtra("page", page)
-                            .putExtra("name", nameList.get(position));
-                    mContext.startActivity(intent);
-                }
-            });
-        } else {
-            holder.tvCategory.setText(array.get(position + 1));
-            holder.root.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int type = 35 - position;
-                    int page = 0;
-                    Intent intent = new Intent(mContext, SearchActivity.class);
-                    intent.putExtra("type", type)
-                            .putExtra("page", page)
-                            .putExtra("select", 0)
-                            .putExtra("name", array.get(position + 1));
-                    mContext.startActivity(intent);
-                }
-            });
+        final Category.CategoryBean bean = beanList.get(position);
+        holder.tvCategory.setText(bean.getTitle());
+        if (!bean.getCover().isEmpty()) {
+            Glide.with(mContext)
+                    .load(bean.getCover())
+                    .placeholder(R.drawable.default_avatar)
+                    .transform(new GlideGircleTransform(mContext))
+                    .into(holder.ivCategory);
         }
+        holder.root.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int type = bean.getCid();
+                int page = 1;
+                Intent intent = new Intent(mContext, SearchActivity.class);
+                intent.putExtra("type", type)
+                        .putExtra("page", page)
+                        .putExtra("name", bean.getTitle());
+                mContext.startActivity(intent);
+            }
+        });
         return convertView;
     }
 
@@ -115,16 +106,17 @@ public class CategoryAdapter extends BaseAdapter {
         LinearLayout root;
         @BindView(R.id.tv_category)
         TextView tvCategory;
-        /*@BindView(R.id.iv_category)
-        ImageView ivCategory;*/
+        @BindView(R.id.iv_category)
+        ImageView ivCategory;
+
 
         public ViewHolder(View itemView) {
             this.itemView = itemView;
             ButterKnife.bind(this, itemView);
-            Drawable drawable = itemView.getContext().getDrawable(R.drawable.default_avatar);
+            /*Drawable drawable = itemView.getContext().getDrawable(R.drawable.default_avatar);
             drawable.setBounds(0, 0, (int) (drawable.getIntrinsicWidth() / 1.3f), (int) (drawable.getIntrinsicHeight() / 1.3f));
             tvCategory.setCompoundDrawables(null, drawable, null, null);
-            tvCategory.setCompoundDrawablePadding(10);
+            tvCategory.setCompoundDrawablePadding(10);*/
         }
     }
 }

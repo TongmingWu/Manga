@@ -10,7 +10,7 @@ import rx.Subscription;
  * Created by Tongming on 2016/8/11.
  */
 public interface IDetailModel {
-    Subscription getDetail(String comicUrl);
+    Subscription getDetail(String source, String comicUrl);
 
     void addHistory(Context context, ComicInfo info, String historyName, String historyUrl);
 

@@ -3,6 +3,7 @@ package com.tongming.manga.mvp.modle;
 import com.orhanobut.logger.Logger;
 import com.tongming.manga.mvp.api.ApiManager;
 import com.tongming.manga.mvp.base.BaseApplication;
+import com.tongming.manga.mvp.bean.Category;
 import com.tongming.manga.mvp.bean.Search;
 import com.tongming.manga.mvp.bean.SearchRecord;
 import com.tongming.manga.mvp.db.DBManager;
@@ -27,8 +28,33 @@ public class SearchModel implements ISearchModel {
     }
 
     @Override
-    public Subscription doSearch(int select, int type, int page) {
-        return ApiManager.getInstance().getComicType(select, type, page)
+    public Subscription getCategory() {
+        return ApiManager.getInstance()
+                .getCategory()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Subscriber<Category>() {
+                    @Override
+                    public void onCompleted() {
+                        this.unsubscribe();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        onSearchListener.onFail(e);
+                    }
+
+                    @Override
+                    public void onNext(Category category) {
+                        Logger.d("获取分类成功");
+                        onSearchListener.onGetCateGory(category);
+                    }
+                });
+    }
+
+    @Override
+    public Subscription doSearch(int type, int page) {
+        return ApiManager.getInstance().getComicType(type, page)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<Search>() {
@@ -68,16 +94,15 @@ public class SearchModel implements ISearchModel {
     }
 
     @Override
-    public void recordSearch(final String name, final String url) {
+    public void recordSearch(final SearchRecord record) {
         final DBManager manager = new DBManager(BaseApplication.getContext());
-        manager.querySearchRecord(url)
+        manager.querySearchRecord(record.getComic_url())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<List<SearchRecord>>() {
                     @Override
                     public void onCompleted() {
                         this.unsubscribe();
-                        manager.closeDB();
                     }
 
                     @Override
@@ -90,11 +115,12 @@ public class SearchModel implements ISearchModel {
                     public void onNext(List<SearchRecord> recordList) {
                         if (recordList.size() > 0) {
                             Logger.d("更新搜索记录");
-                            manager.updateSearchRecord(name, url);
+                            manager.updateSearchRecord(record);
                         } else {
                             Logger.d("插入搜索记录");
-                            manager.insertSearchRecord(name, url);
+                            manager.insertSearchRecord(record);
                         }
+                        this.unsubscribe();
                         manager.closeDB();
                     }
                 });
@@ -121,6 +147,8 @@ public class SearchModel implements ISearchModel {
 
     public interface onSearchListener {
         void onSuccess(Search search);
+
+        void onGetCateGory(Category category);
 
         void onQuery(List<SearchRecord> recordList);
 

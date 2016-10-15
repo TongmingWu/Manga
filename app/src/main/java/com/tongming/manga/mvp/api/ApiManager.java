@@ -1,10 +1,12 @@
 package com.tongming.manga.mvp.api;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
 import com.tongming.manga.mvp.base.BaseApplication;
+import com.tongming.manga.mvp.bean.Category;
 import com.tongming.manga.mvp.bean.ComicInfo;
 import com.tongming.manga.mvp.bean.ComicPage;
 import com.tongming.manga.mvp.bean.Hot;
@@ -46,6 +48,9 @@ public class ApiManager {
     public static final String APP_ID = "Rp2mOsDSVkDoN5E4hbJEhlig-gzGzoHsz";
     public static final String APP_KEY = "ri3VwT0ULLOqxtdjMPkhkgla";
 
+    public static final String SOURCE_DMZJ = "dmzj";
+    public static final String SOURCE_CC = "cc";
+
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     //短缓存有效期为120秒钟
@@ -58,6 +63,9 @@ public class ApiManager {
     private static ApiManager instance;
     private ApiService apiService;
 
+    private static String source;
+    private static SharedPreferences sp;
+
     private ApiManager() {
         initOkHttpClient();
 
@@ -68,6 +76,9 @@ public class ApiManager {
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build();
         apiService = retrofit.create(ApiService.class);
+
+        sp = BaseApplication.getContext().getSharedPreferences("config", Context.MODE_PRIVATE);
+        source = sp.getString("source", SOURCE_DMZJ);
     }
 
     public static ApiManager getInstance() {
@@ -78,6 +89,7 @@ public class ApiManager {
                 }
             }
         }
+        source = sp.getString("source", SOURCE_DMZJ);
         return instance;
     }
 
@@ -110,7 +122,8 @@ public class ApiManager {
                 return originalResponse.newBuilder()
                         .header("Cache-Control", cacheControl)
                         .addHeader("App-Version", versionCode + "")
-                        .removeHeader("Pragma").build();
+                        .removeHeader("Pragma")
+                        .build();
             } else {
                 return originalResponse.newBuilder()
                         .header("Cache-Control", "public, only-if-cached, max-stale=" + CACHE_STALE_SHORT)
@@ -140,23 +153,27 @@ public class ApiManager {
     }
 
     public Observable<Hot> getHot() {
-        return apiService.getHot();
+        return apiService.getHot(source);
     }
 
-    public Observable<ComicInfo> getComicInfo(String comicUrl) {
-        return apiService.getComicInfo(comicUrl);
+    public Observable<ComicInfo> getComicInfo(String source, String comicUrl) {
+        return apiService.getComicInfo(source, comicUrl);
     }
 
-    public Observable<ComicPage> getComicPage(String chapterUrl) {
-        return apiService.getComicPage(chapterUrl);
+    public Observable<ComicPage> getComicPage(String source, String chapterUrl) {
+        return apiService.getComicPage(source, chapterUrl);
     }
 
-    public Observable<Search> getComicType(int select, int type, int page) {
-        return apiService.getComicType(type, page);
+    public Observable<Search> getComicType(int type, int page) {
+        return apiService.getComicType(source, type, page);
+    }
+
+    public Observable<Category> getCategory() {
+        return apiService.getCategory(source);
     }
 
     public Observable<Search> doSearch(String word, int page) {
-        return apiService.doSearch(word, page);
+        return apiService.doSearch(source, word, page);
     }
 
     public Observable<Result> requestSms(RequestBody body) {

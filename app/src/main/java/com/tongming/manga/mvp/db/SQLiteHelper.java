@@ -12,7 +12,7 @@ import com.orhanobut.logger.Logger;
 public class SQLiteHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "comic.db";
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 2;
 
     public SQLiteHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);

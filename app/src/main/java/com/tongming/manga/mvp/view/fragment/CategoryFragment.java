@@ -21,6 +21,7 @@ import com.orhanobut.logger.Logger;
 import com.tongming.manga.R;
 import com.tongming.manga.cusview.CusListView;
 import com.tongming.manga.mvp.base.BaseFragment;
+import com.tongming.manga.mvp.bean.Category;
 import com.tongming.manga.mvp.bean.ComicCard;
 import com.tongming.manga.mvp.bean.Search;
 import com.tongming.manga.mvp.bean.SearchRecord;
@@ -33,6 +34,7 @@ import com.tongming.manga.mvp.view.adapter.SearchAdapter;
 import com.tongming.manga.util.CommonUtil;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -59,6 +61,9 @@ public class CategoryFragment extends BaseFragment implements ISearchView {
     private List<SearchRecord> result = new ArrayList<>();
     private boolean isQueryRecord;
 
+    private static final int SEARCH_NET = 0;
+    private static final int SEARCH_LOCAL = 1;
+
     @Override
     protected int getLayoutId() {
         return R.layout.fragment_category;
@@ -67,7 +72,8 @@ public class CategoryFragment extends BaseFragment implements ISearchView {
     @Override
     protected void initView() {
 //        initGridView();
-        initNewGV();
+//        initNewGV();
+        getCategory();
         slContent.setOnScrollChangeListener(new View.OnScrollChangeListener() {
             @Override
             public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
@@ -129,7 +135,11 @@ public class CategoryFragment extends BaseFragment implements ISearchView {
                 SearchRecord card = result.get(position);
                 intent.putExtra("url", card.getComic_url());
                 intent.putExtra("name", card.getComic_name());
-                ((SearchPresenterImp) presenter).recordSearch(card.getComic_name(), card.getComic_url());
+                SearchRecord record = new SearchRecord();
+                record.setComic_source(card.getComic_source());
+                record.setComic_name(card.getComic_name());
+                record.setComic_url(card.getComic_url());
+                ((SearchPresenterImp) presenter).recordSearch(record);
                 startActivity(intent);
                 etSearch.setText(card.getComic_name());
                 lvHint.setVisibility(View.GONE);
@@ -137,18 +147,27 @@ public class CategoryFragment extends BaseFragment implements ISearchView {
         });
     }
 
+    public void getCategory() {
+        if (presenter == null) {
+            presenter = new SearchPresenterImp(this);
+        }
+        ((SearchPresenterImp) presenter).getCategory();
+    }
+
     /**
      * 实时更新关键词的搜索结果
+     *
+     * @param word 关键词
      */
     private void editHint(String word) {
         //搜索结果最多显示5个
         if (presenter == null) {
             presenter = new SearchPresenterImp(this);
         }
+        presenter.clearSubscription();
         if (!TextUtils.isEmpty(word)) {
             //进行搜索
             Logger.d("搜索:" + word);
-            presenter.clearSubscription();
             ((SearchPresenterImp) presenter).doSearch(word);
         } else {
             //显示历史记录
@@ -233,26 +252,41 @@ public class CategoryFragment extends BaseFragment implements ISearchView {
         gvNormalCategory.setAdapter(new CategoryAdapter(normalPicList, normalNameList, normalTypeList, getActivity()));
     }
 
+    public void hideHint() {
+        if (lvHint != null) {
+            lvHint.setVisibility(View.GONE);
+        }
+    }
+
     @Override
     public void onStop() {
         super.onStop();
         isSearch = false;
+        hideHint();
+    }
+
+    @Override
+    public void onGetCategory(Category category) {
+        gvSpecialCategory.setAdapter(new CategoryAdapter(category.getCategory(), getActivity()));
     }
 
     @Override
     public void onSuccess(Search search) {
-        parserResult(search.getResult(), 0);
+        parserResult(search.getResult(), SEARCH_NET);
     }
 
     @Override
     public void onQuery(List<SearchRecord> recordList) {
         isQueryRecord = false;
-        parserResult(recordList, 1);
+        parserResult(recordList, SEARCH_LOCAL);
     }
 
     private void parserResult(List<?> list, int type) {
         if (list.size() > 0) {
-            if (type == 0) {
+            if (result != null) {
+                result.clear();
+            }
+            if (type == SEARCH_NET) {
                 List<ComicCard> cardList = (List<ComicCard>) list;
                 for (ComicCard card : cardList) {
                     SearchRecord record = new SearchRecord();
@@ -261,7 +295,7 @@ public class CategoryFragment extends BaseFragment implements ISearchView {
                     result.add(record);
                 }
             } else {
-                result = (List<SearchRecord>) list;
+                result.addAll((Collection<? extends SearchRecord>) list);
             }
             if (adapter == null) {
                 adapter = new SearchAdapter(result, getContext());
@@ -286,7 +320,7 @@ public class CategoryFragment extends BaseFragment implements ISearchView {
     }
 
     @Override
-    public void onFail() {
-
+    public void onFail(Throwable throwable) {
+        Logger.e(throwable.getMessage());
     }
 }

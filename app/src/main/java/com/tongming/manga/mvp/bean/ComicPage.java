@@ -25,9 +25,19 @@ public class ComicPage {
     private String next_chapter_url;
     private String current_chapter_url;
     private String chapter_name;
+    private String comic_source;
     private boolean prepare;
     private String message;
     private List<String> img_list;
+
+    public void setComic_source(String comic_source) {
+        this.comic_source = comic_source;
+    }
+
+    public String getComic_source() {
+
+        return comic_source;
+    }
 
     public boolean isNext() {
         return next;

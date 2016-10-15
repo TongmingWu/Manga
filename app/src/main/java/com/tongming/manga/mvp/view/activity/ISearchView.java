@@ -1,5 +1,6 @@
 package com.tongming.manga.mvp.view.activity;
 
+import com.tongming.manga.mvp.bean.Category;
 import com.tongming.manga.mvp.bean.Search;
 import com.tongming.manga.mvp.bean.SearchRecord;
 
@@ -13,9 +14,11 @@ public interface ISearchView {
 
     void onQuery(List<SearchRecord> recordList);
 
+    void onGetCategory(Category category);
+
     void showProgress();
 
     void hideProgress();
 
-    void onFail();
+    void onFail(Throwable throwable);
 }

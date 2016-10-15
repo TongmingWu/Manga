@@ -10,7 +10,7 @@ import rx.Subscription;
  * Created by Tongming on 2016/8/11.
  */
 public interface IPageModel {
-    Subscription getPage(String chapterUrl);
+    Subscription getPage(String source, String chapterUrl);
 
     Subscription cacheImg(Context mContext, List<String> imgList, boolean isLast);
 }

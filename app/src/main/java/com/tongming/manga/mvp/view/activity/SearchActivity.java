@@ -11,9 +11,11 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.orhanobut.logger.Logger;
 import com.tongming.manga.R;
 import com.tongming.manga.cusview.SpaceItemDecoration;
 import com.tongming.manga.mvp.base.BaseActivity;
+import com.tongming.manga.mvp.bean.Category;
 import com.tongming.manga.mvp.bean.ComicCard;
 import com.tongming.manga.mvp.bean.Search;
 import com.tongming.manga.mvp.bean.SearchRecord;
@@ -42,7 +44,6 @@ public class SearchActivity extends BaseActivity implements ISearchView {
     @BindView(R.id.pb_load_more)
     ProgressBar pbMore;*/
     private String word;
-    private int select;
     private int type;
     private List<ComicCard> comicCards;
     //    private ComicAdapter adapter;
@@ -63,13 +64,12 @@ public class SearchActivity extends BaseActivity implements ISearchView {
         presenter = new SearchPresenterImp(this);
         Intent intent = getIntent();
         word = intent.getStringExtra("word");
-        int page = intent.getIntExtra("page", 0);
+        int page = intent.getIntExtra("page", 1);
         if (word == null) {
-            select = intent.getIntExtra("select", 0);
             type = intent.getIntExtra("type", 1);
             String typeName = intent.getStringExtra("name");
             toolbar.setTitle(typeName);
-            ((SearchPresenterImp) presenter).doSearch(select, type, page);
+            ((SearchPresenterImp) presenter).doSearch(type, page);
         } else {
             ((SearchPresenterImp) presenter).doSearch(word, page);
             toolbar.setTitle("搜索: " + word);
@@ -111,6 +111,7 @@ public class SearchActivity extends BaseActivity implements ISearchView {
                 ComicCard card = comicCards.get(position);
                 intent.putExtra("url", card.getComic_url())
                         .putExtra("name", card.getComic_name())
+                        .putExtra("source", card.getComic_source())
                         .putExtra("cover", card.getCover());
                 ImageView ivCover = (ImageView) view.findViewById(R.id.iv_cover);
                 ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(SearchActivity.this, ivCover, getString(R.string.coverName));
@@ -145,7 +146,7 @@ public class SearchActivity extends BaseActivity implements ISearchView {
         tvMore.setTextColor(Color.BLACK);
         pbMore.setVisibility(View.VISIBLE);*/
         if (word == null) {
-            ((SearchPresenterImp) presenter).doSearch(select, type, requestPage);
+            ((SearchPresenterImp) presenter).doSearch(type, requestPage);
         } else {
             ((SearchPresenterImp) presenter).doSearch(word, requestPage);
         }
@@ -170,7 +171,12 @@ public class SearchActivity extends BaseActivity implements ISearchView {
     }
 
     @Override
-    public void onFail() {
+    public void onGetCategory(Category category) {
 
+    }
+
+    @Override
+    public void onFail(Throwable throwable) {
+        Logger.e(throwable.getMessage());
     }
 }

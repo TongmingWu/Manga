@@ -11,11 +11,20 @@ public class DownloadComic implements Comparable<DownloadComic> {
     private String name;
     private String cover;
     private int count;
+    private String comic_source;
     private String currentName;
     private int currentTotal;
     private int currentPosition;
     private int createTime;
 
+    public void setComic_source(String comic_source) {
+        this.comic_source = comic_source;
+    }
+
+    public String getComic_source() {
+
+        return comic_source;
+    }
 
     public void setComic_id(String comic_id) {
         this.comic_id = comic_id;

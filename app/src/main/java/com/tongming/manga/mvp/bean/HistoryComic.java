@@ -11,12 +11,22 @@ public class HistoryComic implements Comparable<HistoryComic> {
     private String type;
     private String area;
     private String url;
+    private String comic_source;
     private String historyName;
     private String historyUrl;
     private String cover;
     private long lastTime;
     private int status;
     private int chapterNum;
+
+    public void setComic_source(String comic_source) {
+        this.comic_source = comic_source;
+    }
+
+    public String getComic_source() {
+
+        return comic_source;
+    }
 
     public void setComic_id(String comic_id) {
         this.comic_id = comic_id;

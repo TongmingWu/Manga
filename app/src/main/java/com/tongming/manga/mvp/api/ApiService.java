@@ -1,5 +1,6 @@
 package com.tongming.manga.mvp.api;
 
+import com.tongming.manga.mvp.bean.Category;
 import com.tongming.manga.mvp.bean.ComicInfo;
 import com.tongming.manga.mvp.bean.ComicPage;
 import com.tongming.manga.mvp.bean.Hot;
@@ -32,32 +33,56 @@ interface ApiService {
     /*@GET("/cc")
     Observable<Hot> getHot();*/
 
-    @GET("/dmzj")
-    Observable<Hot> getHot();
+    /*@GET("/dmzj")
+    Observable<Hot> getHot();*/
+
+    @GET("/")
+    Observable<Hot> getHot(@Query("source") String source);
 
     /*@GET("/cc/comic/detail")
     Observable<ComicInfo> getComicInfo(@Query("comic_url") String comicUrl);*/
 
-    @GET("/dmzj/comic/detail")
-    Observable<ComicInfo> getComicInfo(@Query("comic_url") String comicUrl);
+    /*@GET("/dmzj/comic/detail")
+    Observable<ComicInfo> getComicInfo(@Query("comic_url") String comicUrl);*/
+
+    @GET("/comic/detail")
+    Observable<ComicInfo> getComicInfo(@Query("source") String source, @Query("comic_url") String comicUrl);
 
     /*@GET("/cc/comic/view")
     Observable<ComicPage> getComicPage(@Query("chapter_url") String chapterUrl);*/
 
-    @GET("/dmzj/comic/view")
-    Observable<ComicPage> getComicPage(@Query("chapter_url") String chapterUrl);
+    /*@GET("/dmzj/comic/view")
+    Observable<ComicPage> getComicPage(@Query("chapter_url") String chapterUrl);*/
+
+    @GET("/comic/view")
+    Observable<ComicPage> getComicPage(@Query("source") String source, @Query("chapter_url") String chapterUrl);
 
     /*@GET("/cc/comic/category")
-    Observable<Search> getComicType(@Query("select") int select, @Query("type") int type, @Query("page") int page);*/
+    Observable<Search> getComicType(@Query("type") int type, @Query("page") int page);*/
 
-    @GET("/dmzj/comic/category")
-    Observable<Search> getComicType(@Query("type") int type, @Query("page") int page);
+    /*@GET("/dmzj/comic/category")
+    Observable<Search> getComicType(@Query("type") int type, @Query("page") int page);*/
+
+    @GET("/comic/category")
+    Observable<Search> getComicType(@Query("source") String source, @Query("type") int type, @Query("page") int page);
+
+    /*@GET("/cc/comic/category")
+    Observable<Category> getCategory();*/
+
+    /*@GET("/dmzj/comic/category")
+    Observable<Category> getCategory();*/
+
+    @GET("/comic/category")
+    Observable<Category> getCategory(@Query("source") String source);
 
     /*@GET("/cc/search")
     Observable<Search> doSearch(@Query("word") String word, @Query("page") int page);*/
 
-    @GET("/dmzj/search")
-    Observable<Search> doSearch(@Query("word") String word, @Query("page") int page);
+    /*@GET("/dmzj/search")
+    Observable<Search> doSearch(@Query("word") String word, @Query("page") int page);*/
+
+    @GET("/search")
+    Observable<Search> doSearch(@Query("source") String source, @Query("word") String word, @Query("page") int page);
 
 
     @Headers("Content-Type:application/json")

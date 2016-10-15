@@ -19,6 +19,7 @@ public class HistoryTable {
     static final String COMIC_ID = "comic_id";
     static final String COLUMN_NAME = "name";
     static final String COLUMN_AUTHOR = "author";
+    static final String COLUMN_SOURCE = "source";
     static final String COLUMN_AREA = "area";
     static final String COLUMN_TYPE = "type";
     static final String COLUMN_URL = "url";
@@ -35,6 +36,7 @@ public class HistoryTable {
             + COMIC_ID + " TEXT,"
             + COLUMN_NAME + " TEXT,"
             + COLUMN_AUTHOR + " TEXT,"
+            + COLUMN_SOURCE + " TEXT,"
             + COLUMN_AREA + " TEXT,"
             + COLUMN_TYPE + " TEXT,"
             + COLUMN_URL + " VARCHAR(20),"
@@ -54,6 +56,7 @@ public class HistoryTable {
         values.put(COLUMN_AUTHOR, info.getComic_author());
         values.put(COLUMN_AREA, info.getComic_area());
         values.put(COLUMN_TYPE, info.getComic_type());
+        values.put(COLUMN_SOURCE, info.getComic_source());
         values.put(COLUMN_URL, info.getComic_url());
         values.put(COLUMN_CHAPTER_NUM, info.getChapter_list().size());
         values.put(COLUMN_STATUS, info.getStatus().contains("连载") ? 0 : 1);
@@ -81,6 +84,7 @@ public class HistoryTable {
             comic.setName(name);
             String comicId = cursor.getString(cursor.getColumnIndex(COMIC_ID));
             comic.setComic_id(comicId);
+            comic.setComic_source(cursor.getString(cursor.getColumnIndex(COLUMN_SOURCE)));
             String author = cursor.getString(cursor.getColumnIndex(COLUMN_AUTHOR));
             comic.setAuthor(author);
             String area = cursor.getString(cursor.getColumnIndex(COLUMN_AREA));

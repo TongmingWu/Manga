@@ -36,6 +36,7 @@ public class ComicInfo implements Parcelable {
     private String newest_chapter_date;
     private String comic_name;
     private String download_url;
+    private String comic_source;
     private String comic_area;
     private String desc;
     private String status;
@@ -59,6 +60,15 @@ public class ComicInfo implements Parcelable {
     public List<ComicCard> getSimilar_list() {
 
         return similar_list;
+    }
+
+    public void setComic_source(String comic_source) {
+        this.comic_source = comic_source;
+    }
+
+    public String getComic_source() {
+
+        return comic_source;
     }
 
     public int getCode() {

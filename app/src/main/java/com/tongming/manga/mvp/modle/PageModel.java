@@ -29,8 +29,8 @@ public class PageModel implements IPageModel {
     }
 
     @Override
-    public Subscription getPage(String chapterUrl) {
-        return ApiManager.getInstance().getComicPage(chapterUrl)
+    public Subscription getPage(String source, String chapterUrl) {
+        return ApiManager.getInstance().getComicPage(source, chapterUrl)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<ComicPage>() {
@@ -71,7 +71,7 @@ public class PageModel implements IPageModel {
 
                     @Override
                     public void onNext(String s) {
-                        if (!TextUtils.isEmpty(s)){
+                        if (!TextUtils.isEmpty(s)) {
                             HeaderGlide.downloadImage(mContext, s);
                         }
                     }

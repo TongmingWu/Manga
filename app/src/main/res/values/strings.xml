@@ -5,5 +5,13 @@
         <item>竖屏模式</item>
         <item>横屏模式</item>
     </string-array>
+    <string-array name="source_all">
+        <item>动漫之家</item>
+        <item>CC图库</item>
+    </string-array>
+    <string-array name="source_short">
+        <item>dmzj</item>
+        <item>cc</item>
+    </string-array>
     <string name="coverName">cover</string>
 </resources>

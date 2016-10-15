@@ -141,7 +141,17 @@ public class Hot {
         private String comic_id;
         private String img;
         private String comic_url;
+        private String comic_source;
         private String title;
+
+        public void setComic_source(String comic_source) {
+            this.comic_source = comic_source;
+        }
+
+        public String getComic_source() {
+
+            return comic_source;
+        }
 
         public String getComic_id() {
             return comic_id;

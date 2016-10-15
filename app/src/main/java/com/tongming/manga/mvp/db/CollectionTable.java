@@ -21,6 +21,7 @@ class CollectionTable {
     static final String COLUMN_AUTHOR = "author";
     static final String COLUMN_AREA = "area";
     static final String COLUMN_TYPE = "category";
+    static final String COLUMN_SOURCE = "source";
     static final String COLUMN_URL = "url";
     static final String COLUMN_STATUS = "status";
     static final String COLUMN_COVER = "cover";
@@ -36,6 +37,7 @@ class CollectionTable {
             + COLUMN_URL + " VARCHAR(50),"
             + COLUMN_STATUS + " INTEGER,"
             + COLUMN_COVER + " VARCHAR(120),"
+            + COLUMN_SOURCE + " TEXT,"
             + COLUMN_TIME + " INTEGER"
             + ")";
 
@@ -46,6 +48,7 @@ class CollectionTable {
         values.put(COMIC_ID, info.getComic_id());
         values.put(COLUMN_AUTHOR, info.getComic_author());
         values.put(COLUMN_AREA, info.getComic_area());
+        values.put(COLUMN_SOURCE, info.getComic_source());
         values.put(COLUMN_TYPE, info.getComic_type());
         values.put(COLUMN_URL, info.getComic_url());
         values.put(COLUMN_STATUS, info.getStatus().contains("连载") ? 0 : 1);
@@ -65,6 +68,7 @@ class CollectionTable {
             comic.setComic_id(comicId);
             String author = cursor.getString(cursor.getColumnIndex(COLUMN_AUTHOR));
             comic.setAuthor(author);
+            comic.setComic_source(cursor.getString(cursor.getColumnIndex(COLUMN_SOURCE)));
             String area = cursor.getString(cursor.getColumnIndex(COLUMN_AREA));
             comic.setArea(area);
             String category = cursor.getString(cursor.getColumnIndex(COLUMN_TYPE));

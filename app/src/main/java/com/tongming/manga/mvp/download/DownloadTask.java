@@ -81,7 +81,7 @@ public class DownloadTask implements IDownloadTask, Comparable {
         setStatus(DownloadInfo.DOWNLOAD);
         updateDownloadInfo();
         ApiManager.getInstance()
-                .getComicPage(info.getChapter_url())
+                .getComicPage(info.getComic_source(), info.getChapter_url())
                 .map(new Func1<ComicPage, List<String>>() {
                     @Override
                     public List<String> call(ComicPage comicPage) {

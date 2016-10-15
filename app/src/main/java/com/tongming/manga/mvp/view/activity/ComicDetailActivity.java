@@ -116,7 +116,7 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
         }
         if (TextUtils.isEmpty(cover)) {
             getData();
-        }else {
+        } else {
             getWindow().getSharedElementEnterTransition().addListener(new Transition.TransitionListener() {
                 @Override
                 public void onTransitionStart(Transition transition) {
@@ -160,7 +160,7 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
         }
         //读取已下载的信息
         new DownloadPresenterImp(ComicDetailActivity.this).queryDownloadInfo(ComicDetailActivity.this, name, DownloadInfo.COMPLETE);
-        ((DetailPresenterImp) presenter).getDetail(intent.getStringExtra("url"));
+        ((DetailPresenterImp) presenter).getDetail(intent.getStringExtra("source"), intent.getStringExtra("url"));
         slContent.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
             public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
@@ -225,6 +225,7 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Intent intent = new Intent(ComicDetailActivity.this, PageActivity.class);
                     intent.putExtra("url", comicInfo.getChapter_list().get(position).getChapter_url());
+                    intent.putExtra("source", comicInfo.getComic_source());
                     startActivityForResult(intent, REQUEST_CHAPTER_CODE);
                 }
             });

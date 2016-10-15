@@ -44,6 +44,34 @@
                     android:layout_centerHorizontal="true"
                     app:tabIndicatorColor="@android:color/white" />
 
+                <LinearLayout
+                    android:id="@+id/ll_source"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="5dp">
+
+
+                    <TextView
+                        android:id="@+id/tv_source"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="动漫之家"
+                        android:textColor="@android:color/white"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tv_change"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="1dp"
+                        android:text="[切换]"
+                        android:textColor="@android:color/white"
+                        android:textSize="14sp" />
+                </LinearLayout>
             </RelativeLayout>
 
         </android.support.design.widget.AppBarLayout>
@@ -59,8 +87,8 @@
         android:id="@+id/nav"
         android:layout_width="320dp"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
         android:layout_gravity="start"
+        android:fitsSystemWindows="true"
         app:headerLayout="@layout/head_draw"
         app:menu="@menu/menu_head" />
 </android.support.v4.widget.DrawerLayout>

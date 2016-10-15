@@ -36,8 +36,8 @@ public class DetailModel implements IDetailModel {
     }
 
     @Override
-    public Subscription getDetail(String comicUrl) {
-        return ApiManager.getInstance().getComicInfo(comicUrl)
+    public Subscription getDetail(String source, String comicUrl) {
+        return ApiManager.getInstance().getComicInfo(source, comicUrl)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<ComicInfo>() {
@@ -62,7 +62,7 @@ public class DetailModel implements IDetailModel {
     public void addHistory(Context context, final ComicInfo info, final String historyName, final String historyUrl) {
         DBManager manager = new DBManager(context);
         manager.openDB();
-        long state = manager.addHistory(info, historyName, historyUrl);
+        long state = manager.insertHistory(info, historyName, historyUrl);
         manager.closeDB();
         onGetDataListener.onAddHistoryCompleted(state);
         /*return DBManager.getInstance().queryHistoryByName(info.getComic_name())
@@ -184,6 +184,7 @@ public class DetailModel implements IDetailModel {
         int status = info.getStatus().contains("连载") ? 0 : 1;
         map.put("status", status + "");
         map.put("cover", info.getCover());
+        map.put("comic_source", info.getComic_source());
         JSONObject object = new JSONObject(map);
         RequestBody body = RequestBody.create(ApiManager.JSON, object.toString());
         return ApiManager.getInstance().addCollection(body)
@@ -197,6 +198,7 @@ public class DetailModel implements IDetailModel {
 
                     @Override
                     public void onError(Throwable e) {
+                        Logger.d("添加收藏失败");
                         onGetDataListener.onFail(e);
                     }
 
@@ -221,6 +223,7 @@ public class DetailModel implements IDetailModel {
 
                     @Override
                     public void onError(Throwable e) {
+                        Logger.d("读取收藏失败");
                         onGetDataListener.onFail(e);
                     }
 
