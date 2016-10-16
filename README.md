@@ -13,10 +13,29 @@
 * 阅读体验优化
 
 ### 首页预览
-<img src="https://github.com/TongmingWu/Manga/blob/master/screenshot/home_page_0.jpg?raw=true" width="280"/>
-<img src="https://github.com/TongmingWu/Manga/blob/master/screenshot/home_page_1.jpg?raw=true" width="280"/>
-<img src="https://github.com/TongmingWu/Manga/blob/master/screenshot/home_page_2,jpg?raw=true" width="280"/>
-<img src="https://github.com/TongmingWu/Manga/blob/master/screenshot/home_page_3,jpg?raw=true" width="280"/>
+<img src="https://github.com/TongmingWu/Manga/blob/master/screenshot/home_page_1.jpg?raw=true" width="200"/>
+<img src="https://github.com/TongmingWu/Manga/blob/master/screenshot/home_page_0.jpg?raw=true" width="200"/>
+<img src="https://github.com/TongmingWu/Manga/blob/master/screenshot/home_page_2.jpg?raw=true" width="200"/>
+<img src="https://github.com/TongmingWu/Manga/blob/master/screenshot/home_page_3.jpg?raw=true" width="200"/>
+
+### 漫画页面
+<img src="https://github.com/TongmingWu/Manga/blob/master/screenshot/comic_detail.jpg?raw=true" width="280"/>
+<img src="https://github.com/TongmingWu/Manga/blob/master/screenshot/comic_page.jpg?raw=true" width="280"/>
+<img src="https://github.com/TongmingWu/Manga/blob/master/screenshot/search.jpg?raw=true" width="280"/>
+
+### 历史记录
+<img src="https://github.com/TongmingWu/Manga/blob/master/screenshot/comic_history.jpg?raw=true" width="280"/>
+
+### 下载页面
+<img src="https://github.com/TongmingWu/Manga/blob/master/screenshot/download_manager.jpg?raw=true" width="280"/>
+<img src="https://github.com/TongmingWu/Manga/blob/master/screenshot/download_detail.jpg?raw=true" width="280"/>
+
+### 设置页面
+<img src="https://github.com/TongmingWu/Manga/blob/master/screenshot/setting.jpg?raw=true" width="280"/>
+<img src="https://github.com/TongmingWu/Manga/blob/master/screenshot/watch_setting.jpg?raw=true" width="280"/>
+
+### 个人中心
+<img src="https://github.com/TongmingWu/Manga/blob/master/screenshot/person_center.jpg?raw=true" width="280"/>
 
 ### MIT License
 
