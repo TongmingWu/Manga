@@ -1,8 +1,24 @@
 # Manga
-漫画阅读类APP,漫画来源利用爬虫获取
+**开源漫画阅读器，提供多个漫画来源。实现切换漫画来源、漫画推荐、漫画搜索、漫画收藏、漫画阅读、历史记录、缓存漫画
+等功能。**
 
-# MIT License
-***
+### 项目
+* 项目基于RxJava+Retrofit2+Glide+ButterKnife，结合MVP模式开发。
+* API由本人编写的Python项目提供，暂不提供源代码。
+* 本项目纯属学习交流使用，不得用于商业用途。
+
+### TODO
+* 下载功能完善(目前只是模拟下载过程)
+* 登录注册模块完善，提供第三方登录(QQ,微信)
+* 阅读体验优化
+
+### 首页预览
+<img src="https://github.com/TongmingWu/Manga/master/screenshot/home_page_0.jpg?raw=true"/>
+<img src="https://github.com/TongmingWu/Manga/master/screenshot/home_page_1.jpg?raw=true"/>
+<img src="https://github.com/TongmingWu/Manga/master/screenshot/home_page_2,jpg?raw=true"/>
+<img src="https://github.com/TongmingWu/Manga/master/screenshot/home_page_3,jpg?raw=true"/>
+
+### MIT License
 
 Copyright (c) 2016 TongmingWu
 
