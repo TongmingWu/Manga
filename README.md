@@ -13,10 +13,10 @@
 * 阅读体验优化
 
 ### 首页预览
-<img src="https://github.com/TongmingWu/Manga/master/screenshot/home_page_0.jpg?raw=true"/>
-<img src="https://github.com/TongmingWu/Manga/master/screenshot/home_page_1.jpg?raw=true"/>
-<img src="https://github.com/TongmingWu/Manga/master/screenshot/home_page_2,jpg?raw=true"/>
-<img src="https://github.com/TongmingWu/Manga/master/screenshot/home_page_3,jpg?raw=true"/>
+<img src="https://github.com/TongmingWu/Manga/blob/master/screenshot/home_page_0.jpg?raw=true"/>
+<img src="https://github.com/TongmingWu/Manga/blob/master/screenshot/home_page_1.jpg?raw=true"/>
+<img src="https://github.com/TongmingWu/Manga/blob/master/screenshot/home_page_2,jpg?raw=true"/>
+<img src="https://github.com/TongmingWu/Manga/blob/master/screenshot/home_page_3,jpg?raw=true"/>
 
 ### MIT License
 
