@@ -81,6 +81,8 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
     RelativeLayout rlCover;
     @BindView(R.id.iv_share)
     ImageView ivShare;
+    @BindView(R.id.tv_comic_source)
+    TextView tvSource;
     private ComicInfo comicInfo;
     private ChapterAdapter adapter;
     private List<ComicInfo.ChapterListBean> chapterList;
@@ -188,8 +190,15 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
         if (!TextUtils.isEmpty(area)) {
             tvComicType.setText("地区:  " + area);
         }
+        String[] allArray = getResources().getStringArray(R.array.source_all);
+        String[] shortArray = getResources().getStringArray(R.array.source_short);
+        for (int index = 0; index < allArray.length; index++) {
+            if (info.getComic_source().equals(shortArray[index])) {
+                tvSource.setText("漫画来源: " + allArray[index]);
+            }
+        }
         tvNewestChapter.setText(" 更新于 " + comicInfo.getNewest_chapter_date().split(" ")[0]);
-        tvDesc.setText("  " + comicInfo.getDesc());
+        tvDesc.setText("  " + comicInfo.getDesc().trim());
         tvSelect.setText("共" + comicInfo.getChapter_list().size() + "话");
         if (comicInfo.getChapter_list().size() == 0) {
             Toast.makeText(ComicDetailActivity.this, "此漫画不支持上架", Toast.LENGTH_SHORT).show();

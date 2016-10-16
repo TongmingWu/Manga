@@ -56,6 +56,7 @@
                 android:layout_height="160dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="90dp"
+                android:background="@drawable/bg_cover"
                 android:padding="3dp">
 
                 <ImageView
@@ -74,10 +75,10 @@
                 android:layout_alignTop="@id/rl_cover"
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="10dp"
-                android:textStyle="bold"
                 android:layout_toRightOf="@id/rl_cover"
                 android:textColor="@android:color/white"
                 android:textSize="16sp"
+                android:textStyle="bold"
                 tools:text="漫画名" />
 
             <TextView
@@ -106,8 +107,8 @@
                 android:layout_alignLeft="@id/tv_comic_name"
                 android:layout_below="@id/tv_comic_status"
                 android:layout_marginTop="5dp"
-                tools:text="地区:  未知"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"
+                tools:text="地区:  未知" />
 
             <ImageView
                 android:id="@+id/iv_fav"
@@ -151,10 +152,20 @@
                 android:src="@drawable/ic_share_pressed" />
 
             <TextView
+                android:id="@+id/tv_comic_source"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/rl_cover"
+                android:layout_marginLeft="12dp"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/normalText"
+                tools:text="漫画来源：" />
+
+            <TextView
                 android:id="@+id/tv_comic_desc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/rl_cover"
+                android:layout_below="@id/tv_comic_source"
                 android:layout_margin="8dp"
                 android:ellipsize="end"
                 android:maxLines="4"
