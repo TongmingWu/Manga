@@ -1,7 +1,5 @@
 package com.tongming.manga.mvp.modle;
 
-import android.content.Context;
-
 import com.tongming.manga.mvp.bean.HistoryComic;
 import com.tongming.manga.mvp.db.DBManager;
 
@@ -19,17 +17,14 @@ import rx.schedulers.Schedulers;
 public class HistoryModel implements IHistoryModel {
 
     private onQueryListener queryListener;
-    private Context mContext;
 
-    public HistoryModel(Context context, onQueryListener queryListener) {
-        mContext = context;
+    public HistoryModel(onQueryListener queryListener) {
         this.queryListener = queryListener;
     }
 
     @Override
-    public Subscription queryAllHistory(Context context) {
-        final DBManager manager = new DBManager(mContext);
-        manager.openDB();
+    public Subscription queryAllHistory() {
+        final DBManager manager = DBManager.getInstance();
         return manager.queryAllHistory()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -55,18 +50,24 @@ public class HistoryModel implements IHistoryModel {
     }
 
     @Override
-    public void deleteHistoryByName(Context context, String name) {
-        DBManager manager = new DBManager(mContext);
-        manager.openDB();
+    public void deleteHistoryByName(String name) {
+        DBManager manager = DBManager.getInstance();
         int state = manager.deleteHistoryByName(name);
         manager.closeDB();
-        queryListener.onDeleteByName(state);
+        queryListener.onDeleteByName(state, name);
     }
 
     @Override
-    public void deleteAllHistory(Context context) {
-        DBManager manager = new DBManager(mContext);
-        manager.openDB();
+    public void restoreHistory(HistoryComic comic) {
+        DBManager manager = DBManager.getInstance();
+        int state = (int) manager.insertHistory(comic);
+        manager.closeDB();
+        queryListener.onRestoreHistory(state);
+    }
+
+    @Override
+    public void deleteAllHistory() {
+        DBManager manager = DBManager.getInstance();
         int state = manager.deleteAllHistory();
         manager.closeDB();
         queryListener.onDeleteAll(state);
@@ -75,7 +76,9 @@ public class HistoryModel implements IHistoryModel {
     public interface onQueryListener {
         void onQueryAll(List<HistoryComic> comicList);
 
-        void onDeleteByName(int state);
+        void onDeleteByName(int state, String name);
+
+        void onRestoreHistory(int state);
 
         void onDeleteAll(int state);
 

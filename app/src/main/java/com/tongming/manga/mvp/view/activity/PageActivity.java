@@ -509,8 +509,7 @@ public class PageActivity extends BaseActivity implements IPageView {
         Toast.makeText(PageActivity.this, "获取图片失败", Toast.LENGTH_SHORT).show();
         isFirstLoad = false;
         rvPage.setVisibility(View.GONE);
-        Logger.d(throwable.getMessage());
-//        onBackPressed();
+        Logger.e(throwable.getMessage());
     }
 
     @Override

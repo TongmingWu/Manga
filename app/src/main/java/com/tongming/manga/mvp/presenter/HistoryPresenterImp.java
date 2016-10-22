@@ -3,7 +3,6 @@ package com.tongming.manga.mvp.presenter;
 import android.content.Context;
 
 import com.orhanobut.logger.Logger;
-import com.tongming.manga.mvp.base.BaseApplication;
 import com.tongming.manga.mvp.base.BasePresenter;
 import com.tongming.manga.mvp.bean.HistoryComic;
 import com.tongming.manga.mvp.modle.HistoryModel;
@@ -21,22 +20,27 @@ public class HistoryPresenterImp extends BasePresenter implements IHistoryPresen
 
     public HistoryPresenterImp(IHistoryView historyView) {
         this.historyView = historyView;
-        historyModel = new HistoryModel(BaseApplication.getContext(), this);
+        historyModel = new HistoryModel(this);
     }
 
     @Override
     public void queryAllHistory(Context context) {
-        addSubscription(historyModel.queryAllHistory(context));
+        addSubscription(historyModel.queryAllHistory());
     }
 
     @Override
     public void deleteHistoryByName(Context context, String name) {
-        historyModel.deleteHistoryByName(context, name);
+        historyModel.deleteHistoryByName(name);
+    }
+
+    @Override
+    public void restoreHistory(Context context, HistoryComic comic) {
+        historyModel.restoreHistory(comic);
     }
 
     @Override
     public void deleteAllHistory(Context context) {
-        historyModel.deleteAllHistory(context);
+        historyModel.deleteAllHistory();
     }
 
     @Override
@@ -45,8 +49,13 @@ public class HistoryPresenterImp extends BasePresenter implements IHistoryPresen
     }
 
     @Override
-    public void onDeleteByName(int state) {
-        historyView.onDeleteByName(state);
+    public void onDeleteByName(int state, String name) {
+        historyView.onDeleteByName(state, name);
+    }
+
+    @Override
+    public void onRestoreHistory(int state) {
+        historyView.onRestoreHistory(state);
     }
 
     @Override

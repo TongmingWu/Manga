@@ -60,7 +60,7 @@ public class DownloadManagerActivity extends BaseActivity implements IQueryDownl
     @Override
     protected void onResume() {
         super.onResume();
-        new DownloadPresenterImp(this).queryAllDownloadInfo(this);
+        new DownloadPresenterImp(this).queryAllDownloadInfo();
         serviceStarted = CommonUtil.isServiceStarted(this, DownloadManager.class.getName());
         if (serviceStarted && conn == null) {
             //绑定Service
@@ -86,13 +86,13 @@ public class DownloadManagerActivity extends BaseActivity implements IQueryDownl
             rvDownload.setAdapter(adapter);
             adapter.setOnItemClickListener(new RVComicAdapter.OnItemClickListener() {
                 @Override
-                public void onItemClick(View view, int position) {
+                public void onItemClick(View view, int position, Object object) {
                     jumpToDetail(comicList, position);
                 }
             });
             adapter.setOnItemLongClickListener(new RVComicAdapter.OnItemLongClickListener() {
                 @Override
-                public boolean onItemLongClick(View view, final int position) {
+                public boolean onItemLongClick(View view, final int position, Object object) {
                     //删除,暂停,进入队列功能
                     View inflate = View.inflate(DownloadManagerActivity.this, R.layout.dialog_download, null);
                     TextView tvManager = (TextView) inflate.findViewById(R.id.tv_manager);

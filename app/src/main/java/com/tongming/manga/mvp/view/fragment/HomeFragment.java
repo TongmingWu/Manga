@@ -2,6 +2,7 @@ package com.tongming.manga.mvp.view.fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -11,17 +12,15 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.convenientbanner.holder.Holder;
 import com.bigkoo.convenientbanner.listener.OnItemClickListener;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.model.GlideUrl;
-import com.bumptech.glide.load.model.LazyHeaders;
 import com.tongming.manga.R;
 import com.tongming.manga.cusview.SpaceItemDecoration;
+import com.tongming.manga.mvp.api.ApiManager;
 import com.tongming.manga.mvp.base.BaseFragment;
 import com.tongming.manga.mvp.bean.Hot;
 import com.tongming.manga.mvp.bean.User;
@@ -32,6 +31,7 @@ import com.tongming.manga.mvp.view.activity.IHomeView;
 import com.tongming.manga.mvp.view.activity.SearchActivity;
 import com.tongming.manga.mvp.view.adapter.RVComicAdapter;
 import com.tongming.manga.util.CommonUtil;
+import com.tongming.manga.util.HeaderGlide;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,14 +47,6 @@ public class HomeFragment extends BaseFragment implements IHomeView {
     ConvenientBanner convenientBanner;
     @BindView(R.id.refresh)
     SwipeRefreshLayout refresh;
-    /*@BindView(R.id.gv_recommend)
-    GridView gvRecommend;
-    @BindView(R.id.gv_local)
-    GridView gvLocal;
-    @BindView(R.id.gv_release)
-    GridView gvRelease;
-    @BindView(R.id.gv_hot)
-    GridView gvHot;*/
     @BindView(R.id.rv_hot)
     RecyclerView rvHot;
     @BindView(R.id.rv_recommend)
@@ -67,7 +59,8 @@ public class HomeFragment extends BaseFragment implements IHomeView {
     LinearLayout llContent;
     @BindView(R.id.tv_line)
     TextView tvLine;
-    Hot hot;
+    private Hot hot;
+    private SharedPreferences sp;
 
 
     @Override
@@ -127,7 +120,7 @@ public class HomeFragment extends BaseFragment implements IHomeView {
         rvHot.setAdapter(hotAdapter);
         hotAdapter.setOnItemClickListener(new RVComicAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(View view, int position) {
+            public void onItemClick(View view, int position, Object object) {
                 String comicUrl = hot.getResult().getHot().get(position).getComic_url();
                 Intent intent = new Intent(getActivity(), ComicDetailActivity.class);
                 intent.putExtra("url", comicUrl)
@@ -148,7 +141,7 @@ public class HomeFragment extends BaseFragment implements IHomeView {
         rvRecommend.setAdapter(recommendAdapter);
         recommendAdapter.setOnItemClickListener(new RVComicAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(View view, int position) {
+            public void onItemClick(View view, int position, Object object) {
                 String comicUrl = hot.getResult().getRecommend().get(position).getComic_url();
                 Intent intent = new Intent(getActivity(), ComicDetailActivity.class);
                 intent.putExtra("url", comicUrl)
@@ -169,7 +162,7 @@ public class HomeFragment extends BaseFragment implements IHomeView {
         rvLocal.setAdapter(localAdapter);
         localAdapter.setOnItemClickListener(new RVComicAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(View view, int position) {
+            public void onItemClick(View view, int position, Object object) {
                 String comicUrl = hot.getResult().getLocal().get(position).getComic_url();
                 Intent intent = new Intent(getActivity(), ComicDetailActivity.class);
                 intent.putExtra("url", comicUrl)
@@ -190,7 +183,7 @@ public class HomeFragment extends BaseFragment implements IHomeView {
         rvRelease.setAdapter(releaseAdapter);
         releaseAdapter.setOnItemClickListener(new RVComicAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(View view, int position) {
+            public void onItemClick(View view, int position, Object object) {
                 String comicUrl = hot.getResult().getRelease().get(position).getComic_url();
                 Intent intent = new Intent(getActivity(), ComicDetailActivity.class);
                 intent.putExtra("url", comicUrl)
@@ -225,13 +218,14 @@ public class HomeFragment extends BaseFragment implements IHomeView {
 
                     @Override
                     public void UpdateUI(Context context, int position, String data) {
-                        GlideUrl url = new GlideUrl(data, new LazyHeaders.Builder()
+                        /*GlideUrl url = new GlideUrl(data, new LazyHeaders.Builder()
                                 .addHeader("Referer", "http://m.dmzj.com/")
                                 .build());
                         Glide.with(context)
                                 .load(url)
                                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                .into(imageView);
+                                .into(imageView);*/
+                        HeaderGlide.loadImage(getContext(), data, imageView);
                     }
                 };
             }
@@ -256,31 +250,54 @@ public class HomeFragment extends BaseFragment implements IHomeView {
     @OnClick({R.id.rl_hot, R.id.rl_recommend, R.id.rl_local, R.id.rl_release})
     public void onClick(View view) {
         int page = 1;
-        int type;
+        int type = 0;
         Intent intent = new Intent(getActivity(), SearchActivity.class);
         intent.putExtra("page", page);
+        if (sp == null) {
+            sp = getContext().getSharedPreferences("config", Context.MODE_PRIVATE);
+        }
         switch (view.getId()) {
-            /*
-                @param select = 0
-                type , page = 1
-            */
             case R.id.rl_hot:
-                type = 32;
+                if (sp.getString("source", ApiManager.SOURCE_DMZJ).equals(ApiManager.SOURCE_DMZJ)) {
+                    type = 32;
+                } else if (sp.getString("source", ApiManager.SOURCE_DMZJ).equals(ApiManager.SOURCE_CC)) {
+                    type = 107;
+                } else if (sp.getString("source", ApiManager.SOURCE_DMZJ).equals(ApiManager.SOURCE_IKAN)) {
+                    type = 4;
+                }
                 intent.putExtra("type", type);
                 intent.putExtra("name", "热门连载");
                 break;
             case R.id.rl_recommend:
-                type = 34;
+                if (sp.getString("source", ApiManager.SOURCE_DMZJ).equals(ApiManager.SOURCE_DMZJ)) {
+                    type = 34;
+                } else if (sp.getString("source", ApiManager.SOURCE_DMZJ).equals(ApiManager.SOURCE_CC)) {
+                    type = 108;
+                } else if (sp.getString("source", ApiManager.SOURCE_DMZJ).equals(ApiManager.SOURCE_IKAN)) {
+                    type = 2;
+                }
                 intent.putExtra("type", type);
                 intent.putExtra("name", "排行榜");
                 break;
             case R.id.rl_local:
-                type = 28;
+                if (sp.getString("source", ApiManager.SOURCE_DMZJ).equals(ApiManager.SOURCE_DMZJ)) {
+                    type = 28;
+                } else if (sp.getString("source", ApiManager.SOURCE_DMZJ).equals(ApiManager.SOURCE_CC)) {
+                    type = 106;
+                } else if (sp.getString("source", ApiManager.SOURCE_DMZJ).equals(ApiManager.SOURCE_IKAN)) {
+                    type = 9;
+                }
                 intent.putExtra("type", type);
                 intent.putExtra("name", "国漫");
                 break;
             case R.id.rl_release:
-                type = 35;
+                if (sp.getString("source", ApiManager.SOURCE_DMZJ).equals(ApiManager.SOURCE_DMZJ)) {
+                    type = 35;
+                } else if (sp.getString("source", ApiManager.SOURCE_DMZJ).equals(ApiManager.SOURCE_CC)) {
+                    type = 109;
+                } else if (sp.getString("source", ApiManager.SOURCE_DMZJ).equals(ApiManager.SOURCE_IKAN)) {
+                    type = 1;
+                }
                 intent.putExtra("type", type);
                 intent.putExtra("name", "最近更新");
                 break;
@@ -290,38 +307,29 @@ public class HomeFragment extends BaseFragment implements IHomeView {
 
     @Override
     public void onFail() {
-
+        llContent.setVisibility(View.GONE);
+        Toast.makeText(getActivity(), "网络加载错误", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void showRefresh() {
-        llContent.setVisibility(View.INVISIBLE);
+        llContent.setVisibility(View.GONE);
         refresh.post(new Runnable() {
             @Override
             public void run() {
                 refresh.setRefreshing(true);
             }
         });
-        refresh.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                refresh.setRefreshing(false);
-            }
-        }, 1000 * 3);
     }
 
     @Override
     public void hideRefresh() {
-        if (refresh.isRefreshing()) {
-            refresh.post(new Runnable() {
-                @Override
-                public void run() {
-                    refresh.setRefreshing(false);
-                }
-            });
-        }
-        if (llContent.getVisibility() == View.INVISIBLE) {
-            llContent.setVisibility(View.VISIBLE);
-        }
+        refresh.post(new Runnable() {
+            @Override
+            public void run() {
+                refresh.setRefreshing(false);
+            }
+        });
+        llContent.setVisibility(View.VISIBLE);
     }
 }

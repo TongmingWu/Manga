@@ -1,16 +1,14 @@
 package com.tongming.manga.mvp.presenter;
 
-import android.content.Context;
-
 /**
  * Created by Tongming on 2016/8/17.
  */
 interface ICollectPresenter {
-    void queryAllCollect(Context context);
+    void queryAllCollect();
 
-    void deleteCollectByName(Context context,String name);
+    void deleteCollectByName(String name);
 
-    void deleteAllCollect(Context context);
+    void deleteAllCollect();
 
     void deleteCollectOnNet(String name);
 }

@@ -75,7 +75,8 @@ public class RVComicAdapter extends RecyclerView.Adapter<RVComicAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(RVComicAdapter.ViewHolder holder, int position) {
-        holder.itemView.setTag(position);
+        holder.itemView.setTag(R.id.position, position);
+        holder.itemView.setTag(R.id.comic, list.get(position));
         switch (type) {
             case NORMAL_COMIC:
                 ComicCard bean = comicList.get(position);
@@ -155,13 +156,14 @@ public class RVComicAdapter extends RecyclerView.Adapter<RVComicAdapter.ViewHold
     @Override
     public void onClick(View v) {
         if (onItemClickListener != null) {
-            onItemClickListener.onItemClick(v, (Integer) v.getTag());
+            onItemClickListener.onItemClick(v, (Integer) v.getTag(R.id.position), v.getTag(R.id.comic));
         }
     }
 
     @Override
     public boolean onLongClick(View v) {
-        return onItemLongClickListener != null && onItemLongClickListener.onItemLongClick(v, (Integer) v.getTag());
+        return onItemLongClickListener != null &&
+                onItemLongClickListener.onItemLongClick(v, (Integer) v.getTag(R.id.position), v.getTag(R.id.comic));
     }
 
 
@@ -191,10 +193,10 @@ public class RVComicAdapter extends RecyclerView.Adapter<RVComicAdapter.ViewHold
     }
 
     public interface OnItemClickListener {
-        void onItemClick(View view, int position);
+        void onItemClick(View view, int position, Object object);
     }
 
     public interface OnItemLongClickListener {
-        boolean onItemLongClick(View view, int position);
+        boolean onItemLongClick(View view, int position, Object object);
     }
 }

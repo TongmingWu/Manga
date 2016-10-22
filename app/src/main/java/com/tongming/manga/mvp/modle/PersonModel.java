@@ -1,6 +1,5 @@
 package com.tongming.manga.mvp.modle;
 
-import com.orhanobut.logger.Logger;
 import com.tongming.manga.mvp.api.ApiManager;
 import com.tongming.manga.mvp.base.BaseApplication;
 import com.tongming.manga.mvp.bean.User;
@@ -36,7 +35,6 @@ public class PersonModel implements IPersonModel {
 
     @Override
     public Subscription updateUser(String nickname, String sex, String personality) {
-
         return getNormalObservable(nickname, sex, personality)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -55,8 +53,6 @@ public class PersonModel implements IPersonModel {
 
     @Override
     public Subscription updateUser(File file, String nickname, String sex, String personality) {
-//        File file = new File(path);
-        Logger.d(file.length() / 1024 + "kb");
         RequestBody body = RequestBody.create(MediaType.parse("multipart/form-data"), file);
         MultipartBody.Part data = MultipartBody.Part.createFormData("avatar", file.getName(), body);
         Observable<UserInfo> updateUser = getNormalObservable(nickname, sex, personality);

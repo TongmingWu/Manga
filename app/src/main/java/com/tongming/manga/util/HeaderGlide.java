@@ -10,6 +10,9 @@ import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.load.model.LazyHeaders;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.tongming.manga.mvp.api.ApiManager;
+
+import static com.tencent.bugly.crashreport.inner.InnerAPI.context;
 
 /**
  * Author: Tongming
@@ -18,12 +21,24 @@ import com.bumptech.glide.request.target.SimpleTarget;
 
 public class HeaderGlide {
 
-    private static final String URL = "http://m.dmzj.com/";
-    private static final String REFERER = "Referer";
+    public static final String URL_DMZJ = "http://m.dmzj.com/";
+    public static final String URL_IKAN = "http://m.ikanman.com/";
+    public static final String REFERER = "Referer";
+
+    private static String getReferer() {
+        String referer_url = URL_DMZJ;
+        String source = context.getSharedPreferences("config", Context.MODE_PRIVATE).getString("source", ApiManager.SOURCE_DMZJ);
+        if (source.equals(ApiManager.SOURCE_DMZJ)) {
+            referer_url = URL_DMZJ;
+        } else if (source.equals(ApiManager.SOURCE_IKAN)) {
+            referer_url = URL_IKAN;
+        }
+        return referer_url;
+    }
 
     public static void loadImage(Context context, String url, ImageView view) {
         GlideUrl glideUrl = new GlideUrl(url, new LazyHeaders.Builder()
-                .addHeader(REFERER, URL)
+                .addHeader(REFERER, getReferer())
                 .build());
         Glide.with(context)
                 .load(glideUrl)
@@ -35,7 +50,7 @@ public class HeaderGlide {
 
     public static void loadBitmap(Context context, String url, final ImageView view) {
         GlideUrl glideUrl = new GlideUrl(url, new LazyHeaders.Builder()
-                .addHeader(REFERER, URL)
+                .addHeader(REFERER, getReferer())
                 .build());
         Glide.with(context)
                 .load(glideUrl)
@@ -51,7 +66,7 @@ public class HeaderGlide {
 
     public static void loadPage(Context context, String url, ImageView view) {
         GlideUrl glideUrl = new GlideUrl(url, new LazyHeaders.Builder()
-                .addHeader(REFERER, URL)
+                .addHeader(REFERER, getReferer())
                 .build());
         Glide.with(context)
                 .load(glideUrl)
@@ -64,7 +79,7 @@ public class HeaderGlide {
 
     public static void downloadImage(Context context, String url) {
         GlideUrl glideUrl = new GlideUrl(url, new LazyHeaders.Builder()
-                .addHeader(REFERER, URL)
+                .addHeader(REFERER, getReferer())
                 .build());
         Glide.with(context)
                 .load(glideUrl)

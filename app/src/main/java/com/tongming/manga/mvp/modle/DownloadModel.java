@@ -1,7 +1,5 @@
 package com.tongming.manga.mvp.modle;
 
-import android.content.Context;
-
 import com.tongming.manga.mvp.db.DBManager;
 import com.tongming.manga.server.DownloadInfo;
 
@@ -27,8 +25,8 @@ public class DownloadModel implements IDownloadModel {
     }
 
     @Override
-    public void queryDownloadInfo(Context context, String cid) {
-        final DBManager manager = new DBManager(context);
+    public void queryDownloadInfo(String cid) {
+        final DBManager manager = DBManager.getInstance();
         manager
                 .queryDownloadInfoByCid(cid)
                 .subscribeOn(Schedulers.io())
@@ -55,8 +53,8 @@ public class DownloadModel implements IDownloadModel {
     }
 
     @Override
-    public void queryDownloadInfo(Context context, String name, int status) {
-        new DBManager(context)
+    public void queryDownloadInfo(String name, int status) {
+        DBManager.getInstance()
                 .queryDownloadInfo(name, status)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -74,13 +72,13 @@ public class DownloadModel implements IDownloadModel {
     }
 
     @Override
-    public void queryDownloadInfo(Context context, DownloadInfo info) {
+    public void queryDownloadInfo(DownloadInfo info) {
 
     }
 
     @Override
-    public void queryAllDownloadInfo(Context context) {
-        new DBManager(context)
+    public void queryAllDownloadInfo() {
+        DBManager.getInstance()
                 .queryAllDownloadInfo()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -97,63 +95,10 @@ public class DownloadModel implements IDownloadModel {
                 });
     }
 
-    @Override
-    public void pushToDownloadQueue(Context context, List<DownloadInfo> info) {
-
-    }
-
-    @Override
-    public void startDownloadTask(Context context, DownloadInfo info) {
-        //调用ApiManager下载图片,调用DBManager将下载信息存入sqlite
-
-    }
-
-    @Override
-    public void startAllDownloadTask(Context context, List<DownloadInfo> info) {
-
-    }
-
-    @Override
-    public void pauseDownloadTask(Context context, DownloadInfo info) {
-
-    }
-
-    @Override
-    public void pauseAllDownloadTasks(Context context, DownloadInfo info) {
-
-    }
-
-    @Override
-    public void resumeDownloadTask(Context context, DownloadInfo info) {
-
-    }
-
-    @Override
-    public void cancelDownloadTask(Context context, DownloadInfo info) {
-
-    }
-
-    @Override
-    public void cancelAllDownloadTasks(Context context, DownloadInfo info) {
-
-    }
-
     public interface onDownloadListener {
         void onQueryDownloadInfo(List<DownloadInfo> infoList);
 
         void onQueryAllDownloadInfo(List<DownloadInfo> infoList);
-
-        void onPushToDownloadQueue();
-
-        void onStartDownloadTask();
-
-        void onPauseDownloadTask();
-
-        void onPauseAllDownloadTasks();
-
-        void onCancelDownloadTask();
-
-        void onCancelAllDownloadTasks();
 
         void onFail(Throwable throwable);
     }

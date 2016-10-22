@@ -2,7 +2,6 @@ package com.tongming.manga.mvp.modle;
 
 import com.orhanobut.logger.Logger;
 import com.tongming.manga.mvp.api.ApiManager;
-import com.tongming.manga.mvp.base.BaseApplication;
 import com.tongming.manga.mvp.bean.Category;
 import com.tongming.manga.mvp.bean.Search;
 import com.tongming.manga.mvp.bean.SearchRecord;
@@ -46,7 +45,6 @@ public class SearchModel implements ISearchModel {
 
                     @Override
                     public void onNext(Category category) {
-                        Logger.d("获取分类成功");
                         onSearchListener.onGetCateGory(category);
                     }
                 });
@@ -95,7 +93,7 @@ public class SearchModel implements ISearchModel {
 
     @Override
     public void recordSearch(final SearchRecord record) {
-        final DBManager manager = new DBManager(BaseApplication.getContext());
+        final DBManager manager = DBManager.getInstance();
         manager.querySearchRecord(record.getComic_url())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -128,7 +126,7 @@ public class SearchModel implements ISearchModel {
 
     @Override
     public void querySearchRecord() {
-        new DBManager(BaseApplication.getContext())
+        DBManager.getInstance()
                 .querySearchRecord()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

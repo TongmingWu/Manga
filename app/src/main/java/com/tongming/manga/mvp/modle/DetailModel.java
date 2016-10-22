@@ -1,6 +1,5 @@
 package com.tongming.manga.mvp.modle;
 
-import android.content.Context;
 import android.text.TextUtils;
 
 import com.orhanobut.logger.Logger;
@@ -59,30 +58,16 @@ public class DetailModel implements IDetailModel {
     }
 
     @Override
-    public void addHistory(Context context, final ComicInfo info, final String historyName, final String historyUrl) {
-        DBManager manager = new DBManager(context);
-        manager.openDB();
+    public void addHistory(ComicInfo info, String historyName, String historyUrl) {
+        DBManager manager = DBManager.getInstance();
         long state = manager.insertHistory(info, historyName, historyUrl);
         manager.closeDB();
         onGetDataListener.onAddHistoryCompleted(state);
-        /*return DBManager.getInstance().queryHistoryByName(info.getComic_name())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<HistoryComic>>() {
-                    @Override
-                    public void call(List<HistoryComic> comics) {
-                        if (comics.size() > 0) {
-                            //如果数据库中有记录的话更新记录
-                            updateHistory(info, historyName, historyUrl);
-                        } else {
-                        }
-                    }
-                });*/
     }
 
     @Override
-    public void updateHistory(Context context, ComicInfo info, String historyName, String historyUrl) {
-        DBManager manager = new DBManager(context);
+    public void updateHistory(ComicInfo info, String historyName, String historyUrl) {
+        DBManager manager = DBManager.getInstance();
         if (!TextUtils.isEmpty(historyName) && !TextUtils.isEmpty(historyUrl)) {
             int state = manager.updateHistory(info, historyName, historyUrl);
             manager.closeDB();
@@ -91,9 +76,9 @@ public class DetailModel implements IDetailModel {
     }
 
     @Override
-    public Subscription queryHistoryByName(Context context, final String comicName) {
+    public Subscription queryHistoryByName(final String comicName) {
         Logger.d("开始读取历史记录");
-        final DBManager manager = new DBManager(context);
+        final DBManager manager = DBManager.getInstance();
         return manager.queryHistoryByName(comicName)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -124,21 +109,23 @@ public class DetailModel implements IDetailModel {
                         } else {
                             onGetDataListener.onQueryHistoryCompleted("", "");
                         }
+                        manager.closeDB();
+                        this.unsubscribe();
                     }
                 });
     }
 
     @Override
-    public void collectComic(Context context, final ComicInfo info) {
-        DBManager manager = new DBManager(context);
+    public void collectComic(final ComicInfo info) {
+        DBManager manager = DBManager.getInstance();
         long state = manager.collectComic(info);
         manager.closeDB();
         onGetDataListener.onAddCollectCompleted(state);
     }
 
     @Override
-    public Subscription queryCollectByName(Context context, String name) {
-        final DBManager manager = new DBManager(context);
+    public Subscription queryCollectByName(String name) {
+        final DBManager manager = DBManager.getInstance();
         return manager.queryCollectedByName(name)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -165,8 +152,8 @@ public class DetailModel implements IDetailModel {
     }
 
     @Override
-    public void deleteCollectByName(Context context, String name) {
-        DBManager manager = new DBManager(context);
+    public void deleteCollectByName(String name) {
+        DBManager manager = DBManager.getInstance();
         int state = manager.deleteCollectByName(name);
         manager.closeDB();
         onGetDataListener.onDeleteCollectCompleted(state);
@@ -226,6 +213,7 @@ public class DetailModel implements IDetailModel {
                         Logger.d("读取收藏失败");
                         onGetDataListener.onFail(e);
                     }
+
 
                     @Override
                     public void onNext(Result result) {

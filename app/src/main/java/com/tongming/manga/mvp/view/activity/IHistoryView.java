@@ -10,7 +10,9 @@ import java.util.List;
 public interface IHistoryView {
     void onQuery(List<HistoryComic> comics);
 
-    void onDeleteByName(int state);
+    void onDeleteByName(int state, String name);
+
+    void onRestoreHistory(int state);
 
     void onDeleteAll(int state);
 }

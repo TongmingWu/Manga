@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.squareup.sqlbrite.BriteDatabase;
 import com.squareup.sqlbrite.SqlBrite;
+import com.tongming.manga.mvp.base.BaseApplication;
 import com.tongming.manga.mvp.bean.CollectedComic;
 import com.tongming.manga.mvp.bean.ComicInfo;
 import com.tongming.manga.mvp.bean.HistoryComic;
@@ -20,29 +21,35 @@ import rx.schedulers.Schedulers;
  */
 public class DBManager {
 
-    private BriteDatabase briteDatabase;
+    private static BriteDatabase briteDatabase;
     private static DBManager instance;
-    private final SQLiteHelper helper;
+    private static SQLiteHelper helper;
+    private static final Context mContext = BaseApplication.getContext();
 
-    public DBManager(Context context) {
-        helper = new SQLiteHelper(context);
-        briteDatabase = SqlBrite.create().wrapDatabaseHelper(helper, Schedulers.io());
+    private DBManager() {
     }
 
-
-    /*public static synchronized DBManager getInstance() {
+    public static DBManager getInstance() {
         if (instance == null) {
-            instance = new DBManager();
+            synchronized (DBManager.class) {
+                if (instance == null) {
+                    instance = new DBManager();
+                }
+            }
         }
+        openDB();
         return instance;
-    }*/
+    }
 
-    public void openDB() {
+    private static void openDB() {
+        helper = new SQLiteHelper(mContext);
         briteDatabase = SqlBrite.create().wrapDatabaseHelper(helper, Schedulers.io());
     }
 
     public void closeDB() {
-        briteDatabase.close();
+        if (helper != null) {
+            helper.close();
+        }
     }
 
     /**
@@ -78,6 +85,15 @@ public class DBManager {
      */
     public long insertHistory(ComicInfo info, String historyName, String historyUrl) {
         return briteDatabase.insert(HistoryTable.TABLE_NAME, HistoryTable.toContentValues(info, historyName, historyUrl));
+    }
+
+    /**
+     * 添加历史记录
+     *
+     * @param comic 历史记录信息
+     */
+    public long insertHistory(HistoryComic comic) {
+        return briteDatabase.insert(HistoryTable.TABLE_NAME, HistoryTable.toContentValues(comic));
     }
 
     /**

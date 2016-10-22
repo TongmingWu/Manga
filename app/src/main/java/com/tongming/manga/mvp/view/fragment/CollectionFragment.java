@@ -34,9 +34,6 @@ import butterknife.BindView;
  * Created by Tongming on 2016/8/9.
  */
 public class CollectionFragment extends BaseFragment implements ICollectView {
-
-    //    @BindView(R.id.gv_collect)
-//    GridView gvCollect;
     @BindView(R.id.rv_collection)
     RecyclerView rvCollection;
     private boolean isLogin;
@@ -51,25 +48,21 @@ public class CollectionFragment extends BaseFragment implements ICollectView {
 
     @Override
     protected void initView() {
-        presenter = new CollectPresenterImp(this);
-        ((CollectPresenterImp) presenter).queryAllCollect(getContext());
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        //更新数据库操作
         if (presenter == null) {
             presenter = new CollectPresenterImp(this);
         }
         isLogin = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE).getBoolean("isLogin", false);
         if (!isLogin) {
-            ((CollectPresenterImp) presenter).queryAllCollect(getContext());
+            ((CollectPresenterImp) presenter).queryAllCollect();
         } else {
             if (User.getInstance() != null) {
                 List<CollectedComic> comics = User.getInstance().getInfo().getUser().getCollection();
                 if (comics != null && comics.size() > 0) {
-//                    initGridView(comics);
                     initRecyclerView(comics);
                 }
             }
@@ -84,9 +77,8 @@ public class CollectionFragment extends BaseFragment implements ICollectView {
             UserInfo info = User.getInstance().getInfo();
             initRecyclerView(info.getUser().getCollection());
         } else {
-            ((CollectPresenterImp) presenter).queryAllCollect(getContext());
+            ((CollectPresenterImp) presenter).queryAllCollect();
         }
-//        Logger.d("刷新成功");
     }
 
     @Override
@@ -106,8 +98,8 @@ public class CollectionFragment extends BaseFragment implements ICollectView {
 
 
     private void initRecyclerView(List<CollectedComic> comicList) {
-        if (this.comics == null) {
-            this.comics = comicList;
+        if (comics == null) {
+            comics = comicList;
             rvCollection.setLayoutManager(new GridLayoutManager(getContext(), 3));
             rvCollection.addItemDecoration(new SpaceItemDecoration(CommonUtil.dip2px(getContext(), 10), true));
             if (adapter == null) {
@@ -115,9 +107,9 @@ public class CollectionFragment extends BaseFragment implements ICollectView {
                 rvCollection.setAdapter(adapter);
                 adapter.setOnItemClickListener(new RVComicAdapter.OnItemClickListener() {
                     @Override
-                    public void onItemClick(View view, int position) {
+                    public void onItemClick(View view, int position, Object object) {
                         Intent intent = new Intent(getActivity(), ComicDetailActivity.class);
-                        CollectedComic comic = comics.get(position);
+                        CollectedComic comic = (CollectedComic) object;
                         String name = comic.getName();
                         intent.putExtra("url", comic.getUrl())
                                 .putExtra("name", name.endsWith("漫画") ? name.replace("漫画", "") : name)
@@ -134,18 +126,19 @@ public class CollectionFragment extends BaseFragment implements ICollectView {
                 });
                 adapter.setOnItemLongClickListener(new RVComicAdapter.OnItemLongClickListener() {
                     @Override
-                    public boolean onItemLongClick(View view, final int position) {
+                    public boolean onItemLongClick(View view, int position, Object object) {
+                        final CollectedComic comic = (CollectedComic) object;
                         new AlertDialog.Builder(getActivity())
                                 .setTitle("注意")
-                                .setMessage("确定要取消收藏" + comics.get(position).getName() + "吗?")
+                                .setMessage("确定要取消收藏" + comic.getName() + "吗?")
                                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         if (!isLogin) {
-                                            ((CollectPresenterImp) presenter).deleteCollectByName(getContext(), comics.get(position).getName());
+                                            ((CollectPresenterImp) presenter).deleteCollectByName(comic.getName());
                                         } else {
                                             //在线更新数据
-                                            ((CollectPresenterImp) presenter).deleteCollectOnNet(comics.get(position).getName());
+                                            ((CollectPresenterImp) presenter).deleteCollectOnNet(comic.getName());
                                         }
                                         if (progressDialog == null) {
                                             progressDialog = ProgressDialog.show(getActivity(), null, "正在删除...");
@@ -158,58 +151,30 @@ public class CollectionFragment extends BaseFragment implements ICollectView {
                 });
             }
         } else {
-            this.comics.clear();
-            this.comics.addAll(comicList);
-            if (adapter != null) {
-                adapter.notifyDataSetChanged();
+            if (comics.size() != comicList.size()) {
+                if (comics.size() > comicList.size()) {
+                    int position = 0;
+                    while (position < comicList.size()) {
+                        if (!comics.get(position).getName().equals(comicList.get(position).getName())) {
+                            break;
+                        }
+                        position++;
+                    }
+                    comics.remove(position);
+                    adapter.notifyItemRemoved(position);
+                } else {
+                    comics.clear();
+                    comics.addAll(comicList);
+                    adapter.notifyDataSetChanged();
+                }
             }
         }
     }
 
-    /*private void initGridView(final List<CollectedComic> comics) {
-        gvCollect.setAdapter(new ComicAdapter(comics, getActivity(), ComicAdapter.COLLECTION_COMIC));
-        gvCollect.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getActivity(), ComicDetailActivity.class);
-                CollectedComic comic = comics.get(position);
-                String name = comic.getName();
-                intent.putExtra("url", comic.getUrl()).putExtra("name", name.endsWith("漫画") ? name.replace("漫画", "") : name);
-                startActivity(intent);
-            }
-        });
-        gvCollect.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                *//*View dialog = View.inflate(getContext(), R.layout.dialog_card, null);
-                TextView tvRemove = (TextView) dialog.findViewById(R.id.tv_remove_collection);*//*
-                new AlertDialog.Builder(getActivity())
-                        .setTitle("注意")
-                        .setMessage("确定要取消收藏" + comics.get(position).getName() + "吗?")
-                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                if (!isLogin) {
-                                    ((CollectPresenterImp) presenter).deleteCollectByName(getContext(), comics.get(position).getName());
-                                } else {
-                                    //在线更新数据
-                                    ((CollectPresenterImp) presenter).deleteCollectOnNet(comics.get(position).getName());
-                                }
-                                if (progressDialog == null) {
-                                    progressDialog = ProgressDialog.show(getActivity(), null, "正在删除...");
-                                }
-                            }
-                        }).setNegativeButton("取消", null)
-                        .show();
-                return true;
-            }
-        });
-    }*/
-
     @Override
     public void onDeleteCollectByName(int state) {
         if (state > 0) {
-            ((CollectPresenterImp) presenter).queryAllCollect(getContext());
+            ((CollectPresenterImp) presenter).queryAllCollect();
             Logger.d("删除指定收藏完毕");
             hideDialog();
         }
@@ -217,6 +182,11 @@ public class CollectionFragment extends BaseFragment implements ICollectView {
 
     @Override
     public void onDeleteAllCollect(int state) {
+
+    }
+
+    private void showNothing(){
+        //未收藏任何漫画
 
     }
 

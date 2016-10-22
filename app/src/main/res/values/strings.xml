@@ -8,10 +8,14 @@
     <string-array name="source_all">
         <item>动漫之家</item>
         <item>CC图库</item>
+        <item>看漫画</item>
     </string-array>
     <string-array name="source_short">
         <item>dmzj</item>
         <item>cc</item>
+        <item>ikan</item>
     </string-array>
     <string name="coverName">cover</string>
+    <item name="comic" type="id" />
+    <item name="position" type="id" />
 </resources>

@@ -1,7 +1,5 @@
 package com.tongming.manga.mvp.presenter;
 
-import android.content.Context;
-
 import com.orhanobut.logger.Logger;
 import com.tongming.manga.mvp.base.BasePresenter;
 import com.tongming.manga.mvp.bean.ComicInfo;
@@ -30,33 +28,33 @@ public class DetailPresenterImp extends BasePresenter implements IDetailPresente
     }
 
     @Override
-    public void addHistory(Context context, ComicInfo info, String historyName, String historyUrl) {
-        detailModel.addHistory(context, info, historyName, historyUrl);
+    public void addHistory(ComicInfo info, String historyName, String historyUrl) {
+        detailModel.addHistory(info, historyName, historyUrl);
     }
 
     @Override
-    public void updateHistory(Context context, ComicInfo info, String historyName, String historyUrl) {
-        detailModel.updateHistory(context, info, historyName, historyUrl);
+    public void updateHistory(ComicInfo info, String historyName, String historyUrl) {
+        detailModel.updateHistory(info, historyName, historyUrl);
     }
 
     @Override
-    public void queryHistoryByName(Context context, String name) {
-        addSubscription(detailModel.queryHistoryByName(context, name));
+    public void queryHistoryByName(String name) {
+        addSubscription(detailModel.queryHistoryByName(name));
     }
 
     @Override
-    public void collectComic(Context context, ComicInfo info) {
-        detailModel.collectComic(context, info);
+    public void collectComic(ComicInfo info) {
+        detailModel.collectComic(info);
     }
 
     @Override
-    public void queryCollectByName(Context context, String name) {
-        detailModel.queryCollectByName(context, name);
+    public void queryCollectByName(String name) {
+        detailModel.queryCollectByName(name);
     }
 
     @Override
-    public void deleteCollectByName(Context context, String name) {
-        detailModel.deleteCollectByName(context, name);
+    public void deleteCollectByName(String name) {
+        detailModel.deleteCollectByName(name);
     }
 
     @Override

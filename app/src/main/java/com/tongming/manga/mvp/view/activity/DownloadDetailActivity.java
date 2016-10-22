@@ -67,7 +67,7 @@ public class DownloadDetailActivity extends BaseActivity implements IQueryDownlo
         super.onResume();
         Intent intent = getIntent();
         cid = intent.getStringExtra("cid");
-        new DownloadPresenterImp(this).queryDownloadInfo(this, cid);
+        new DownloadPresenterImp(this).queryDownloadInfo(cid);
         serviceStarted = CommonUtil.isServiceStarted(this, DownloadManager.class.getName());
         if (serviceStarted && conn == null) {
             //绑定Service

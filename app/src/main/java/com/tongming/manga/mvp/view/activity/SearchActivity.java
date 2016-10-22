@@ -74,7 +74,6 @@ public class SearchActivity extends BaseActivity implements ISearchView {
             ((SearchPresenterImp) presenter).doSearch(word, page);
             toolbar.setTitle("搜索: " + word);
         }
-//        initGridView();
     }
 
     @Override
@@ -106,7 +105,7 @@ public class SearchActivity extends BaseActivity implements ISearchView {
         rvSearch.setAdapter(adapter);
         adapter.setOnItemClickListener(new RVComicAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(View view, int position) {
+            public void onItemClick(View view, int position, Object object) {
                 Intent intent = new Intent(SearchActivity.this, ComicDetailActivity.class);
                 ComicCard card = comicCards.get(position);
                 intent.putExtra("url", card.getComic_url())

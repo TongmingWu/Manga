@@ -11,4 +11,5 @@
     <color name="lineColor">#dddddd</color>
     <color name="gray">#aaa</color>
     <color name="downloadBorder">#99cc00</color>
+    <color name="tabColor">#efc997</color>
 </resources>

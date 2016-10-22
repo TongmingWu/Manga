@@ -2,8 +2,6 @@ package com.tongming.manga.mvp.api;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 
 import com.tongming.manga.mvp.base.BaseApplication;
 import com.tongming.manga.mvp.bean.Category;
@@ -41,8 +39,7 @@ import rx.Observable;
  * Date: 2016/8/9
  */
 public class ApiManager {
-    //    private static final String BASE_URL = "http://192.168.137.1:5000";
-//    private static final String BASE_URL = "http://45.78.25.201";
+    //        private static final String BASE_URL = "http://192.168.191.1:5000";
     private static final String BASE_URL = "http://119.29.57.187";
 
     public static final String APP_ID = "Rp2mOsDSVkDoN5E4hbJEhlig-gzGzoHsz";
@@ -50,13 +47,14 @@ public class ApiManager {
 
     public static final String SOURCE_DMZJ = "dmzj";
     public static final String SOURCE_CC = "cc";
+    public static final String SOURCE_IKAN = "ikan";
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     //短缓存有效期为120秒钟
     private static final int CACHE_STALE_SHORT = 120;
     //长缓存有效期为1天
-    public static final int CACHE_STALE_LONG = 60 * 60 * 24;
+    private static final int CACHE_STALE_LONG = 60 * 60 * 24;
 
     private OkHttpClient mOkHttpClient;
 
@@ -109,24 +107,14 @@ public class ApiManager {
             }
             Response originalResponse = chain.proceed(request);
             if (CommonUtil.isNet(context)) {
-                PackageManager manager = context.getPackageManager();
-                PackageInfo info;
-                try {
-                    info = manager.getPackageInfo(context.getPackageName(), 0);
-                    versionCode = info != null ? info.versionCode : 1;
-                } catch (PackageManager.NameNotFoundException e) {
-                    e.printStackTrace();
-                }
                 //有网的时候读接口上的@Headers里的配置，可以在这里进行统一的设置
-                String cacheControl = request.cacheControl().toString();
                 return originalResponse.newBuilder()
-                        .header("Cache-Control", cacheControl)
-                        .addHeader("App-Version", versionCode + "")
+                        .header("Cache-Control", "public, max-age=" + CACHE_STALE_SHORT)
                         .removeHeader("Pragma")
                         .build();
             } else {
                 return originalResponse.newBuilder()
-                        .header("Cache-Control", "public, only-if-cached, max-stale=" + CACHE_STALE_SHORT)
+                        .header("Cache-Control", "public, only-if-cached, max-stale=" + CACHE_STALE_LONG)
                         .removeHeader("Pragma")
                         .build();
             }
@@ -201,7 +189,6 @@ public class ApiManager {
         return apiService.uploadAvatar(body, User.getInstance().getToken());
     }
 
-
     public Observable<UserInfo> addCollection(RequestBody body) {
         return apiService.addCollection(body);
     }
@@ -215,7 +202,13 @@ public class ApiManager {
     }
 
     public Observable<ResponseBody> downloadImage(String url) {
-        return apiService.downloadImage(url);
+        Observable<ResponseBody> observable = null;
+        if (source.equals(SOURCE_DMZJ)) {
+            observable = apiService.downloadImageByDMZJ(url);
+        } else if (source.equals(SOURCE_IKAN)) {
+            observable = apiService.downloadImageByIKAN(url);
+        }
+        return observable;
     }
 
 }

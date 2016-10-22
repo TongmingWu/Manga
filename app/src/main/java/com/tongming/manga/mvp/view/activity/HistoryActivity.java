@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
@@ -12,7 +13,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.orhanobut.logger.Logger;
 import com.tongming.manga.R;
 import com.tongming.manga.cusview.SpaceItemDecoration;
 import com.tongming.manga.mvp.base.BaseActivity;
@@ -39,6 +39,8 @@ public class HistoryActivity extends BaseActivity implements IHistoryView {
     FloatingActionButton fabClear;
     private List<HistoryComic> comics;
     private RVComicAdapter adapter;
+    private HistoryComic deleteComic;
+    private int deletePos;
 
     @Override
     protected int getLayoutId() {
@@ -75,9 +77,9 @@ public class HistoryActivity extends BaseActivity implements IHistoryView {
         rvHistory.setAdapter(adapter);
         adapter.setOnItemClickListener(new RVComicAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(View view, int position) {
+            public void onItemClick(View view, int position, Object object) {
+                HistoryComic comic = (HistoryComic) object;
                 Intent intent = new Intent(HistoryActivity.this, ComicDetailActivity.class);
-                HistoryComic comic = comics.get(position);
                 String name = comic.getName();
                 intent.putExtra("url", comic.getUrl())
                         .putExtra("name", name.endsWith("漫画") ? name.replace("漫画", "") : name)
@@ -94,14 +96,22 @@ public class HistoryActivity extends BaseActivity implements IHistoryView {
         });
         adapter.setOnItemLongClickListener(new RVComicAdapter.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(View view, final int position) {
+            public boolean onItemLongClick(View view, int position, Object object) {
+                final HistoryComic comic = (HistoryComic) object;
                 new AlertDialog.Builder(HistoryActivity.this)
                         .setTitle("注意")
-                        .setMessage("确定要删除" + comics.get(position).getName() + "吗?")
+                        .setMessage("确定要删除" + comic.getName() + "吗?")
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                ((HistoryPresenterImp) presenter).deleteHistoryByName(HistoryActivity.this, comics.get(position).getName());
+                                deleteComic = comic;
+                                for (int pos = 0; pos < comics.size(); pos++) {
+                                    if (comics.get(pos).equals(comic.getName())) {
+                                        deletePos = pos;
+                                        break;
+                                    }
+                                }
+                                ((HistoryPresenterImp) presenter).deleteHistoryByName(HistoryActivity.this, deleteComic.getName());
                             }
                         }).setNegativeButton("取消", null)
                         .show();
@@ -136,14 +146,36 @@ public class HistoryActivity extends BaseActivity implements IHistoryView {
     }
 
     @Override
-    public void onDeleteByName(int state) {
-        ((HistoryPresenterImp) presenter).queryAllHistory(this);
-        Logger.d("删除指定历史");
+    public void onDeleteByName(int state, String name) {
+        for (int index = 0; index < comics.size(); index++) {
+            if (comics.get(index).getName().equals(name)) {
+                comics.remove(index);
+                adapter.notifyItemRemoved(index);
+                break;
+            }
+        }
+        Snackbar snackbar = Snackbar.make(rvHistory, "删除成功", Snackbar.LENGTH_SHORT);
+        snackbar.setAction("撤销", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //在删除之前保存信息,点击撤销恢复信息
+                ((HistoryPresenterImp) presenter).restoreHistory(HistoryActivity.this, deleteComic);
+            }
+        });
+        snackbar.show();
+    }
+
+    @Override
+    public void onRestoreHistory(int state) {
+        if (state > 0) {
+            comics.add(deletePos, deleteComic);
+            adapter.notifyItemInserted(deletePos);
+        }
     }
 
     @Override
     public void onDeleteAll(int state) {
-        Logger.d("清空历史记录");
-        ((HistoryPresenterImp) presenter).queryAllHistory(this);
+        comics.clear();
+        adapter.notifyDataSetChanged();
     }
 }

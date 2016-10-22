@@ -56,9 +56,12 @@ public class HomeActivity extends BaseActivity implements ISystemView, ICacheVie
     public static final int LOGIN_CODE = 0x77;
     private long exitTime = 0;
     private final int[] tabPics = {
-            R.drawable.icon_tab_favor_us,
-            R.drawable.icon_tab_recom_us,
-            R.drawable.icon_tab_search_us
+//            R.drawable.icon_tab_favor_us,
+//            R.drawable.icon_tab_recom_us,
+//            R.drawable.icon_tab_search_us
+            R.drawable.bg_tab_fav,
+            R.drawable.bg_tab_recom,
+            R.drawable.bg_tab_search
     };
     private final int[] selectedPics = {
             R.drawable.icon_tab_favor,
@@ -93,8 +96,6 @@ public class HomeActivity extends BaseActivity implements ISystemView, ICacheVie
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_nav:
-                drawerLayout.openDrawer(Gravity.LEFT);
-                break;
             case R.id.iv_avatar:
                 drawerLayout.openDrawer(Gravity.LEFT);
                 break;

@@ -29,57 +29,20 @@ import rx.Observable;
  * Date: 2016/8/9
  */
 interface ApiService {
-    //TODO 资源整合
-    /*@GET("/cc")
-    Observable<Hot> getHot();*/
-
-    /*@GET("/dmzj")
-    Observable<Hot> getHot();*/
-
     @GET("/")
     Observable<Hot> getHot(@Query("source") String source);
-
-    /*@GET("/cc/comic/detail")
-    Observable<ComicInfo> getComicInfo(@Query("comic_url") String comicUrl);*/
-
-    /*@GET("/dmzj/comic/detail")
-    Observable<ComicInfo> getComicInfo(@Query("comic_url") String comicUrl);*/
 
     @GET("/comic/detail")
     Observable<ComicInfo> getComicInfo(@Query("source") String source, @Query("comic_url") String comicUrl);
 
-    /*@GET("/cc/comic/view")
-    Observable<ComicPage> getComicPage(@Query("chapter_url") String chapterUrl);*/
-
-    /*@GET("/dmzj/comic/view")
-    Observable<ComicPage> getComicPage(@Query("chapter_url") String chapterUrl);*/
-
     @GET("/comic/view")
     Observable<ComicPage> getComicPage(@Query("source") String source, @Query("chapter_url") String chapterUrl);
-
-    /*@GET("/cc/comic/category")
-    Observable<Search> getComicType(@Query("type") int type, @Query("page") int page);*/
-
-    /*@GET("/dmzj/comic/category")
-    Observable<Search> getComicType(@Query("type") int type, @Query("page") int page);*/
 
     @GET("/comic/category")
     Observable<Search> getComicType(@Query("source") String source, @Query("type") int type, @Query("page") int page);
 
-    /*@GET("/cc/comic/category")
-    Observable<Category> getCategory();*/
-
-    /*@GET("/dmzj/comic/category")
-    Observable<Category> getCategory();*/
-
     @GET("/comic/category")
     Observable<Category> getCategory(@Query("source") String source);
-
-    /*@GET("/cc/search")
-    Observable<Search> doSearch(@Query("word") String word, @Query("page") int page);*/
-
-    /*@GET("/dmzj/search")
-    Observable<Search> doSearch(@Query("word") String word, @Query("page") int page);*/
 
     @GET("/search")
     Observable<Search> doSearch(@Query("source") String source, @Query("word") String word, @Query("page") int page);
@@ -111,15 +74,19 @@ interface ApiService {
     @POST("/collection")
     Observable<UserInfo> addCollection(@Body RequestBody body);
 
-
     @Headers("Content-Type:application/json")
     @HTTP(method = "DELETE", path = "/collection", hasBody = true)
     Observable<UserInfo> deleteCollection(@Body RequestBody body);
 
+    @Headers("Cache-Control: max-age=0")
     @GET("/collection")
     Observable<Result> queryCollection(@Query("uid") int uid, @Query("name") String name);
 
     @Headers("Referer:http://m.dmzj.com/")
     @GET
-    Observable<ResponseBody> downloadImage(@Url String url);
+    Observable<ResponseBody> downloadImageByDMZJ(@Url String url);
+
+    @Headers("Referer:http://m.ikanman.com/")
+    @GET
+    Observable<ResponseBody> downloadImageByIKAN(@Url String url);
 }

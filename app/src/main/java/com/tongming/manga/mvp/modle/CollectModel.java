@@ -1,7 +1,5 @@
 package com.tongming.manga.mvp.modle;
 
-import android.content.Context;
-
 import com.tongming.manga.mvp.api.ApiManager;
 import com.tongming.manga.mvp.bean.CollectedComic;
 import com.tongming.manga.mvp.bean.User;
@@ -26,17 +24,14 @@ import rx.schedulers.Schedulers;
 public class CollectModel implements ICollectModel {
 
     private OnCollectListener collectListener;
-    private Context mContext;
 
-    public CollectModel(Context context, OnCollectListener collectListener) {
-        mContext = context;
+    public CollectModel(OnCollectListener collectListener) {
         this.collectListener = collectListener;
     }
 
     @Override
-    public Subscription queryAllCollect(Context context) {
-        final DBManager manager = new DBManager(mContext);
-        manager.openDB();
+    public Subscription queryAllCollect() {
+        final DBManager manager = DBManager.getInstance();
         return manager.queryAllCollected()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -61,9 +56,8 @@ public class CollectModel implements ICollectModel {
     }
 
     @Override
-    public void deleteCollectByName(Context context, String name) {
-        DBManager manager = new DBManager(mContext);
-        manager.openDB();
+    public void deleteCollectByName(String name) {
+        DBManager manager = DBManager.getInstance();
         int state = manager.deleteCollectByName(name);
         manager.closeDB();
         collectListener.onDeleteByName(state);
@@ -71,9 +65,8 @@ public class CollectModel implements ICollectModel {
     }
 
     @Override
-    public void deleteAllCollect(Context context) {
-        DBManager manager = new DBManager(mContext);
-        manager.openDB();
+    public void deleteAllCollect() {
+        DBManager manager = DBManager.getInstance();
         int state = manager.deleteAllCollect();
         manager.closeDB();
         collectListener.onDeleteAll(state);

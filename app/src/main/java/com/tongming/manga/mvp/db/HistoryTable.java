@@ -67,6 +67,24 @@ public class HistoryTable {
         return values;
     }
 
+    static ContentValues toContentValues(HistoryComic comic) {
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_NAME, comic.getName());
+        values.put(COMIC_ID, comic.getComic_id());
+        values.put(COLUMN_AUTHOR, comic.getAuthor());
+        values.put(COLUMN_AREA, comic.getArea());
+        values.put(COLUMN_TYPE, comic.getType());
+        values.put(COLUMN_SOURCE, comic.getComic_source());
+        values.put(COLUMN_URL, comic.getUrl());
+        values.put(COLUMN_CHAPTER_NUM, comic.getChapterNum());
+        values.put(COLUMN_STATUS, comic.getStatus());
+        values.put(COLUMN_HISTORY_NAME, comic.getHistoryName());
+        values.put(COLUMN_HISTORY_URL, comic.getHistoryUrl());
+        values.put(COLUMN_COVER, comic.getCover());
+        values.put(COLUMN_TIME, System.currentTimeMillis());
+        return values;
+    }
+
     static ContentValues toContentValues(String historyName, String historyUrl) {
         ContentValues values = new ContentValues();
         values.put(COLUMN_HISTORY_NAME, historyName);

@@ -1,6 +1,6 @@
 package com.tongming.manga.mvp.modle;
 
-import android.content.Context;
+import com.tongming.manga.mvp.bean.HistoryComic;
 
 import rx.Subscription;
 
@@ -8,9 +8,11 @@ import rx.Subscription;
  * Created by Tongming on 2016/8/15.
  */
 public interface IHistoryModel {
-    Subscription queryAllHistory(Context context);
+    Subscription queryAllHistory();
 
-    void deleteHistoryByName(Context context, String name);
+    void deleteHistoryByName(String name);
 
-    void deleteAllHistory(Context context);
+    void restoreHistory(HistoryComic comic);
+
+    void deleteAllHistory();
 }

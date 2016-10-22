@@ -71,7 +71,7 @@ public class SelectActivity extends BaseActivity implements IQueryDownloadView {
         tvChapterNum.setText("共" + info.getChapter_list().size() + "话");
         tvDate.setText("更新于" + info.getNewest_chapter_date().split(" ")[0]);
         presenter = new DownloadPresenterImp(this);
-        ((DownloadPresenterImp) presenter).queryDownloadInfo(this, info.getComic_id());
+        ((DownloadPresenterImp) presenter).queryDownloadInfo(info.getComic_id());
     }
 
     @OnClick({R.id.tv_select_all, R.id.tv_download})

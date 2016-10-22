@@ -54,7 +54,7 @@ public class DownloadManager extends Service implements IDownloadManager, IQuery
         DownloadInfo download = intent.getParcelableExtra("download");
         if (cid != null) {
             //查询下载信息
-            new DownloadPresenterImp(this).queryDownloadInfo(getApplicationContext(), cid);
+            new DownloadPresenterImp(this).queryDownloadInfo(cid);
         } else if (download != null) {
             //根据单个downloadInfo建立下载队列
             ArrayList<DownloadInfo> list = new ArrayList<>();
@@ -160,6 +160,7 @@ public class DownloadManager extends Service implements IDownloadManager, IQuery
             downloadInfo.setChapter_name(bean.getChapter_title());
             downloadInfo.setChapter_url(bean.getChapter_url());
             downloadInfo.setComic_name(info.getComic_name());
+            downloadInfo.setComic_source(info.getComic_source());
             downloadInfo.setComic_url(info.getComic_url());
             downloadInfo.setCover(info.getCover());
             downloadInfo.setStatus(DownloadInfo.WAIT);

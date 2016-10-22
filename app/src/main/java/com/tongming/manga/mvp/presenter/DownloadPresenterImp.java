@@ -1,7 +1,5 @@
 package com.tongming.manga.mvp.presenter;
 
-import android.content.Context;
-
 import com.tongming.manga.mvp.base.BasePresenter;
 import com.tongming.manga.mvp.modle.DownloadModel;
 import com.tongming.manga.mvp.modle.IDownloadModel;
@@ -26,63 +24,23 @@ public class DownloadPresenterImp extends BasePresenter implements IDownloadPres
     }
 
     @Override
-    public void queryDownloadInfo(Context context, String name, int status) {
-        downloadModel.queryDownloadInfo(context, name, status);
+    public void queryDownloadInfo(String name, int status) {
+        downloadModel.queryDownloadInfo(name, status);
     }
 
     @Override
-    public void queryDownloadInfo(Context context, DownloadInfo info) {
-        downloadModel.queryDownloadInfo(context, info);
+    public void queryDownloadInfo(DownloadInfo info) {
+        downloadModel.queryDownloadInfo(info);
     }
 
     @Override
-    public void queryDownloadInfo(Context context, String cid) {
-        downloadModel.queryDownloadInfo(context, cid);
+    public void queryDownloadInfo(String cid) {
+        downloadModel.queryDownloadInfo(cid);
     }
 
     @Override
-    public void queryAllDownloadInfo(Context context) {
-        downloadModel.queryAllDownloadInfo(context);
-    }
-
-    @Override
-    public void pushToDownloadQueue(Context context, List<DownloadInfo> info) {
-        downloadModel.pushToDownloadQueue(context, info);
-    }
-
-    @Override
-    public void startDownloadTask(Context context, DownloadInfo info) {
-        downloadModel.startDownloadTask(context, info);
-    }
-
-    @Override
-    public void startAllDownloadTask(Context context, List<DownloadInfo> info) {
-        downloadModel.startAllDownloadTask(context, info);
-    }
-
-    @Override
-    public void pauseDownloadTask(Context context, DownloadInfo info) {
-        downloadModel.pauseDownloadTask(context, info);
-    }
-
-    @Override
-    public void pauseAllDownloadTask(Context context, DownloadInfo info) {
-        downloadModel.pauseAllDownloadTasks(context, info);
-    }
-
-    @Override
-    public void resumeDownloadTask(Context context, DownloadInfo info) {
-        downloadModel.resumeDownloadTask(context, info);
-    }
-
-    @Override
-    public void cancelDownloadTask(Context context, DownloadInfo info) {
-        downloadModel.cancelDownloadTask(context, info);
-    }
-
-    @Override
-    public void cancelAllDownloadTasks(Context context, DownloadInfo info) {
-        downloadModel.cancelAllDownloadTasks(context, info);
+    public void queryAllDownloadInfo() {
+        downloadModel.queryAllDownloadInfo();
     }
 
     @Override
@@ -95,35 +53,6 @@ public class DownloadPresenterImp extends BasePresenter implements IDownloadPres
         queryDownloadView.onQueryDownloadInfo(infoList);
     }
 
-    @Override
-    public void onPushToDownloadQueue() {
-
-    }
-
-    @Override
-    public void onStartDownloadTask() {
-
-    }
-
-    @Override
-    public void onPauseDownloadTask() {
-
-    }
-
-    @Override
-    public void onPauseAllDownloadTasks() {
-
-    }
-
-    @Override
-    public void onCancelDownloadTask() {
-
-    }
-
-    @Override
-    public void onCancelAllDownloadTasks() {
-
-    }
 
     @Override
     public void onFail(Throwable throwable) {

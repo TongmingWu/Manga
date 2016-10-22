@@ -2,7 +2,6 @@ package com.tongming.manga.mvp.download;
 
 import com.orhanobut.logger.Logger;
 import com.tongming.manga.mvp.api.ApiManager;
-import com.tongming.manga.mvp.base.BaseApplication;
 import com.tongming.manga.mvp.bean.ComicPage;
 import com.tongming.manga.mvp.db.DBManager;
 import com.tongming.manga.server.DownloadInfo;
@@ -34,7 +33,7 @@ public class DownloadTask implements IDownloadTask, Comparable {
         this.queue = queue;
         this.info = info;
         this.position = position;
-        manager = new DBManager(BaseApplication.getContext());
+        manager = DBManager.getInstance();
         insertDownloadInfo();
     }
 
