@@ -318,7 +318,6 @@ public class PageActivity extends BaseActivity implements IPageView {
                     //不返回true,不拦截此处的事件 :( 绕了好久,为什么要这么傻去拦截...
                 }
                 //加载上一话
-                //TODO 如果图片大于屏幕的高度,出现问题
                 if ((manager.findFirstVisibleItemPosition() == 0)
                         || (!sp.getBoolean("isPortrait", true) && manager.findFirstVisibleItemPosition() == 0)) {
                     if (sp.getBoolean("isPortrait", true)) {
@@ -471,7 +470,7 @@ public class PageActivity extends BaseActivity implements IPageView {
     public void onPageCompleted(List<String> imgList) {
         if (this.imgList == null) {
             this.imgList = imgList;
-            adapter = new PageAdapter(this.imgList, this);
+            adapter = new PageAdapter(this.imgList, this, source);
             rvPage.setAdapter(adapter);
             isFirstLoad = false;
             Logger.d("第一次加载成功");
@@ -579,7 +578,7 @@ public class PageActivity extends BaseActivity implements IPageView {
             sp.edit().putBoolean("isPortrait", true).apply();
         }
         if (adapter != null && imgList != null) {
-            adapter = new PageAdapter(imgList, this);
+            adapter = new PageAdapter(imgList, this, source);
             rvPage.setAdapter(adapter);
             rvPage.addItemDecoration(new SpaceItemDecoration(30));
             manager.scrollToPosition(currentPage);

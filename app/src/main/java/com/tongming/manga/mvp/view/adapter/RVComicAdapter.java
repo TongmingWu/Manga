@@ -82,7 +82,7 @@ public class RVComicAdapter extends RecyclerView.Adapter<RVComicAdapter.ViewHold
                 ComicCard bean = comicList.get(position);
                 String cover = bean.getCover();
                 if (!TextUtils.isEmpty(cover)) {
-                    HeaderGlide.loadImage(mContext, bean.getCover(), holder.cover);
+                    HeaderGlide.loadImage(mContext, bean.getCover(), holder.cover, bean.getComic_source());
                 }
                 holder.comicName.setText(bean.getComic_name());
                 if ("".equals(bean.getNewest_chapter())) {
@@ -94,7 +94,7 @@ public class RVComicAdapter extends RecyclerView.Adapter<RVComicAdapter.ViewHold
             case HISTORY_COMIC:
                 HistoryComic comic = historyComics.get(position);
                 if (!TextUtils.isEmpty(comic.getCover())) {
-                    HeaderGlide.loadImage(mContext, comic.getCover(), holder.cover);
+                    HeaderGlide.loadImage(mContext, comic.getCover(), holder.cover, comic.getComic_source());
                 }
                 holder.comicName.setText(comic.getName());
                 holder.chapterName.setText(comic.getHistoryName());
@@ -102,7 +102,7 @@ public class RVComicAdapter extends RecyclerView.Adapter<RVComicAdapter.ViewHold
             case COLLECTION_COMIC:
                 CollectedComic collectedComic = collectedComics.get(position);
                 if (!TextUtils.isEmpty(collectedComic.getCover())) {
-                    HeaderGlide.loadImage(mContext, collectedComic.getCover(), holder.cover);
+                    HeaderGlide.loadImage(mContext, collectedComic.getCover(), holder.cover, collectedComic.getComic_source());
                 }
                 holder.comicName.setText(collectedComic.getName());
                 holder.chapterName.setText(collectedComic.getAuthor());
@@ -110,7 +110,7 @@ public class RVComicAdapter extends RecyclerView.Adapter<RVComicAdapter.ViewHold
             case DOWNLOAD_COMIC:
                 DownloadComic downloadComic = downloadComicList.get(position);
                 if (!TextUtils.isEmpty(downloadComic.getCover())) {
-                    HeaderGlide.loadImage(mContext, downloadComic.getCover(), holder.cover);
+                    HeaderGlide.loadImage(mContext, downloadComic.getCover(), holder.cover, downloadComic.getComic_source());
                 }
                 holder.comicName.setText(downloadComic.getName());
                 holder.comicName.setTextSize(15);

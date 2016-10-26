@@ -3,6 +3,7 @@ package com.tongming.manga.mvp.view.activity;
 import android.widget.ImageView;
 
 import com.tongming.manga.R;
+import com.tongming.manga.mvp.api.ApiManager;
 import com.tongming.manga.mvp.base.BaseActivity;
 import com.tongming.manga.util.HeaderGlide;
 
@@ -26,7 +27,7 @@ public class LocalActivity extends BaseActivity {
     protected void initView() {
         String url = "http://images.dmzj.com/img/chapterpic/20457/55239/14743796761525.jpg";
 
-        HeaderGlide.loadImage(this, url, ivTest);
+        HeaderGlide.loadImage(this, url, ivTest, ApiManager.SOURCE_DMZJ);
     }
 
 }

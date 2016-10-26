@@ -225,7 +225,7 @@ public class HomeFragment extends BaseFragment implements IHomeView {
                                 .load(url)
                                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                                 .into(imageView);*/
-                        HeaderGlide.loadImage(getContext(), data, imageView);
+                        HeaderGlide.loadImage(getContext(), data, imageView, hot.getBanner().get(position).getComic_source());
                     }
                 };
             }

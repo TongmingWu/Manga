@@ -126,7 +126,7 @@ public class ComicAdapter extends BaseAdapter {
             ComicCard bean = comicList.get(position);
             String cover = bean.getCover();
             if (!TextUtils.isEmpty(cover)) {
-                HeaderGlide.loadImage(mContext, bean.getCover(), holder.cover);
+                HeaderGlide.loadImage(mContext, bean.getCover(), holder.cover, bean.getComic_source());
             }
             holder.comicName.setText(bean.getComic_name());
             if ("".equals(bean.getNewest_chapter())) {
@@ -140,21 +140,21 @@ public class ComicAdapter extends BaseAdapter {
         } else if (historyComics != null) {
             HistoryComic comic = historyComics.get(position);
             if (!TextUtils.isEmpty(comic.getCover())) {
-                HeaderGlide.loadImage(mContext, comic.getCover(), holder.cover);
+                HeaderGlide.loadImage(mContext, comic.getCover(), holder.cover, comic.getComic_source());
             }
             holder.comicName.setText(comic.getName());
             holder.chapterName.setText(comic.getHistoryName());
         } else if (collectedComics != null) {
             CollectedComic comic = collectedComics.get(position);
             if (!TextUtils.isEmpty(comic.getCover())) {
-                HeaderGlide.loadImage(mContext, comic.getCover(), holder.cover);
+                HeaderGlide.loadImage(mContext, comic.getCover(), holder.cover, comic.getComic_source());
             }
             holder.comicName.setText(comic.getName());
             holder.chapterName.setText(comic.getAuthor());
         } else {
             DownloadComic comic = downloadComicList.get(position);
             if (!TextUtils.isEmpty(comic.getCover())) {
-                HeaderGlide.loadImage(mContext, comic.getCover(), holder.cover);
+                HeaderGlide.loadImage(mContext, comic.getCover(), holder.cover, comic.getComic_source());
             }
             /*Glide.with(mContext)
                     .load(comic.getCover())

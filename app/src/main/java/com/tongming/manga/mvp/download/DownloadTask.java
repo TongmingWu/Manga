@@ -119,7 +119,7 @@ public class DownloadTask implements IDownloadTask, Comparable {
 
     private void downloadImage() {
         ApiManager.getInstance()
-                .downloadImage(imgs.get(info.getPosition()))
+                .downloadImage(imgs.get(info.getPosition()), info.getComic_source())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<ResponseBody>() {

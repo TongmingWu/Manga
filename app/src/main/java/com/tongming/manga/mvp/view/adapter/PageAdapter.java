@@ -16,7 +16,9 @@ import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.load.model.LazyHeaders;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 import com.tongming.manga.R;
+import com.tongming.manga.mvp.api.ApiManager;
 import com.tongming.manga.util.CommonUtil;
+import com.tongming.manga.util.HeaderGlide;
 
 import java.util.List;
 
@@ -32,10 +34,16 @@ public class PageAdapter extends RecyclerView.Adapter<PageAdapter.PageHolder> {
     private Context mContext;
     private int height;
     private int width;
+    private String SOURCE_URL;
 
-    public PageAdapter(List<String> picList, Context mContext) {
+    public PageAdapter(List<String> picList, Context mContext, String source) {
         this.picList = picList;
         this.mContext = mContext;
+        if (source.equals(ApiManager.SOURCE_DMZJ)) {
+            SOURCE_URL = HeaderGlide.URL_DMZJ;
+        } else if (source.equals(ApiManager.SOURCE_IKAN)) {
+            SOURCE_URL = HeaderGlide.URL_IKAN;
+        }
         height = CommonUtil.getDeviceHeight((Activity) mContext);
         width = CommonUtil.getDeviceWidth((Activity) mContext);
     }
@@ -50,10 +58,9 @@ public class PageAdapter extends RecyclerView.Adapter<PageAdapter.PageHolder> {
     @Override
     public void onBindViewHolder(final PageAdapter.PageHolder holder, final int position) {
         scaleImageView(1.78f, holder);
-//        HeaderGlide.loadPage(mContext, picList.get(position), holder.ivPage);
 
-        GlideUrl glideUrl = new GlideUrl(picList.get(position), new LazyHeaders.Builder()
-                .addHeader("Referer", "http://m.dmzj.com/")
+        final GlideUrl glideUrl = new GlideUrl(picList.get(position), new LazyHeaders.Builder()
+                .addHeader("Referer", SOURCE_URL)
                 .build());
         Glide.with(mContext)
                 .load(glideUrl)
@@ -92,7 +99,7 @@ public class PageAdapter extends RecyclerView.Adapter<PageAdapter.PageHolder> {
         @BindView(R.id.iv_page)
         ImageView ivPage;
 
-        public PageHolder(View itemView) {
+        PageHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }

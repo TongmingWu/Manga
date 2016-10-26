@@ -23,6 +23,7 @@ import rx.schedulers.Schedulers;
 public class PageModel implements IPageModel {
 
     private onGetPageListener onGetPageListener;
+    private String source;
 
     public PageModel(PageModel.onGetPageListener onGetPageListener) {
         this.onGetPageListener = onGetPageListener;
@@ -30,6 +31,7 @@ public class PageModel implements IPageModel {
 
     @Override
     public Subscription getPage(String source, String chapterUrl) {
+        this.source = source;
         return ApiManager.getInstance().getComicPage(source, chapterUrl)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -72,7 +74,7 @@ public class PageModel implements IPageModel {
                     @Override
                     public void onNext(String s) {
                         if (!TextUtils.isEmpty(s)) {
-                            HeaderGlide.downloadImage(mContext, s);
+                            HeaderGlide.downloadImage(mContext, s, source);
                         }
                     }
                 });

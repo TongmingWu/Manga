@@ -113,8 +113,8 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
         toolbar.setTitle(intent.getStringExtra("name"));
         String cover = intent.getStringExtra("cover");
         if (!TextUtils.isEmpty(cover)) {
-            HeaderGlide.loadImage(this, cover, ivCover);
-            HeaderGlide.loadBitmap(this, cover, ivBlur);
+            HeaderGlide.loadImage(this, cover, ivCover, intent.getStringExtra("source"));
+            HeaderGlide.loadBitmap(this, cover, ivBlur, intent.getStringExtra("source"));
             isCover = true;
             getWindow().getSharedElementEnterTransition().addListener(new Transition.TransitionListener() {
                 @Override
@@ -188,8 +188,8 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
         }
         String cover = comicInfo.getCover();
         if (!isCover) {
-            HeaderGlide.loadImage(this, cover, ivCover);
-            HeaderGlide.loadBitmap(this, cover, ivBlur);
+            HeaderGlide.loadImage(this, cover, ivCover, info.getComic_source());
+            HeaderGlide.loadBitmap(this, cover, ivBlur, info.getComic_source());
         }
         tvComicName.setText(this.comicInfo.getComic_name());
         tvComicAuthor.setText("作者:  " + comicInfo.getComic_author());
@@ -317,6 +317,7 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
 
     private int getHistoryPos(String historyUrl) {
         for (int i = 0; i < chapterList.size(); i++) {
+            Logger.d(chapterList.get(i).getChapter_url());
             if (chapterList.get(i).getChapter_url().equals(historyUrl)) {
                 return i;
             }
@@ -411,8 +412,6 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
                 isRead = true;
                 Logger.d("添加阅读记录");
             }
-            /*adapter = new ChapterAdapter(chapterList, getHistoryPos(historyUrl), this);
-            gvChapter.setAdapter(adapter);*/
             adapter.setHistoryPos(getHistoryPos(historyUrl));
             adapter.notifyDataSetChanged();
         }

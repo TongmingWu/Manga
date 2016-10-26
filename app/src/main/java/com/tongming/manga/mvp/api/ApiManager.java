@@ -201,11 +201,13 @@ public class ApiManager {
         return apiService.queryCollection(uid, name);
     }
 
-    public Observable<ResponseBody> downloadImage(String url) {
+    public Observable<ResponseBody> downloadImage(String url, String source) {
         Observable<ResponseBody> observable = null;
         if (source.equals(SOURCE_DMZJ)) {
             observable = apiService.downloadImageByDMZJ(url);
         } else if (source.equals(SOURCE_IKAN)) {
+            observable = apiService.downloadImageByIKAN(url);
+        } else {
             observable = apiService.downloadImageByIKAN(url);
         }
         return observable;
