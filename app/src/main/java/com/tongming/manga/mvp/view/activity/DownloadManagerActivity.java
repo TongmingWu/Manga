@@ -294,6 +294,7 @@ public class DownloadManagerActivity extends BaseActivity implements IQueryDownl
                 DownloadComic comic = new DownloadComic();
                 comic.setComic_id(info.getComic_id());
                 comic.setCover(info.getCover());
+                comic.setComic_source(info.getComic_source());
                 comic.setName(info.getComic_name());
                 comicList.add(comic);
             }
@@ -342,6 +343,9 @@ public class DownloadManagerActivity extends BaseActivity implements IQueryDownl
         if (conn != null) {
             conn.getManager().removeQueueListener();
             unbindService(conn);
+        }
+        if (presenter != null) {
+            presenter.closeDB();
         }
     }
 }

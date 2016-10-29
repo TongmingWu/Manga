@@ -45,6 +45,7 @@ public class DownloadDetailActivity extends BaseActivity implements IQueryDownlo
     private boolean serviceStarted;
     private boolean isStart;
     private String cid;
+    private DownloadPresenterImp downloadPresenterImp;
 
     @Override
     protected int getLayoutId() {
@@ -67,7 +68,10 @@ public class DownloadDetailActivity extends BaseActivity implements IQueryDownlo
         super.onResume();
         Intent intent = getIntent();
         cid = intent.getStringExtra("cid");
-        new DownloadPresenterImp(this).queryDownloadInfo(cid);
+        if (downloadPresenterImp == null) {
+            downloadPresenterImp = new DownloadPresenterImp(this);
+        }
+        downloadPresenterImp.queryDownloadInfo(cid);
         serviceStarted = CommonUtil.isServiceStarted(this, DownloadManager.class.getName());
         if (serviceStarted && conn == null) {
             //绑定Service
@@ -80,6 +84,7 @@ public class DownloadDetailActivity extends BaseActivity implements IQueryDownlo
         //tvControl控制整个队列的开始暂停
         try {
             if (serviceStarted && binder != null) {
+                isStart = conn.getManager().checkQueueStatus(cid);
                 if (isStart) {
                     binder.pauseQueue(cid);
                     isStart = false;
@@ -92,11 +97,16 @@ public class DownloadDetailActivity extends BaseActivity implements IQueryDownlo
             } else {
                 //默认情况下是暂停状态
                 Intent intent = new Intent(this, DownloadManager.class);
-                intent.putExtra("cid", cid);
                 startService(intent);
                 serviceStarted = true;
                 if (conn == null) {
-                    conn = new DownloadConnection(this, DownloadConnection.DOWNLOAD_TASK);
+                    conn = new DownloadConnection(this, DownloadConnection.DOWNLOAD_TASK, new DownloadConnection.OnConnectedListener() {
+                        @Override
+                        public void onServiceConnected() {
+                            //连接成功
+                            conn.getManager().queryDownloadInfoByCid(cid);
+                        }
+                    });
                     bindService(intent, conn, BIND_AUTO_CREATE);
                     isStart = true;
                     tvControl.setText("全部暂停");
@@ -178,13 +188,14 @@ public class DownloadDetailActivity extends BaseActivity implements IQueryDownlo
             infoList.addAll(list);
             adapter.notifyDataSetChanged();
         }
-        if (list.size() != 0) {
+        if (infoList.size() != 0) {
             tvDirectory.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(DownloadDetailActivity.this, ComicDetailActivity.class);
                     intent.putExtra("name", infoList.get(0).getComic_name());
                     intent.putExtra("url", infoList.get(0).getComic_url());
+                    intent.putExtra("source", infoList.get(0).getComic_source());
                     startActivity(intent);
                 }
             });
@@ -330,6 +341,9 @@ public class DownloadDetailActivity extends BaseActivity implements IQueryDownlo
         if (conn != null) {
             conn.getManager().removeTaskListener();
             unbindService(conn);
+        }
+        if (presenter != null) {
+            presenter.closeDB();
         }
     }
 }

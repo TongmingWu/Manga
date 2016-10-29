@@ -1,5 +1,6 @@
 package com.tongming.manga.mvp.download;
 
+import com.tongming.manga.mvp.db.DBManager;
 import com.tongming.manga.server.DownloadInfo;
 
 /**
@@ -35,6 +36,8 @@ public interface IDownloadManager {
     void onTaskRestart(DownloadInfo info);
 
     void onTaskComplete(DownloadInfo info);
+
+    DBManager getDBManager();
 
     void onTaskFail(DownloadInfo info);
 }

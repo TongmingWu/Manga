@@ -185,7 +185,7 @@ public class CollectionFragment extends BaseFragment implements ICollectView {
 
     }
 
-    private void showNothing(){
+    private void showNothing() {
         //未收藏任何漫画
 
     }
@@ -199,5 +199,13 @@ public class CollectionFragment extends BaseFragment implements ICollectView {
     @Override
     public void onFail(Throwable throwable) {
         Logger.e(throwable.getMessage());
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (presenter != null) {
+            presenter.closeDB();
+        }
     }
 }

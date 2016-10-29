@@ -155,9 +155,9 @@ public class PageActivity extends BaseActivity implements IPageView {
 
     @Override
     protected void initView() {
-        Glide.get(this).clearMemory();  //清除内存缓存
-        CommonUtil.requireScreenOn(this);   //屏幕常亮
-        handler.postDelayed(runnable, 1000 * 60);      //时间定时器
+        Glide.get(this).clearMemory();
+        CommonUtil.requireScreenOn(this);
+        handler.postDelayed(runnable, 1000 * 60);
         sp = getSharedPreferences("config", MODE_PRIVATE);
         isVertical = sp.getBoolean("isVertical", true);
         source = getIntent().getStringExtra("source");
@@ -185,8 +185,6 @@ public class PageActivity extends BaseActivity implements IPageView {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                //停止拖动时跳转图片
-                //先计算,再跳转
                 int position = calculateSB(progress);
                 calculatePos(position);
                 rvPage.scrollToPosition(position);
@@ -335,20 +333,16 @@ public class PageActivity extends BaseActivity implements IPageView {
                     //点击屏幕左右边缘切页
                     if (Math.abs(firstY - height / 2) < 500 && Math.abs(ev.getRawX() - firstX) < 10f) {
                         if (firstX < width / 3) {
-                            //上一页
                             if (manager.findFirstVisibleItemPosition() == 0) {
                                 loadPre();
                             } else {
                                 rvPage.smoothScrollToPosition(manager.findFirstVisibleItemPosition() - 1);
-//                                rvPage.smoothScrollBy(-width, 0);
                             }
                         } else if (firstX > width / 3 * 2) {
-                            //下一页
                             if (manager.findLastVisibleItemPosition() == manager.getItemCount() - 1) {
                                 loadNext();
                             } else {
                                 rvPage.smoothScrollToPosition(manager.findLastVisibleItemPosition() + 1);
-//                                rvPage.smoothScrollBy(width, 0);
                             }
                         }
                         calculatePos(manager.findFirstVisibleItemPosition());
@@ -363,7 +357,6 @@ public class PageActivity extends BaseActivity implements IPageView {
     private void loadPre() {
         if (!isLoadPre && !TextUtils.isEmpty(preUrl)) {
             ((PagePresenterImp) presenter).getPage(source, preUrl);
-            Logger.d("开始加载上一话");
             isLoadPre = true;
         } else if (TextUtils.isEmpty(preUrl)) {
             Toast.makeText(PageActivity.this, "这是第一话哦", Toast.LENGTH_SHORT).show();
@@ -372,7 +365,6 @@ public class PageActivity extends BaseActivity implements IPageView {
 
     private void loadNext() {
         if (!TextUtils.isEmpty(nextUrl) && !isLoadNext && !isFirstLoad) {
-            Logger.d("开始加载下一章");
             ((PagePresenterImp) presenter).getPage(source, nextUrl);
             isLoadNext = true;
         } else if (TextUtils.isEmpty(nextUrl)) {
@@ -385,15 +377,15 @@ public class PageActivity extends BaseActivity implements IPageView {
     }
 
     private void showController() {
-        ObjectAnimator.ofFloat(rlTopBar, "translationY", 0).start();
-        ObjectAnimator.ofFloat(rlBottomBar, "translationY", 0).start();
+        ObjectAnimator.ofFloat(rlTopBar, "translationY", -rlTopBar.getHeight(), 0).start();
+        ObjectAnimator.ofFloat(rlBottomBar, "translationY", rlBottomBar.getHeight(), 0).start();
 //        ObjectAnimator.ofFloat(rlBright, "translationX", 0).start();
         isControllerShowing = true;
     }
 
     private void hideController() {
-        ObjectAnimator.ofFloat(rlTopBar, "translationY", -rlTopBar.getHeight()).start();
-        ObjectAnimator.ofFloat(rlBottomBar, "translationY", rlBottomBar.getHeight()).start();
+        ObjectAnimator.ofFloat(rlTopBar, "translationY", 0, -rlTopBar.getHeight()).start();
+        ObjectAnimator.ofFloat(rlBottomBar, "translationY", 0, rlBottomBar.getHeight()).start();
 //        ObjectAnimator.ofFloat(rlBright, "translationX", -rlBright.getWidth()).start();
         isControllerShowing = false;
     }
@@ -420,7 +412,7 @@ public class PageActivity extends BaseActivity implements IPageView {
             urlList = new ArrayList<>();
         }
         String chapterName = page.getChapter_name();
-        Matcher matcher = Pattern.compile("第?\\d+[话卷集]").matcher(chapterName);
+        Matcher matcher = Pattern.compile("第?\\d+[话卷集回]").matcher(chapterName);
         if (matcher.find()) {
             chapterName = matcher.group(0);
         }
@@ -446,22 +438,13 @@ public class PageActivity extends BaseActivity implements IPageView {
             nameList.add(chapterName);
             numList.add(page.getPage_count());
             urlList.add(page.getCurrent_chapter_url());
-            if (page.isNext()) {
-                nextUrl = page.getNext_chapter_url();
-            } else {
-                nextUrl = null;
-            }
+            nextUrl = page.isNext() ? page.getNext_chapter_url() : null;
             ((PagePresenterImp) presenter).cacheImg(this, page.getImg_list(), false);
         } else {
             nameList.add(0, chapterName);
             numList.add(0, page.getPage_count());
             urlList.add(0, page.getCurrent_chapter_url());
-            Logger.d("当前的urlList = :" + urlList.toString());
-            if (page.isPrepare()) {
-                preUrl = page.getPre_chapter_url();
-            } else {
-                preUrl = null;
-            }
+            preUrl = page.isPrepare() ? page.getPre_chapter_url() : null;
             ((PagePresenterImp) presenter).cacheImg(this, page.getImg_list(), true);
         }
     }
@@ -473,28 +456,20 @@ public class PageActivity extends BaseActivity implements IPageView {
             adapter = new PageAdapter(this.imgList, this, source);
             rvPage.setAdapter(adapter);
             isFirstLoad = false;
-            Logger.d("第一次加载成功");
         } else {
             int itemCount = imgList.size();
             int startPos = 0;
             if (isLoadNext) {
-                Logger.d("加载下一话成功");
                 isLoadNext = false;
                 startPos = this.imgList.size();
                 this.imgList.addAll(imgList);
-//                adapter.notifyDataSetChanged();
                 adapter.notifyItemRangeInserted(startPos, itemCount);
             } else if (isLoadPre) {
-                Logger.d("加载上一话成功");
                 isLoadPre = false;
                 this.imgList.addAll(0, imgList);
-//                adapter.notifyDataSetChanged();
                 adapter.notifyItemRangeInserted(startPos, itemCount);
                 manager.scrollToPosition(imgList.size());
             }
-            /*sbPage.setMax(manager.getItemCount());
-            Logger.d("sb的最大值为:" + sbPage.getMax());
-            sbPage.setProgress(manager.findFirstCompletelyVisibleItemPosition());*/
         }
     }
 
@@ -514,7 +489,6 @@ public class PageActivity extends BaseActivity implements IPageView {
     @Override
     public void onBackPressed() {
         setResult(resultName);
-        Logger.d("在back中setResult");
         handler.removeCallbacks(runnable);
         super.onBackPressed();
     }
@@ -563,7 +537,6 @@ public class PageActivity extends BaseActivity implements IPageView {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        Logger.d("configChanged");
         int width = CommonUtil.getScreenWidth(this);
         int height = CommonUtil.getScreenHeight(this);
         if (height < width) {
@@ -588,7 +561,6 @@ public class PageActivity extends BaseActivity implements IPageView {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PAGE_REQUEST_CODE) {
-            Logger.d("设置回调处理");
             if (sp.getBoolean("isVertical", true) != isVertical) {
                 //配置发生改变
                 isVertical = sp.getBoolean("isVertical", true);

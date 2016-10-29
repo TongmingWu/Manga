@@ -4,7 +4,6 @@ import com.tongming.manga.mvp.base.BasePresenter;
 import com.tongming.manga.mvp.bean.CollectedComic;
 import com.tongming.manga.mvp.bean.UserInfo;
 import com.tongming.manga.mvp.modle.CollectModel;
-import com.tongming.manga.mvp.modle.ICollectModel;
 import com.tongming.manga.mvp.view.activity.ICollectView;
 
 import java.util.List;
@@ -14,27 +13,26 @@ import java.util.List;
  */
 public class CollectPresenterImp extends BasePresenter implements ICollectPresenter, CollectModel.OnCollectListener {
 
-    private ICollectModel collectModel;
     private ICollectView collectView;
 
     public CollectPresenterImp(ICollectView collectView) {
         this.collectView = collectView;
-        collectModel = new CollectModel(this);
+        baseModel = new CollectModel(this);
     }
 
     @Override
     public void queryAllCollect() {
-        addSubscription(collectModel.queryAllCollect());
+        addSubscription(((CollectModel) baseModel).queryAllCollect());
     }
 
     @Override
     public void deleteCollectByName(String name) {
-        collectModel.deleteCollectByName(name);
+        ((CollectModel) baseModel).deleteCollectByName(name);
     }
 
     @Override
     public void deleteAllCollect() {
-        collectModel.deleteAllCollect();
+        ((CollectModel) baseModel).deleteAllCollect();
     }
 
     @Override
@@ -44,7 +42,7 @@ public class CollectPresenterImp extends BasePresenter implements ICollectPresen
 
     @Override
     public void deleteCollectOnNet(String name) {
-        addSubscription(collectModel.deleteCollectOnNet(name));
+        addSubscription(((CollectModel) baseModel).deleteCollectOnNet(name));
     }
 
     @Override

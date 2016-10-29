@@ -22,72 +22,41 @@ public class DownloadInfo implements Parcelable {
     private int total;
     private int create_time;
 
-    public void setComic_source(String comic_source) {
-        this.comic_source = comic_source;
+    public DownloadInfo(){}
+
+    protected DownloadInfo(Parcel in) {
+        _id = in.readInt();
+        comic_id = in.readInt();
+        comic_name = in.readString();
+        comic_url = in.readString();
+        chapter_name = in.readString();
+        chapter_url = in.readString();
+        cover = in.readString();
+        comic_source = in.readString();
+        status = in.readInt();
+        position = in.readInt();
+        total = in.readInt();
+        create_time = in.readInt();
     }
 
-    public String getComic_source() {
+    public static final Creator<DownloadInfo> CREATOR = new Creator<DownloadInfo>() {
+        @Override
+        public DownloadInfo createFromParcel(Parcel in) {
+            return new DownloadInfo(in);
+        }
 
-        return comic_source;
-    }
+        @Override
+        public DownloadInfo[] newArray(int size) {
+            return new DownloadInfo[size];
+        }
+    };
 
-    public void setComic_id(int comic_id) {
-        this.comic_id = comic_id;
+    public int get_id() {
+        return _id;
     }
 
     public int getComic_id() {
-
         return comic_id;
-    }
-
-    public void setCover(String cover) {
-        this.cover = cover;
-    }
-
-    public String getCover() {
-
-        return cover;
-    }
-
-    public void set_id(int _id) {
-        this._id = _id;
-    }
-
-    public void setComic_name(String comic_name) {
-        this.comic_name = comic_name;
-    }
-
-    public void setComic_url(String comic_url) {
-        this.comic_url = comic_url;
-    }
-
-    public void setChapter_name(String chapter_name) {
-        this.chapter_name = chapter_name;
-    }
-
-    public void setChapter_url(String chapter_url) {
-        this.chapter_url = chapter_url;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
-    public void setPosition(int position) {
-        this.position = position;
-    }
-
-    public void setTotal(int total) {
-        this.total = total;
-    }
-
-    public void setCreate_time(int create_time) {
-        this.create_time = create_time;
-    }
-
-    public int get_id() {
-
-        return _id;
     }
 
     public String getComic_name() {
@@ -104,6 +73,14 @@ public class DownloadInfo implements Parcelable {
 
     public String getChapter_url() {
         return chapter_url;
+    }
+
+    public String getCover() {
+        return cover;
+    }
+
+    public String getComic_source() {
+        return comic_source;
     }
 
     public int getStatus() {
@@ -129,45 +106,17 @@ public class DownloadInfo implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this._id);
-        dest.writeInt(this.comic_id);
-        dest.writeString(this.comic_name);
-        dest.writeString(this.comic_url);
-        dest.writeString(this.chapter_name);
-        dest.writeString(this.chapter_url);
-        dest.writeString(this.cover);
-        dest.writeInt(this.status);
-        dest.writeInt(this.position);
-        dest.writeInt(this.total);
-        dest.writeInt(this.create_time);
+        dest.writeInt(_id);
+        dest.writeInt(comic_id);
+        dest.writeString(comic_name);
+        dest.writeString(comic_url);
+        dest.writeString(chapter_name);
+        dest.writeString(chapter_url);
+        dest.writeString(cover);
+        dest.writeString(comic_source);
+        dest.writeInt(status);
+        dest.writeInt(position);
+        dest.writeInt(total);
+        dest.writeInt(create_time);
     }
-
-    public DownloadInfo() {
-    }
-
-    protected DownloadInfo(Parcel in) {
-        this._id = in.readInt();
-        this.comic_id = in.readInt();
-        this.comic_name = in.readString();
-        this.comic_url = in.readString();
-        this.chapter_name = in.readString();
-        this.chapter_url = in.readString();
-        this.cover = in.readString();
-        this.status = in.readInt();
-        this.position = in.readInt();
-        this.total = in.readInt();
-        this.create_time = in.readInt();
-    }
-
-    public static final Creator<DownloadInfo> CREATOR = new Creator<DownloadInfo>() {
-        @Override
-        public DownloadInfo createFromParcel(Parcel source) {
-            return new DownloadInfo(source);
-        }
-
-        @Override
-        public DownloadInfo[] newArray(int size) {
-            return new DownloadInfo[size];
-        }
-    };
 }

@@ -1,5 +1,6 @@
 package com.tongming.manga.mvp.modle;
 
+import com.tongming.manga.mvp.base.BaseModel;
 import com.tongming.manga.mvp.db.DBManager;
 import com.tongming.manga.server.DownloadInfo;
 
@@ -8,7 +9,6 @@ import java.util.List;
 
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -16,17 +16,17 @@ import rx.schedulers.Schedulers;
  * Date: 2016/9/8
  */
 
-public class DownloadModel implements IDownloadModel {
+public class DownloadModel extends BaseModel implements IDownloadModel {
 
     private onDownloadListener onDownloadListener;
 
     public DownloadModel(DownloadModel.onDownloadListener onDownloadListener) {
         this.onDownloadListener = onDownloadListener;
+        manager = DBManager.getInstance();
     }
 
     @Override
     public void queryDownloadInfo(String cid) {
-        final DBManager manager = DBManager.getInstance();
         manager
                 .queryDownloadInfoByCid(cid)
                 .subscribeOn(Schedulers.io())
@@ -35,38 +35,45 @@ public class DownloadModel implements IDownloadModel {
                     @Override
                     public void onCompleted() {
                         this.unsubscribe();
-                        manager.closeDB();
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         onDownloadListener.onFail(e);
-                        manager.closeDB();
+                        this.unsubscribe();
                     }
 
                     @Override
                     public void onNext(List<DownloadInfo> infoList) {
                         Collections.sort(infoList);
                         onDownloadListener.onQueryDownloadInfo(infoList);
+                        this.unsubscribe();
                     }
                 });
     }
 
     @Override
     public void queryDownloadInfo(String name, int status) {
-        DBManager.getInstance()
+        manager
                 .queryDownloadInfo(name, status)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<DownloadInfo>>() {
+                .subscribe(new Subscriber<List<DownloadInfo>>() {
                     @Override
-                    public void call(List<DownloadInfo> infoList) {
-                        onDownloadListener.onQueryDownloadInfo(infoList);
+                    public void onCompleted() {
+                        this.unsubscribe();
                     }
-                }, new Action1<Throwable>() {
+
                     @Override
-                    public void call(Throwable throwable) {
-                        onDownloadListener.onFail(throwable);
+                    public void onError(Throwable e) {
+                        onDownloadListener.onFail(e);
+                        this.unsubscribe();
+                    }
+
+                    @Override
+                    public void onNext(List<DownloadInfo> infoList) {
+                        onDownloadListener.onQueryDownloadInfo(infoList);
+                        this.unsubscribe();
                     }
                 });
     }
@@ -78,19 +85,26 @@ public class DownloadModel implements IDownloadModel {
 
     @Override
     public void queryAllDownloadInfo() {
-        DBManager.getInstance()
+        manager
                 .queryAllDownloadInfo()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<DownloadInfo>>() {
+                .subscribe(new Subscriber<List<DownloadInfo>>() {
                     @Override
-                    public void call(List<DownloadInfo> infoList) {
-                        onDownloadListener.onQueryAllDownloadInfo(infoList);
+                    public void onCompleted() {
+                        this.unsubscribe();
                     }
-                }, new Action1<Throwable>() {
+
                     @Override
-                    public void call(Throwable throwable) {
-                        onDownloadListener.onFail(throwable);
+                    public void onError(Throwable e) {
+                        onDownloadListener.onFail(e);
+                        this.unsubscribe();
+                    }
+
+                    @Override
+                    public void onNext(List<DownloadInfo> infoList) {
+                        onDownloadListener.onQueryAllDownloadInfo(infoList);
+                        this.unsubscribe();
                     }
                 });
     }

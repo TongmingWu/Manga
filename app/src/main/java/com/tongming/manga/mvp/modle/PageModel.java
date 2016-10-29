@@ -4,7 +4,9 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.tongming.manga.mvp.api.ApiManager;
+import com.tongming.manga.mvp.base.BaseModel;
 import com.tongming.manga.mvp.bean.ComicPage;
+import com.tongming.manga.mvp.db.DBManager;
 import com.tongming.manga.util.HeaderGlide;
 
 import java.util.Collections;
@@ -20,18 +22,41 @@ import rx.schedulers.Schedulers;
 /**
  * Created by Tongming on 2016/8/11.
  */
-public class PageModel implements IPageModel {
+public class PageModel extends BaseModel implements IPageModel {
 
     private onGetPageListener onGetPageListener;
     private String source;
 
     public PageModel(PageModel.onGetPageListener onGetPageListener) {
         this.onGetPageListener = onGetPageListener;
+        manager = DBManager.getInstance();
     }
 
     @Override
     public Subscription getPage(String source, String chapterUrl) {
         this.source = source;
+        /*manager
+                .queryDownloadInfo(chapterUrl)
+                .subscribe(new Subscriber<List<DownloadInfo>>() {
+                    @Override
+                    public void onCompleted() {
+                        this.unsubscribe();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Logger.e(e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(List<DownloadInfo> infoList) {
+                        if (infoList.size() > 0 && infoList.get(0).getStatus() == DownloadInfo.COMPLETE) {
+
+                        } else {
+
+                        }
+                    }
+                });*/
         return ApiManager.getInstance().getComicPage(source, chapterUrl)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

@@ -317,7 +317,6 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
 
     private int getHistoryPos(String historyUrl) {
         for (int i = 0; i < chapterList.size(); i++) {
-            Logger.d(chapterList.get(i).getChapter_url());
             if (chapterList.get(i).getChapter_url().equals(historyUrl)) {
                 return i;
             }
@@ -337,8 +336,7 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
 
     @Override
     public void onQueryHistory(String historyName, String historyUrl) {
-        if (!TextUtils.isEmpty(historyName)) {
-            Logger.d("读取阅读记录成功:" + historyUrl);
+        if (!TextUtils.isEmpty(historyName) && !TextUtils.isEmpty(historyUrl)) {
             isRead = true;      //判断是否看过
             this.historyName = historyName;
             this.historyUrl = historyUrl;
@@ -460,5 +458,8 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (presenter != null) {
+            presenter.closeDB();
+        }
     }
 }

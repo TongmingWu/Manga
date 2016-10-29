@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 
 import com.orhanobut.logger.Logger;
 import com.tongming.manga.mvp.bean.ComicInfo;
+import com.tongming.manga.mvp.db.DBManager;
 import com.tongming.manga.mvp.presenter.DownloadPresenterImp;
 import com.tongming.manga.mvp.view.activity.IQueryDownloadView;
 import com.tongming.manga.server.DownloadInfo;
@@ -33,6 +34,7 @@ public class DownloadManager extends Service implements IDownloadManager, IQuery
     public static final int STOP_QUEUE = 4;
 
     private int status;
+    private DBManager manager;
 
     public static final int WAIT = 0x00010;
     public static final int DOWNLOAD = 0x00020;
@@ -40,10 +42,14 @@ public class DownloadManager extends Service implements IDownloadManager, IQuery
     public static final int COMPLETE = 0x00040;
     public static final int STOP = 0x00050;
 
+    public static final int START_TYPE_DETAIL = Integer.MIN_VALUE;
+
     private Set<DownloadTaskQueue> queueList;
     private DownloadBinder binder;
     private OnQueueListener onQueueListener;
     private onTaskListener onTaskListener;
+    private String cid;
+    private DownloadPresenterImp downloadPresenterImp;
 
 
     @Nullable
@@ -54,12 +60,15 @@ public class DownloadManager extends Service implements IDownloadManager, IQuery
         DownloadInfo download = intent.getParcelableExtra("download");
         if (cid != null) {
             //查询下载信息
-            new DownloadPresenterImp(this).queryDownloadInfo(cid);
+            queryDownloadInfoByCid(cid);
         } else if (download != null) {
             //根据单个downloadInfo建立下载队列
             ArrayList<DownloadInfo> list = new ArrayList<>();
             list.add(download);
             addQueue(download.getComic_id(), list);
+        }
+        if (manager == null) {
+            manager = DBManager.getInstance();
         }
         return binder;
     }
@@ -76,7 +85,17 @@ public class DownloadManager extends Service implements IDownloadManager, IQuery
                 addQueue(comicId, list);
             }
         }
+        if (manager == null) {
+            manager = DBManager.getInstance();
+        }
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    public void queryDownloadInfoByCid(String cid) {
+        if (downloadPresenterImp == null) {
+            downloadPresenterImp = new DownloadPresenterImp(this);
+        }
+        downloadPresenterImp.queryDownloadInfo(cid);
     }
 
     private void addQueue(String cid, List<DownloadInfo> list) {
@@ -94,7 +113,9 @@ public class DownloadManager extends Service implements IDownloadManager, IQuery
             queue.startQueue();
             status = DOWNLOAD;
         } else {
-            queue.waitQueue();
+            if (queue.getStatus() != DownloadTaskQueue.DOWNLOAD) {
+                queue.waitQueue();
+            }
         }
     }
 
@@ -138,6 +159,17 @@ public class DownloadManager extends Service implements IDownloadManager, IQuery
             }
         }
         return null;
+    }
+
+    public boolean checkQueueStatus(String cid) {
+        if (queueList != null) {
+            for (DownloadTaskQueue queue : queueList) {
+                if (cid.equals(queue.getCid()) && queue.getStatus() == DownloadTaskQueue.DOWNLOAD) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public boolean hasDownloadQueue() {
@@ -399,6 +431,7 @@ public class DownloadManager extends Service implements IDownloadManager, IQuery
                                 break;
                             case RESUME_QUEUE:
                                 if (status != DOWNLOAD) {
+                                    //...
                                     queue.resumeQueue();
                                     status = DOWNLOAD;
                                 } else {
@@ -490,6 +523,11 @@ public class DownloadManager extends Service implements IDownloadManager, IQuery
                 }
             }
         }
+    }
+
+    @Override
+    public DBManager getDBManager() {
+        return manager == null ? DBManager.getInstance() : manager;
     }
 
     public void setStatus(int status) {

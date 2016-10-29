@@ -1,6 +1,7 @@
 package com.tongming.manga.mvp.download;
 
 import com.orhanobut.logger.Logger;
+import com.tongming.manga.mvp.db.DBManager;
 import com.tongming.manga.server.DownloadInfo;
 
 import java.util.ArrayList;
@@ -67,10 +68,8 @@ public class DownloadTaskQueue implements IDownloadTaskQueue, Comparable {
             taskList = new ArrayList<>();
         }
         this.infoList.addAll(infoList);
-        int position = taskList.size();
         for (DownloadInfo info : infoList) {
-            taskList.add(new DownloadTask(this, info, position));
-            position++;
+            taskList.add(new DownloadTask(this, info));
         }
         Logger.d("addTask");
     }
@@ -187,7 +186,6 @@ public class DownloadTaskQueue implements IDownloadTaskQueue, Comparable {
     @Override
     public void onTaskWait(DownloadInfo info) {
         manager.onTaskWait(info);
-        //队列中没有DOWNLOAD的task的话,那么队列为等待状态
         int waitSize = 0;
         int pauseSize = 0;
         boolean isDownload = false;
@@ -339,6 +337,11 @@ public class DownloadTaskQueue implements IDownloadTaskQueue, Comparable {
                 break;
             }
         }
+    }
+
+    @Override
+    public DBManager getDBManager() {
+        return manager.getDBManager();
     }
 
     public List<DownloadTask> getTaskList() {

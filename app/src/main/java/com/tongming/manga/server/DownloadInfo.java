@@ -30,35 +30,20 @@ public class DownloadInfo implements Parcelable, Comparable {
     private int total;
     private int create_time;
 
-    public void setComic_source(String comic_source) {
-        this.comic_source = comic_source;
+    public DownloadInfo(){
+
     }
 
-    public String getComic_source() {
-
-        return comic_source;
-    }
-
-    public void setComic_id(String comic_id) {
-        this.comic_id = comic_id;
-    }
-
-    public String getComic_id() {
-
-        return comic_id;
-    }
-
-    public void setCover(String cover) {
-        this.cover = cover;
-    }
-
-    public String getCover() {
-
-        return cover;
+    public int get_id() {
+        return _id;
     }
 
     public void set_id(int _id) {
         this._id = _id;
+    }
+
+    public void setComic_id(String comic_id) {
+        this.comic_id = comic_id;
     }
 
     public void setComic_name(String comic_name) {
@@ -77,6 +62,14 @@ public class DownloadInfo implements Parcelable, Comparable {
         this.chapter_url = chapter_url;
     }
 
+    public void setComic_source(String comic_source) {
+        this.comic_source = comic_source;
+    }
+
+    public void setCover(String cover) {
+        this.cover = cover;
+    }
+
     public void setStatus(int status) {
         this.status = status;
     }
@@ -93,9 +86,8 @@ public class DownloadInfo implements Parcelable, Comparable {
         this.create_time = create_time;
     }
 
-    public int get_id() {
-
-        return _id;
+    public String getComic_id() {
+        return comic_id;
     }
 
     public String getComic_name() {
@@ -114,6 +106,14 @@ public class DownloadInfo implements Parcelable, Comparable {
         return chapter_url;
     }
 
+    public String getComic_source() {
+        return comic_source;
+    }
+
+    public String getCover() {
+        return cover;
+    }
+
     public int getStatus() {
         return status;
     }
@@ -130,61 +130,25 @@ public class DownloadInfo implements Parcelable, Comparable {
         return create_time;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this._id);
-        dest.writeString(this.comic_id);
-        dest.writeString(this.comic_name);
-        dest.writeString(this.comic_url);
-        dest.writeString(this.chapter_name);
-        dest.writeString(this.chapter_url);
-        dest.writeString(this.cover);
-        dest.writeInt(this.status);
-        dest.writeInt(this.position);
-        dest.writeInt(this.total);
-        dest.writeInt(this.create_time);
-    }
-
-    public void readFromParcel(Parcel source) {
-        this._id = source.readInt();
-        this.comic_id = source.readString();
-        this.comic_name = source.readString();
-        this.comic_url = source.readString();
-        this.chapter_name = source.readString();
-        this.chapter_url = source.readString();
-        this.cover = source.readString();
-        this.status = source.readInt();
-        this.position = source.readInt();
-        this.total = source.readInt();
-        this.create_time = source.readInt();
-    }
-
-    public DownloadInfo() {
-    }
-
     protected DownloadInfo(Parcel in) {
-        this._id = in.readInt();
-        this.comic_id = in.readString();
-        this.comic_name = in.readString();
-        this.comic_url = in.readString();
-        this.chapter_name = in.readString();
-        this.chapter_url = in.readString();
-        this.cover = in.readString();
-        this.status = in.readInt();
-        this.position = in.readInt();
-        this.total = in.readInt();
-        this.create_time = in.readInt();
+        _id = in.readInt();
+        comic_id = in.readString();
+        comic_name = in.readString();
+        comic_url = in.readString();
+        chapter_name = in.readString();
+        chapter_url = in.readString();
+        comic_source = in.readString();
+        cover = in.readString();
+        status = in.readInt();
+        position = in.readInt();
+        total = in.readInt();
+        create_time = in.readInt();
     }
 
-    public static final Parcelable.Creator<DownloadInfo> CREATOR = new Parcelable.Creator<DownloadInfo>() {
+    public static final Creator<DownloadInfo> CREATOR = new Creator<DownloadInfo>() {
         @Override
-        public DownloadInfo createFromParcel(Parcel source) {
-            return new DownloadInfo(source);
+        public DownloadInfo createFromParcel(Parcel in) {
+            return new DownloadInfo(in);
         }
 
         @Override
@@ -214,5 +178,26 @@ public class DownloadInfo implements Parcelable, Comparable {
         }
         DownloadInfo info = (DownloadInfo) obj;
         return this.chapter_url.equals(info.chapter_url) && this.chapter_name.equals(info.chapter_name);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(_id);
+        dest.writeString(comic_id);
+        dest.writeString(comic_name);
+        dest.writeString(comic_url);
+        dest.writeString(chapter_name);
+        dest.writeString(chapter_url);
+        dest.writeString(comic_source);
+        dest.writeString(cover);
+        dest.writeInt(status);
+        dest.writeInt(position);
+        dest.writeInt(total);
+        dest.writeInt(create_time);
     }
 }

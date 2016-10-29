@@ -10,6 +10,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.orhanobut.logger.Logger;
 import com.tongming.manga.R;
 import com.tongming.manga.cusview.CusGridView;
 import com.tongming.manga.mvp.base.BaseActivity;
@@ -155,6 +156,14 @@ public class SelectActivity extends BaseActivity implements IQueryDownloadView {
 
     @Override
     public void onFail(Throwable throwable) {
+        Logger.e(throwable.getMessage());
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (presenter != null) {
+            presenter.closeDB();
+        }
     }
 }

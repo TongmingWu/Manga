@@ -41,14 +41,17 @@ public class DBManager {
         return instance;
     }
 
-    private static void openDB() {
-        helper = new SQLiteHelper(mContext);
-        briteDatabase = SqlBrite.create().wrapDatabaseHelper(helper, Schedulers.io());
+    private synchronized static void openDB() {
+        if (helper == null) {
+            helper = new SQLiteHelper(mContext);
+            briteDatabase = SqlBrite.create().wrapDatabaseHelper(helper, Schedulers.io());
+        }
     }
 
-    public void closeDB() {
+    public synchronized void closeDB() {
         if (helper != null) {
             helper.close();
+            helper = null;
         }
     }
 

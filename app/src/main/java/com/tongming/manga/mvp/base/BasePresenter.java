@@ -11,6 +11,7 @@ import rx.subscriptions.CompositeSubscription;
 public class BasePresenter {
 
     private CompositeSubscription compositeSubscription;
+    protected BaseModel baseModel;
 
     public void addSubscription(Subscription subscription) {
         if (compositeSubscription == null) {
@@ -23,6 +24,12 @@ public class BasePresenter {
         if (compositeSubscription != null && compositeSubscription.isUnsubscribed()) {
             compositeSubscription.unsubscribe();
             Logger.d("清除请求");
+        }
+    }
+
+    public void closeDB() {
+        if (baseModel != null) {
+            baseModel.closeDB();
         }
     }
 }

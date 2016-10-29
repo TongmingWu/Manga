@@ -51,10 +51,9 @@ public class CommonUtil {
     /**
      * 检测服务是否启动
      */
-    public static boolean isServiceStarted(Activity activity, String className) {
-        ActivityManager myManager = (ActivityManager) activity
-                .getApplicationContext().getSystemService(
-                        Context.ACTIVITY_SERVICE);
+    public static boolean isServiceStarted(Context context, String className) {
+        ActivityManager myManager = (ActivityManager) context.getSystemService(
+                Context.ACTIVITY_SERVICE);
         ArrayList<ActivityManager.RunningServiceInfo> runningService = (ArrayList<ActivityManager.RunningServiceInfo>) myManager
                 .getRunningServices(30);
         for (ActivityManager.RunningServiceInfo info : runningService) {

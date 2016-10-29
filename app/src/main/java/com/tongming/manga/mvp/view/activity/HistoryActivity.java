@@ -178,4 +178,12 @@ public class HistoryActivity extends BaseActivity implements IHistoryView {
         comics.clear();
         adapter.notifyDataSetChanged();
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (presenter != null) {
+            presenter.closeDB();
+        }
+    }
 }

@@ -9,7 +9,7 @@
         <item
             android:id="@+id/menu_local"
             android:icon="@drawable/ic_drawer_local_manga"
-            android:title="本地漫画" />
+            android:title="离线漫画" />
         <item
             android:id="@+id/menu_history"
             android:icon="@drawable/ic_drawer_history"

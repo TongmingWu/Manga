@@ -1,5 +1,6 @@
 package com.tongming.manga.mvp.modle;
 
+import com.tongming.manga.mvp.base.BaseModel;
 import com.tongming.manga.mvp.bean.HistoryComic;
 import com.tongming.manga.mvp.db.DBManager;
 
@@ -14,17 +15,17 @@ import rx.schedulers.Schedulers;
 /**
  * Created by Tongming on 2016/8/15.
  */
-public class HistoryModel implements IHistoryModel {
+public class HistoryModel extends BaseModel implements IHistoryModel {
 
     private onQueryListener queryListener;
 
     public HistoryModel(onQueryListener queryListener) {
         this.queryListener = queryListener;
+        manager = DBManager.getInstance();
     }
 
     @Override
     public Subscription queryAllHistory() {
-        final DBManager manager = DBManager.getInstance();
         return manager.queryAllHistory()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -32,44 +33,37 @@ public class HistoryModel implements IHistoryModel {
                     @Override
                     public void onCompleted() {
                         this.unsubscribe();
-                        manager.closeDB();
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         queryListener.onFail(e);
-                        manager.closeDB();
                     }
 
                     @Override
                     public void onNext(List<HistoryComic> comics) {
                         Collections.sort(comics);
                         queryListener.onQueryAll(comics);
+                        this.unsubscribe();
                     }
                 });
     }
 
     @Override
     public void deleteHistoryByName(String name) {
-        DBManager manager = DBManager.getInstance();
         int state = manager.deleteHistoryByName(name);
-        manager.closeDB();
         queryListener.onDeleteByName(state, name);
     }
 
     @Override
     public void restoreHistory(HistoryComic comic) {
-        DBManager manager = DBManager.getInstance();
         int state = (int) manager.insertHistory(comic);
-        manager.closeDB();
         queryListener.onRestoreHistory(state);
     }
 
     @Override
     public void deleteAllHistory() {
-        DBManager manager = DBManager.getInstance();
         int state = manager.deleteAllHistory();
-        manager.closeDB();
         queryListener.onDeleteAll(state);
     }
 

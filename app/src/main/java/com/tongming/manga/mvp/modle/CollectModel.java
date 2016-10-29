@@ -1,6 +1,7 @@
 package com.tongming.manga.mvp.modle;
 
 import com.tongming.manga.mvp.api.ApiManager;
+import com.tongming.manga.mvp.base.BaseModel;
 import com.tongming.manga.mvp.bean.CollectedComic;
 import com.tongming.manga.mvp.bean.User;
 import com.tongming.manga.mvp.bean.UserInfo;
@@ -21,17 +22,17 @@ import rx.schedulers.Schedulers;
 /**
  * Created by Tongming on 2016/8/17.
  */
-public class CollectModel implements ICollectModel {
+public class CollectModel extends BaseModel implements ICollectModel {
 
     private OnCollectListener collectListener;
 
     public CollectModel(OnCollectListener collectListener) {
         this.collectListener = collectListener;
+        manager = DBManager.getInstance();
     }
 
     @Override
     public Subscription queryAllCollect() {
-        final DBManager manager = DBManager.getInstance();
         return manager.queryAllCollected()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -39,36 +40,32 @@ public class CollectModel implements ICollectModel {
                     @Override
                     public void onCompleted() {
                         this.unsubscribe();
-                        manager.closeDB();
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         collectListener.onFail(e);
-                        manager.closeDB();
+                        this.unsubscribe();
                     }
 
                     @Override
                     public void onNext(List<CollectedComic> comics) {
                         collectListener.onQueryAllCompleted(comics);
+                        this.unsubscribe();
                     }
                 });
     }
 
     @Override
     public void deleteCollectByName(String name) {
-        DBManager manager = DBManager.getInstance();
         int state = manager.deleteCollectByName(name);
-        manager.closeDB();
         collectListener.onDeleteByName(state);
 
     }
 
     @Override
     public void deleteAllCollect() {
-        DBManager manager = DBManager.getInstance();
         int state = manager.deleteAllCollect();
-        manager.closeDB();
         collectListener.onDeleteAll(state);
     }
 

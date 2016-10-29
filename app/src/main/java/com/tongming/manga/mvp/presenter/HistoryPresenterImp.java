@@ -6,7 +6,6 @@ import com.orhanobut.logger.Logger;
 import com.tongming.manga.mvp.base.BasePresenter;
 import com.tongming.manga.mvp.bean.HistoryComic;
 import com.tongming.manga.mvp.modle.HistoryModel;
-import com.tongming.manga.mvp.modle.IHistoryModel;
 import com.tongming.manga.mvp.view.activity.IHistoryView;
 
 import java.util.List;
@@ -16,31 +15,30 @@ import java.util.List;
  */
 public class HistoryPresenterImp extends BasePresenter implements IHistoryPresenter, HistoryModel.onQueryListener {
     private IHistoryView historyView;
-    private IHistoryModel historyModel;
 
     public HistoryPresenterImp(IHistoryView historyView) {
         this.historyView = historyView;
-        historyModel = new HistoryModel(this);
+        baseModel = new HistoryModel(this);
     }
 
     @Override
     public void queryAllHistory(Context context) {
-        addSubscription(historyModel.queryAllHistory());
+        addSubscription(((HistoryModel) baseModel).queryAllHistory());
     }
 
     @Override
     public void deleteHistoryByName(Context context, String name) {
-        historyModel.deleteHistoryByName(name);
+        ((HistoryModel) baseModel).deleteHistoryByName(name);
     }
 
     @Override
     public void restoreHistory(Context context, HistoryComic comic) {
-        historyModel.restoreHistory(comic);
+        ((HistoryModel) baseModel).restoreHistory(comic);
     }
 
     @Override
     public void deleteAllHistory(Context context) {
-        historyModel.deleteAllHistory();
+        ((HistoryModel) baseModel).deleteAllHistory();
     }
 
     @Override

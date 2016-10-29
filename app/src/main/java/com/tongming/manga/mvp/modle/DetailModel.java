@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 import com.orhanobut.logger.Logger;
 import com.tongming.manga.mvp.api.ApiManager;
+import com.tongming.manga.mvp.base.BaseModel;
 import com.tongming.manga.mvp.bean.CollectedComic;
 import com.tongming.manga.mvp.bean.ComicInfo;
 import com.tongming.manga.mvp.bean.HistoryComic;
@@ -22,16 +23,18 @@ import okhttp3.RequestBody;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
  * Created by Tongming on 2016/8/11.
  */
-public class DetailModel implements IDetailModel {
+public class DetailModel extends BaseModel implements IDetailModel {
     private onGetDataListener onGetDataListener;
 
     public DetailModel(DetailModel.onGetDataListener onGetDataListener) {
         this.onGetDataListener = onGetDataListener;
+        manager = DBManager.getInstance();
     }
 
     @Override
@@ -58,16 +61,39 @@ public class DetailModel implements IDetailModel {
     }
 
     @Override
-    public void addHistory(ComicInfo info, String historyName, String historyUrl) {
-        DBManager manager = DBManager.getInstance();
-        long state = manager.insertHistory(info, historyName, historyUrl);
-        manager.closeDB();
-        onGetDataListener.onAddHistoryCompleted(state);
+    public void addHistory(final ComicInfo info, final String historyName, final String historyUrl) {
+        manager.queryHistoryByName(historyName)
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .filter(new Func1<List<HistoryComic>, Boolean>() {
+                    @Override
+                    public Boolean call(List<HistoryComic> historyComics) {
+                        return historyComics.size() == 0;
+                    }
+                })
+                .subscribe(new Subscriber<List<HistoryComic>>() {
+                    @Override
+                    public void onCompleted() {
+                        this.unsubscribe();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Logger.e(e.getMessage());
+                        this.unsubscribe();
+                    }
+
+                    @Override
+                    public void onNext(List<HistoryComic> historyComics) {
+                        long state = manager.insertHistory(info, historyName, historyUrl);
+                        onGetDataListener.onAddHistoryCompleted(state);
+                        this.unsubscribe();
+                    }
+                });
     }
 
     @Override
     public void updateHistory(ComicInfo info, String historyName, String historyUrl) {
-        DBManager manager = DBManager.getInstance();
         if (!TextUtils.isEmpty(historyName) && !TextUtils.isEmpty(historyUrl)) {
             int state = manager.updateHistory(info, historyName, historyUrl);
             manager.closeDB();
@@ -77,39 +103,35 @@ public class DetailModel implements IDetailModel {
 
     @Override
     public Subscription queryHistoryByName(final String comicName) {
-        Logger.d("开始读取历史记录");
-        final DBManager manager = DBManager.getInstance();
         return manager.queryHistoryByName(comicName)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .filter(new Func1<List<HistoryComic>, Boolean>() {
+                    @Override
+                    public Boolean call(List<HistoryComic> historyComics) {
+                        return historyComics.size() > 0;
+                    }
+                })
                 .subscribe(new Subscriber<List<HistoryComic>>() {
                     @Override
                     public void onCompleted() {
                         this.unsubscribe();
-                        manager.closeDB();
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         onGetDataListener.onFail(e);
-                        manager.closeDB();
+                        this.unsubscribe();
                     }
 
                     @Override
                     public void onNext(List<HistoryComic> comics) {
-                        if (comics.size() > 0) {
-                            Logger.d("得到的历史记录:" + comics.get(0).getHistoryUrl());
-                            for (HistoryComic comic : comics) {
-                                if (!TextUtils.isEmpty(comic.getHistoryUrl())) {
-                                    onGetDataListener.onQueryHistoryCompleted(
-                                            comic.getHistoryName(),
-                                            comic.getHistoryUrl());
-                                }
-                            }
-                        } else {
-                            onGetDataListener.onQueryHistoryCompleted("", "");
+                        Logger.d("得到的历史记录:" + comics.get(0).getHistoryUrl());
+                        if (!TextUtils.isEmpty(comics.get(0).getHistoryUrl())) {
+                            onGetDataListener.onQueryHistoryCompleted(
+                                    comics.get(0).getHistoryName(),
+                                    comics.get(0).getHistoryUrl());
                         }
-                        manager.closeDB();
                         this.unsubscribe();
                     }
                 });
@@ -117,45 +139,44 @@ public class DetailModel implements IDetailModel {
 
     @Override
     public void collectComic(final ComicInfo info) {
-        DBManager manager = DBManager.getInstance();
         long state = manager.collectComic(info);
-        manager.closeDB();
         onGetDataListener.onAddCollectCompleted(state);
     }
 
     @Override
     public Subscription queryCollectByName(String name) {
-        final DBManager manager = DBManager.getInstance();
         return manager.queryCollectedByName(name)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .filter(new Func1<List<CollectedComic>, Boolean>() {
+                    @Override
+                    public Boolean call(List<CollectedComic> comics) {
+                        return comics.size() > 0;
+                    }
+                })
                 .subscribe(new Subscriber<List<CollectedComic>>() {
                     @Override
                     public void onCompleted() {
                         this.unsubscribe();
-                        manager.closeDB();
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         onGetDataListener.onFail(e);
-                        manager.closeDB();
+                        this.unsubscribe();
                     }
 
                     @Override
                     public void onNext(List<CollectedComic> comics) {
-                        if (comics.size() > 0) {
-                            onGetDataListener.onQueryCollectCompleted(true);
-                        }
+                        onGetDataListener.onQueryCollectCompleted(true);
+                        this.unsubscribe();
                     }
                 });
     }
 
     @Override
     public void deleteCollectByName(String name) {
-        DBManager manager = DBManager.getInstance();
         int state = manager.deleteCollectByName(name);
-        manager.closeDB();
         onGetDataListener.onDeleteCollectCompleted(state);
     }
 
@@ -185,7 +206,6 @@ public class DetailModel implements IDetailModel {
 
                     @Override
                     public void onError(Throwable e) {
-                        Logger.d("添加收藏失败");
                         onGetDataListener.onFail(e);
                     }
 
@@ -210,7 +230,6 @@ public class DetailModel implements IDetailModel {
 
                     @Override
                     public void onError(Throwable e) {
-                        Logger.d("读取收藏失败");
                         onGetDataListener.onFail(e);
                     }
 

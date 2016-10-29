@@ -23,10 +23,17 @@ public class DownloadConnection implements ServiceConnection {
     public static final int DOWNLOAD_TASK = 0x2144;
     private int flag;
     private Context context;
+    private OnConnectedListener onConnectedListener;
 
     public DownloadConnection(Context context, int flag) {
         this.context = context;
         this.flag = flag;
+    }
+
+    public DownloadConnection(Context context, int flag, OnConnectedListener onConnectedListener) {
+        this.context = context;
+        this.flag = flag;
+        this.onConnectedListener = onConnectedListener;
     }
 
     @Override
@@ -41,6 +48,9 @@ public class DownloadConnection implements ServiceConnection {
             case DOWNLOAD_TASK:
                 DownloadDetailActivity detailActivity = (DownloadDetailActivity) context;
                 detailActivity.setOnTaskListener();
+                if (onConnectedListener != null) {
+                    onConnectedListener.onServiceConnected();
+                }
                 break;
             default:
                 break;
@@ -58,5 +68,9 @@ public class DownloadConnection implements ServiceConnection {
 
     public DownloadManager.DownloadBinder getBinder() {
         return binder;
+    }
+
+    public interface OnConnectedListener {
+        void onServiceConnected();
     }
 }

@@ -267,4 +267,12 @@ public class CategoryFragment extends BaseFragment implements ISearchView {
     public void onFail(Throwable throwable) {
         Logger.e(throwable.getMessage());
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (presenter != null) {
+            presenter.closeDB();
+        }
+    }
 }

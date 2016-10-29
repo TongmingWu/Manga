@@ -2,10 +2,15 @@ package com.tongming.manga.mvp.download;
 
 import com.orhanobut.logger.Logger;
 import com.tongming.manga.mvp.api.ApiManager;
+import com.tongming.manga.mvp.base.BaseApplication;
 import com.tongming.manga.mvp.bean.ComicPage;
 import com.tongming.manga.mvp.db.DBManager;
 import com.tongming.manga.server.DownloadInfo;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -19,21 +24,23 @@ import rx.schedulers.Schedulers;
  * Date: 2016/9/9
  */
 
-public class DownloadTask implements IDownloadTask, Comparable {
+public class DownloadTask implements IDownloadTask {
 
     private DownloadInfo info;
-    private DownloadTaskQueue queue;
-    private int position;
+    private IDownloadTaskQueue queue;
     private int status;
     private DBManager manager;
     private List<String> imgs;
+    private String downloadPath;
 
 
-    public DownloadTask(DownloadTaskQueue queue, DownloadInfo info, int position) {
+    public DownloadTask(IDownloadTaskQueue queue, DownloadInfo info) {
         this.queue = queue;
         this.info = info;
-        this.position = position;
-        manager = DBManager.getInstance();
+        downloadPath = BaseApplication.getExternalPath()
+                + "/download/" + info.getComic_name()
+                + "/" + info.getChapter_name();
+        manager = queue.getDBManager();
         insertDownloadInfo();
     }
 
@@ -50,20 +57,23 @@ public class DownloadTask implements IDownloadTask, Comparable {
                     @Override
                     public void onError(Throwable e) {
                         Logger.e(e.getMessage());
+                        this.unsubscribe();
                     }
 
                     @Override
                     public void onNext(List<DownloadInfo> infoList) {
                         if (infoList.size() == 0) {
-                            Logger.d("插入记录");
                             int state = manager.insertDownloadInfo(info);
-                            this.unsubscribe();
+                            //创建目录
+                            File file = new File(downloadPath);
+                            if (!file.exists()) {
+                                file.mkdirs();
+                            }
                         } else {
-                            Logger.d("存在");
                             updateDownloadInfo();
                             info.setPosition(infoList.get(0).getPosition());
-                            this.unsubscribe();
                         }
+                        this.unsubscribe();
                     }
                 });
     }
@@ -121,8 +131,15 @@ public class DownloadTask implements IDownloadTask, Comparable {
         ApiManager.getInstance()
                 .downloadImage(imgs.get(info.getPosition()), info.getComic_source())
                 .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .map(new Func1<ResponseBody, File>() {
+                    @Override
+                    public File call(ResponseBody responseBody) {
+                        return saveImage(responseBody);
+                    }
+                })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<ResponseBody>() {
+                .subscribe(new Subscriber<File>() {
                     @Override
                     public void onCompleted() {
                         this.unsubscribe();
@@ -136,10 +153,41 @@ public class DownloadTask implements IDownloadTask, Comparable {
                     }
 
                     @Override
-                    public void onNext(ResponseBody responseBody) {
+                    public void onNext(File file) {
+                        //保存图片
                         updateSchedule();
                     }
                 });
+    }
+
+    private File saveImage(ResponseBody body) {
+        String imgPath = downloadPath + "/" + info.getPosition() + ".jpg";
+        File file = new File(imgPath);
+        InputStream is = null;
+        FileOutputStream fos = null;
+        try {
+            is = body.byteStream();
+            fos = new FileOutputStream(file);
+            byte[] buff = new byte[1024];
+            int len = 0;
+            while ((len = is.read(buff)) != -1) {
+                fos.write(buff, 0, len);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (is != null) {
+                    is.close();
+                }
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return file;
     }
 
     private void updateSchedule() {
@@ -154,7 +202,6 @@ public class DownloadTask implements IDownloadTask, Comparable {
                 updateDownloadInfo();
                 //回调Queue的onTaskComplete()
                 queue.onTaskComplete(info);
-                manager.closeDB();
             }
         }
     }
@@ -201,10 +248,6 @@ public class DownloadTask implements IDownloadTask, Comparable {
         queue.onTaskRestart(info);
     }
 
-    public int getPosition() {
-        return position;
-    }
-
     public DownloadInfo getInfo() {
         return info;
     }
@@ -223,10 +266,4 @@ public class DownloadTask implements IDownloadTask, Comparable {
         return info.getChapter_url().hashCode();
     }
 
-
-    @Override
-    public int compareTo(Object o) {
-        DownloadTask task = (DownloadTask) o;
-        return this.position - task.position;
-    }
 }
