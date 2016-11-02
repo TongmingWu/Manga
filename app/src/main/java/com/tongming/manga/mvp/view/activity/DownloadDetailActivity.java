@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.orhanobut.logger.Logger;
 import com.tongming.manga.R;
 import com.tongming.manga.cusview.SpaceItemDecoration;
-import com.tongming.manga.mvp.base.BaseActivity;
+import com.tongming.manga.mvp.base.SwipeBackActivity;
 import com.tongming.manga.mvp.download.DownloadManager;
 import com.tongming.manga.mvp.presenter.DownloadPresenterImp;
 import com.tongming.manga.mvp.view.adapter.DownloadAdapter;
@@ -28,7 +28,7 @@ import butterknife.BindView;
  * Date: 2016/9/7
  */
 
-public class DownloadDetailActivity extends BaseActivity implements IQueryDownloadView {
+public class DownloadDetailActivity extends SwipeBackActivity implements IQueryDownloadView {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.rv_download)

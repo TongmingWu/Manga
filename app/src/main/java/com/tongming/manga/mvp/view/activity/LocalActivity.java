@@ -4,7 +4,7 @@ import android.widget.ImageView;
 
 import com.tongming.manga.R;
 import com.tongming.manga.mvp.api.ApiManager;
-import com.tongming.manga.mvp.base.BaseActivity;
+import com.tongming.manga.mvp.base.SwipeBackActivity;
 import com.tongming.manga.util.HeaderGlide;
 
 import butterknife.BindView;
@@ -14,7 +14,7 @@ import butterknife.BindView;
  * Date: 2016/9/20
  */
 
-public class LocalActivity extends BaseActivity {
+public class LocalActivity extends SwipeBackActivity {
     @BindView(R.id.iv_test)
     ImageView ivTest;
 

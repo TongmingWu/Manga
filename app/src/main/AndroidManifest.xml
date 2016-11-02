@@ -23,22 +23,25 @@
             android:name="com.tongming.manga.cusview.CustomCachingGlideModule"
             android:value="GlideModule" />
 
-        <activity android:name=".mvp.view.activity.SplashActivity">
-            <!--<intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
-        </activity>
         <activity
-            android:name=".mvp.view.activity.HomeActivity"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait">
+            android:name=".mvp.view.activity.SplashActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/HomeSplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".mvp.view.activity.HomeActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
+            <!--<intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>-->
         </activity>
         <activity
             android:name=".mvp.view.activity.PersonCenterActivity"
@@ -54,8 +57,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".mvp.view.activity.SearchActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/SelectActivityTheme" />
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".mvp.view.activity.ComicDetailActivity"
             android:screenOrientation="portrait" />

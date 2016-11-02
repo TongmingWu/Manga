@@ -70,7 +70,7 @@
         android:layout_height="30dp"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:background="@drawable/btn_logon_border"
+        android:background="@drawable/btn_primary_color_border"
         android:gravity="center"
         android:text="观看"
         android:textColor="@color/colorPrimary"

@@ -12,7 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tongming.manga.R;
-import com.tongming.manga.mvp.base.BaseActivity;
+import com.tongming.manga.mvp.base.SwipeBackActivity;
 import com.tongming.manga.mvp.bean.User;
 import com.tongming.manga.mvp.bean.UserInfo;
 import com.tongming.manga.mvp.presenter.LoginPresenterImp;
@@ -25,7 +25,7 @@ import butterknife.OnClick;
 /**
  * Created by Tongming on 2016/8/28.
  */
-public class LoginActivity extends BaseActivity implements ILoginView {
+public class LoginActivity extends SwipeBackActivity implements ILoginView {
     public static final int LOGIN_RESULT_CODE = 0x45;
     @BindView(R.id.toolbar)
     Toolbar toolbar;

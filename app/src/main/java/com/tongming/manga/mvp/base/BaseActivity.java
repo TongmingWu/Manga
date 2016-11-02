@@ -43,7 +43,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         int height = CommonUtil.getScreenHeight(this);
         params.setMargins(0, height / 32, 0, 0);
         if (view instanceof Toolbar) {
-            setSupportActionBar((Toolbar) view);
+//            setSupportActionBar((Toolbar) view);
             ((Toolbar) view).setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

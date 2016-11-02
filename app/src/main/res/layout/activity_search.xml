@@ -23,7 +23,7 @@
             toolbar:titleTextColor="@android:color/white" />
     </android.support.design.widget.AppBarLayout>
 
-    <RelativeLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -31,29 +31,29 @@
             android:id="@+id/progress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_gravity="center"
             android:visibility="gone" />
 
-        <!--<GridView
-            android:id="@+id/gv_search"
-            style="@style/GridView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />-->
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_search"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <!--<RelativeLayout
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal">
+            android:layout_marginBottom="45dp" />
+
+        <RelativeLayout
+            android:id="@+id/rl_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:layout_gravity="center_horizontal|bottom"
+            android:gravity="center"
+            android:padding="8dp"
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/tv_load_more"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="暂无更多"
+                android:layout_height="45dp"
+                android:text="加载更多"
                 android:textColor="@android:color/darker_gray" />
 
             <ProgressBar
@@ -61,8 +61,8 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_marginLeft="8dp"
-                android:layout_toRightOf="@id/tv_load_more"
-                android:visibility="gone" />
-        </RelativeLayout>-->
-    </RelativeLayout>
+                android:layout_toRightOf="@id/tv_load_more" />
+        </RelativeLayout>
+    </FrameLayout>
+
 </LinearLayout>

@@ -9,14 +9,14 @@ import android.widget.AdapterView;
 import android.widget.RadioGroup;
 
 import com.tongming.manga.R;
-import com.tongming.manga.mvp.base.BaseActivity;
+import com.tongming.manga.mvp.base.SwipeBackActivity;
 
 import butterknife.BindView;
 
 /**
  * Created by Tongming on 2016/8/13.
  */
-public class WatchSettingActivity extends BaseActivity {
+public class WatchSettingActivity extends SwipeBackActivity {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.rg_page_mode)

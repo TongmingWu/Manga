@@ -22,7 +22,7 @@ import android.widget.Toast;
 import com.orhanobut.logger.Logger;
 import com.tongming.manga.R;
 import com.tongming.manga.cusview.CustomCachingGlideModule;
-import com.tongming.manga.mvp.base.BaseActivity;
+import com.tongming.manga.mvp.base.SwipeBackActivity;
 import com.tongming.manga.mvp.bean.User;
 import com.tongming.manga.mvp.presenter.CachePresenterImp;
 import com.tongming.manga.util.CommonUtil;
@@ -33,7 +33,7 @@ import butterknife.OnClick;
 /**
  * Created by Tongming on 2016/9/3.
  */
-public class SettingActivity extends BaseActivity implements ICacheView {
+public class SettingActivity extends SwipeBackActivity implements ICacheView {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.tv_cache_ceiling)

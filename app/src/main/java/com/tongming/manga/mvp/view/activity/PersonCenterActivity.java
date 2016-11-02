@@ -28,7 +28,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.orhanobut.logger.Logger;
 import com.tongming.manga.R;
 import com.tongming.manga.cusview.GlideGircleTransform;
-import com.tongming.manga.mvp.base.BaseActivity;
+import com.tongming.manga.mvp.base.SwipeBackActivity;
 import com.tongming.manga.mvp.bean.User;
 import com.tongming.manga.mvp.bean.UserInfo;
 import com.tongming.manga.mvp.presenter.PersonPresenterImp;
@@ -44,7 +44,7 @@ import butterknife.OnClick;
 /**
  * Created by Tongming on 2016/8/30.
  */
-public class PersonCenterActivity extends BaseActivity implements IPersonView {
+public class PersonCenterActivity extends SwipeBackActivity implements IPersonView {
     private static final int REQUEST_PERSONALITY = 0x4545;
     private static final int REQUEST_PICTURE = 0x5432;
     private static final int CROP_SMALL_PICTURE = 0x3325;

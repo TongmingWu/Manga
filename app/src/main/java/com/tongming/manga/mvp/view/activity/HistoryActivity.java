@@ -15,7 +15,7 @@ import android.widget.ImageView;
 
 import com.tongming.manga.R;
 import com.tongming.manga.cusview.SpaceItemDecoration;
-import com.tongming.manga.mvp.base.BaseActivity;
+import com.tongming.manga.mvp.base.SwipeBackActivity;
 import com.tongming.manga.mvp.bean.HistoryComic;
 import com.tongming.manga.mvp.presenter.HistoryPresenterImp;
 import com.tongming.manga.mvp.view.adapter.RVComicAdapter;
@@ -28,7 +28,7 @@ import butterknife.BindView;
 /**
  * Created by Tongming on 2016/8/15.
  */
-public class HistoryActivity extends BaseActivity implements IHistoryView {
+public class HistoryActivity extends SwipeBackActivity implements IHistoryView {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     //    @BindView(R.id.gv_history)

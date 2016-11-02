@@ -10,7 +10,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.tongming.manga.R;
-import com.tongming.manga.mvp.base.BaseActivity;
+import com.tongming.manga.mvp.base.SwipeBackActivity;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -18,7 +18,7 @@ import butterknife.OnClick;
 /**
  * Created by Tongming on 2016/9/1.
  */
-public class PersonalityActivity extends BaseActivity {
+public class PersonalityActivity extends SwipeBackActivity {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.et_personality)

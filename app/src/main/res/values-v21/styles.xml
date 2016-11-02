@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    
+    <style name="HomeSplashTheme" parent="AppTheme">
+        <item name="android:windowBackground">@drawable/logo_splash</item>
+    </style>
 
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->

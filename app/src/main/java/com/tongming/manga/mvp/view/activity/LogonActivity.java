@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.orhanobut.logger.Logger;
 import com.tongming.manga.R;
-import com.tongming.manga.mvp.base.BaseActivity;
+import com.tongming.manga.mvp.base.SwipeBackActivity;
 import com.tongming.manga.mvp.presenter.LogonPresenterImp;
 import com.tongming.manga.util.Base64Utils;
 import com.tongming.manga.util.RSA;
@@ -27,7 +27,7 @@ import butterknife.OnClick;
 /**
  * Created by Tongming on 2016/8/28.
  */
-public class LogonActivity extends BaseActivity implements ILogonView {
+public class LogonActivity extends SwipeBackActivity implements ILogonView {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.et_phone)

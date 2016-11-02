@@ -122,8 +122,8 @@ public class PageActivity extends BaseActivity implements IPageView {
         }
     };
     private int currentChapter;
-    private float firstX = 0;
-    private float firstY = 0;
+    private float firstX = 0.0f;
+    private float firstY = 0.0f;
     private boolean isVertical;
     private int currentPage;
     private boolean isActionDown;

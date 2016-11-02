@@ -13,7 +13,7 @@ import android.widget.Toast;
 import com.orhanobut.logger.Logger;
 import com.tongming.manga.R;
 import com.tongming.manga.cusview.CusGridView;
-import com.tongming.manga.mvp.base.BaseActivity;
+import com.tongming.manga.mvp.base.SwipeBackActivity;
 import com.tongming.manga.mvp.bean.ComicInfo;
 import com.tongming.manga.mvp.download.DownloadManager;
 import com.tongming.manga.mvp.presenter.DownloadPresenterImp;
@@ -31,7 +31,7 @@ import butterknife.OnClick;
  * Date: 2016/9/7
  */
 
-public class SelectActivity extends BaseActivity implements IQueryDownloadView {
+public class SelectActivity extends SwipeBackActivity implements IQueryDownloadView {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.tv_chapter_num)
@@ -99,7 +99,7 @@ public class SelectActivity extends BaseActivity implements IQueryDownloadView {
             selectionNum = adapter.selectAll();
         } else {
             tvSelectAll.setText("全选");
-            tvSelectAll.setBackgroundResource(R.drawable.btn_logon_border);
+            tvSelectAll.setBackgroundResource(R.drawable.btn_primary_color_border);
             tvSelectAll.setTextColor(getResources().getColor(R.color.colorPrimary, null));
             tvSelect.setText("选择需要下载的章节");
             tvDownload.setBackgroundResource(R.drawable.btn_undownload_bg);

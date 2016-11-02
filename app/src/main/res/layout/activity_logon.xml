@@ -139,7 +139,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
-        android:background="@drawable/btn_logon_bg"
+        android:background="@drawable/btn_primary_color_bg"
         android:text="注册"
         android:textColor="@android:color/white"
         android:textSize="16sp" />

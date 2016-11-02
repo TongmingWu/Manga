@@ -9,6 +9,7 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.transition.Transition;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -20,7 +21,7 @@ import android.widget.Toast;
 
 import com.orhanobut.logger.Logger;
 import com.tongming.manga.R;
-import com.tongming.manga.mvp.base.BaseActivity;
+import com.tongming.manga.mvp.base.SwipeBackActivity;
 import com.tongming.manga.mvp.bean.ComicInfo;
 import com.tongming.manga.mvp.bean.User;
 import com.tongming.manga.mvp.bean.UserInfo;
@@ -39,7 +40,7 @@ import butterknife.BindView;
 /**
  * Created by Tongming on 2016/8/10.
  */
-public class ComicDetailActivity extends BaseActivity implements IDetailView, IQueryDownloadView {
+public class ComicDetailActivity extends SwipeBackActivity implements IDetailView, IQueryDownloadView {
     public static final int REQUEST_CHAPTER_CODE = 0x15;
     public static final int REQUEST_DOWNLOAD_CODE = 0x8856;
     @BindView(R.id.toolbar)
@@ -62,12 +63,18 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
     TextView tvComicType;
     @BindView(R.id.tv_comic_desc)
     TextView tvDesc;
-    @BindView(R.id.iv_fav)
+    /*@BindView(R.id.iv_fav)
     ImageView ivFav;
     @BindView(R.id.iv_download)
     ImageView ivDownload;
+    @BindView(R.id.iv_share)
+    ImageView ivShare;*/
     /*@BindView(R.id.iv_sort)
     ImageView ivSort;*/
+    @BindView(R.id.btn_read)
+    TextView tvRead;
+    @BindView(R.id.btn_collection)
+    TextView tvCollection;
     @BindView(R.id.tv_newest_chapter)
     TextView tvNewestChapter;
     @BindView(R.id.gv_chapter)
@@ -80,8 +87,6 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
     RelativeLayout rlContent;
     @BindView(R.id.rl_cover)
     RelativeLayout rlCover;
-    @BindView(R.id.iv_share)
-    ImageView ivShare;
     @BindView(R.id.tv_comic_source)
     TextView tvSource;
     private ComicInfo comicInfo;
@@ -90,7 +95,7 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
     private SharedPreferences sp;
     private String historyName = "";
     private String historyUrl = "";
-    private int historyPos;
+    private int historyPos = -Integer.MAX_VALUE;
     private boolean isRead;
     private boolean isCollected;
     private List<Integer> downloadPos;
@@ -110,6 +115,7 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
         presenter = new DetailPresenterImp(this);
         intent = getIntent();
         initToolbar(toolbar);
+        toolbar.inflateMenu(R.menu.menu_detail);
         toolbar.setTitle(intent.getStringExtra("name"));
         String cover = intent.getStringExtra("cover");
         if (!TextUtils.isEmpty(cover)) {
@@ -153,6 +159,17 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Logger.d("pos = " + historyPos);
+        if (historyPos >= 0) {
+            tvRead.setText("继续观看");
+        } else {
+            tvRead.setText("开始阅读");
+        }
+    }
+
     private void getData() {
         //先从数据库读取阅读记录,如果有阅读过的话返回historyUrl,跟list进行匹配得到position,再设置item的背景
         String name = intent.getStringExtra("name");
@@ -182,7 +199,20 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
     }
 
     @Override
-    public void onGetData(ComicInfo info) {
+    public void onGetData(final ComicInfo info) {
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.ic_download:
+                        Intent intent = new Intent(ComicDetailActivity.this, SelectActivity.class);
+                        intent.putExtra("info", comicInfo);
+                        startActivityForResult(intent, REQUEST_DOWNLOAD_CODE);
+                        break;
+                }
+                return true;
+            }
+        });
         if (this.comicInfo == null) {
             this.comicInfo = info;
         }
@@ -268,7 +298,7 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
             }
         });*/
         //收藏
-        ivFav.setOnClickListener(new View.OnClickListener() {
+        /*ivFav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //判断是否有登录,如果没有登录的话,从本地数据库操作,有的话从服务器操作
@@ -289,20 +319,55 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
                     }
                 }
             }
+        });*/
+        tvCollection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //判断是否有登录,如果没有登录的话,从本地数据库操作,有的话从服务器操作
+                if (!sp.getBoolean("isLogin", false)) {
+                    //未登录
+                    if (isCollected) {
+                        ((DetailPresenterImp) presenter).deleteCollectByName(comicInfo.getComic_name());
+                    } else {
+                        ((DetailPresenterImp) presenter).collectComic(comicInfo);
+                    }
+                } else {
+                    //已登录
+                    if (isCollected) {
+                        ((DetailPresenterImp) presenter).deleteCollectOnNet(comicInfo);
+                    } else {
+                        ((DetailPresenterImp) presenter).collectComicOnNet(comicInfo);
+                    }
+                }
+            }
+        });
+
+        tvRead.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ComicDetailActivity.this, PageActivity.class);
+                if (historyPos >= 0) {
+                    intent.putExtra("url", comicInfo.getChapter_list().get(historyPos).getChapter_url());
+                } else {
+                    intent.putExtra("url", comicInfo.getChapter_list().get(comicInfo.getChapter_list().size() - 1).getChapter_url());
+                }
+                intent.putExtra("source", comicInfo.getComic_source());
+                startActivityForResult(intent, REQUEST_CHAPTER_CODE);
+            }
         });
 
         //下载漫画
-        ivDownload.setOnClickListener(new View.OnClickListener() {
+        /*ivDownload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(ComicDetailActivity.this, SelectActivity.class);
                 intent.putExtra("info", comicInfo);
                 startActivityForResult(intent, REQUEST_DOWNLOAD_CODE);
             }
-        });
+        });*/
 
         //分享链接
-        ivShare.setOnClickListener(new View.OnClickListener() {
+        /*ivShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
@@ -311,7 +376,7 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
                 intent.setType("text/plain");
                 startActivity(Intent.createChooser(intent, "分享到"));
             }
-        });
+        });*/
         hideProgress();
     }
 
@@ -347,54 +412,66 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
     @Override
     public void onQueryCollectByName(boolean isCollected) {
         this.isCollected = isCollected;
-        if (isCollected) {
-            ivFav.setImageResource(R.drawable.ic_collected);
-            Logger.d("收藏成功");
-        }
+//            ivFav.setImageResource(R.drawable.ic_collected);
+        changeCollection(isCollected);
     }
 
     @Override
     public void onAddCollect(long state) {
-        ivFav.setImageResource(R.drawable.ic_collected);
+//        ivFav.setImageResource(R.drawable.ic_collected);
+//        ivFav.setClickable(true);
         isCollected = true;
-        ivFav.setClickable(true);
+        changeCollection(isCollected);
         Toast.makeText(ComicDetailActivity.this, "收藏成功", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onDeleteCollectByName(int state) {
         isCollected = false;
-        ivFav.setImageResource(R.drawable.select_collect);
-        ivFav.setClickable(true);
+//        ivFav.setImageResource(R.drawable.select_collect);
+//        ivFav.setClickable(true);
+        changeCollection(isCollected);
         Toast.makeText(ComicDetailActivity.this, "取消收藏", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onQueryCollectOnNet(boolean isCollected) {
         this.isCollected = isCollected;
-        if (isCollected) {
-            ivFav.setImageResource(R.drawable.ic_collected);
-        }
+        changeCollection(isCollected);
+//            ivFav.setImageResource(R.drawable.ic_collected);
     }
 
     @Override
     public void onAddCollectOnNet(UserInfo info) {
         isCollected = true;
-        ivFav.setClickable(true);
         User.getInstance().saveUser(info);
-        ivFav.setImageResource(R.drawable.ic_collected);
+//        ivFav.setClickable(true);
+//        ivFav.setImageResource(R.drawable.ic_collected);
+        changeCollection(isCollected);
         Toast.makeText(ComicDetailActivity.this, "收藏成功", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onDeleteCollectOnNet(UserInfo info) {
         isCollected = false;
-        ivFav.setClickable(true);
         User.getInstance().saveUser(info);
-        ivFav.setImageResource(R.drawable.select_collect);
+//        ivFav.setClickable(true);
+//        ivFav.setImageResource(R.drawable.select_collect);
+        changeCollection(isCollected);
         Toast.makeText(ComicDetailActivity.this, "取消收藏", Toast.LENGTH_SHORT).show();
     }
 
+    private void changeCollection(boolean isCollected) {
+        if (isCollected) {
+            tvCollection.setText("已收藏");
+            tvCollection.setTextColor(Color.GRAY);
+            tvCollection.setBackgroundResource(R.drawable.gray_border);
+        } else {
+            tvCollection.setText("收藏");
+            tvCollection.setTextColor(Color.WHITE);
+            tvCollection.setBackgroundResource(R.drawable.btn_primary_color_select);
+        }
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -410,7 +487,8 @@ public class ComicDetailActivity extends BaseActivity implements IDetailView, IQ
                 isRead = true;
                 Logger.d("添加阅读记录");
             }
-            adapter.setHistoryPos(getHistoryPos(historyUrl));
+            historyPos = getHistoryPos(historyUrl);
+            adapter.setHistoryPos(historyPos);
             adapter.notifyDataSetChanged();
         }
     }

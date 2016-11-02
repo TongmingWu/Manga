@@ -9,12 +9,13 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.orhanobut.logger.Logger;
 import com.tongming.manga.R;
 import com.tongming.manga.cusview.SpaceItemDecoration;
-import com.tongming.manga.mvp.base.BaseActivity;
+import com.tongming.manga.mvp.base.SwipeBackActivity;
 import com.tongming.manga.mvp.bean.Category;
 import com.tongming.manga.mvp.bean.ComicCard;
 import com.tongming.manga.mvp.bean.Search;
@@ -30,19 +31,21 @@ import butterknife.BindView;
 /**
  * Created by Tongming on 2016/8/10.
  */
-public class SearchActivity extends BaseActivity implements ISearchView {
+public class SearchActivity extends SwipeBackActivity implements ISearchView {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.progress)
     ProgressBar progress;
-    //    @BindView(R.id.gv_search)
-//    GridView gvSearch;
     @BindView(R.id.rv_search)
     RecyclerView rvSearch;
-    /*@BindView(R.id.tv_load_more)
+    /*@BindView(R.id.rv_search)
+    EasyRecyclerView rvSearch;*/
+    @BindView(R.id.rl_progress)
+    RelativeLayout rlProgress;
+    @BindView(R.id.tv_load_more)
     TextView tvMore;
     @BindView(R.id.pb_load_more)
-    ProgressBar pbMore;*/
+    ProgressBar pbMore;
     private String word;
     private int type;
     private List<ComicCard> comicCards;
@@ -83,18 +86,17 @@ public class SearchActivity extends BaseActivity implements ISearchView {
         if (comicCards == null) {
             comicCards = search.getResult();
             initRecyclerView();
+            hideProgress();
         } else {
-            for (ComicCard comic : search.getResult()) {
+            /*for (ComicCard comic : search.getResult()) {
                 comicCards.add(comic);
                 adapter.notifyItemInserted(comicCards.size() - 1);
-            }
-            /*if (pbMore.getVisibility() == View.VISIBLE) {
-                pbMore.setVisibility(View.GONE);
-                tvMore.setText("暂无更多");
-                tvMore.setTextColor(Color.DKGRAY);
             }*/
+            int originalSize = comicCards.size();
+            comicCards.addAll(search.getResult());
+            adapter.notifyItemRangeChanged(originalSize, search.getResult().size());
+            rlProgress.setVisibility(View.GONE);
         }
-        hideProgress();
     }
 
     private void initRecyclerView() {
@@ -127,7 +129,10 @@ public class SearchActivity extends BaseActivity implements ISearchView {
                             if (search.isNext()) {
                                 loadMore(search.getCurrent_page() + 1);
                             } else {
-                                Toast.makeText(SearchActivity.this, "没有咯- -", Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(SearchActivity.this, "没有咯- -", Toast.LENGTH_SHORT).show();
+                                rlProgress.setVisibility(View.VISIBLE);
+                                pbMore.setVisibility(View.GONE);
+                                tvMore.setText("已没有更多- -");
                             }
                         }
                         break;
@@ -141,6 +146,7 @@ public class SearchActivity extends BaseActivity implements ISearchView {
     }
 
     private void loadMore(int requestPage) {
+        rlProgress.setVisibility(View.VISIBLE);
         /*tvMore.setText("正在加载");
         tvMore.setTextColor(Color.BLACK);
         pbMore.setVisibility(View.VISIBLE);*/
