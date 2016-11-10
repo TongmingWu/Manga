@@ -60,7 +60,7 @@ public class HistoryActivity extends SwipeBackActivity implements IHistoryView {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 if (presenter != null) {
-                                    ((HistoryPresenterImp) presenter).deleteAllHistory(HistoryActivity.this);
+                                    ((HistoryPresenterImp) presenter).deleteAllHistory();
                                 }
                             }
                         }).setNegativeButton("取消", null).show();
@@ -111,7 +111,7 @@ public class HistoryActivity extends SwipeBackActivity implements IHistoryView {
                                         break;
                                     }
                                 }
-                                ((HistoryPresenterImp) presenter).deleteHistoryByName(HistoryActivity.this, deleteComic.getName());
+                                ((HistoryPresenterImp) presenter).deleteHistoryByName(deleteComic.getName());
                             }
                         }).setNegativeButton("取消", null)
                         .show();
@@ -130,7 +130,7 @@ public class HistoryActivity extends SwipeBackActivity implements IHistoryView {
         if (presenter == null) {
             presenter = new HistoryPresenterImp(this);
         }
-        ((HistoryPresenterImp) presenter).queryAllHistory(this);
+        ((HistoryPresenterImp) presenter).queryAllHistory();
     }
 
     @Override
@@ -159,7 +159,7 @@ public class HistoryActivity extends SwipeBackActivity implements IHistoryView {
             @Override
             public void onClick(View v) {
                 //在删除之前保存信息,点击撤销恢复信息
-                ((HistoryPresenterImp) presenter).restoreHistory(HistoryActivity.this, deleteComic);
+                ((HistoryPresenterImp) presenter).restoreHistory(deleteComic);
             }
         });
         snackbar.show();

@@ -12,6 +12,7 @@ import com.orhanobut.logger.Logger;
 import com.tongming.manga.R;
 import com.tongming.manga.cusview.SpaceItemDecoration;
 import com.tongming.manga.mvp.base.SwipeBackActivity;
+import com.tongming.manga.mvp.bean.ComicPage;
 import com.tongming.manga.mvp.download.DownloadManager;
 import com.tongming.manga.mvp.presenter.DownloadPresenterImp;
 import com.tongming.manga.mvp.view.adapter.DownloadAdapter;
@@ -201,6 +202,11 @@ public class DownloadDetailActivity extends SwipeBackActivity implements IQueryD
             });
         }
         initAction();
+    }
+
+    @Override
+    public void onQueryDownloadInfo(ComicPage page) {
+
     }
 
     public void setOnTaskListener() {

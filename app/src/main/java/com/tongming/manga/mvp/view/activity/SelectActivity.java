@@ -15,6 +15,7 @@ import com.tongming.manga.R;
 import com.tongming.manga.cusview.CusGridView;
 import com.tongming.manga.mvp.base.SwipeBackActivity;
 import com.tongming.manga.mvp.bean.ComicInfo;
+import com.tongming.manga.mvp.bean.ComicPage;
 import com.tongming.manga.mvp.download.DownloadManager;
 import com.tongming.manga.mvp.presenter.DownloadPresenterImp;
 import com.tongming.manga.mvp.view.adapter.ChapterAdapter;
@@ -151,6 +152,11 @@ public class SelectActivity extends SwipeBackActivity implements IQueryDownloadV
                 adapter.notifyDataSetChanged();
             }
         });
+    }
+
+    @Override
+    public void onQueryDownloadInfo(ComicPage page) {
+
     }
 
 

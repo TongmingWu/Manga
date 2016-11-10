@@ -18,10 +18,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         super(context, DB_NAME, null, DB_VERSION);
     }
 
-    public SQLiteHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, DB_NAME, null, DB_VERSION);
-    }
-
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(HistoryTable.CREATE);

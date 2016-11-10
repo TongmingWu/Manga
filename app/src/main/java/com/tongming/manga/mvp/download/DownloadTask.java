@@ -71,7 +71,7 @@ public class DownloadTask implements IDownloadTask {
                             }
                         } else {
                             updateDownloadInfo();
-                            info.setPosition(infoList.get(0).getPosition());
+                            info.setPosition(info.getPosition());
                         }
                         this.unsubscribe();
                     }
@@ -149,6 +149,7 @@ public class DownloadTask implements IDownloadTask {
                     public void onError(Throwable e) {
                         //回调Queue的onTaskFail()
                         setStatus(DownloadInfo.FAIL);
+                        Logger.e(e.getMessage());   //409
                         queue.onTaskFail(info);
                     }
 

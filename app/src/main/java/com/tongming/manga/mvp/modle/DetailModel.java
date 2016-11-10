@@ -126,7 +126,6 @@ public class DetailModel extends BaseModel implements IDetailModel {
 
                     @Override
                     public void onNext(List<HistoryComic> comics) {
-                        Logger.d("得到的历史记录:" + comics.get(0).getHistoryUrl());
                         if (!TextUtils.isEmpty(comics.get(0).getHistoryUrl())) {
                             onGetDataListener.onQueryHistoryCompleted(
                                     comics.get(0).getHistoryName(),

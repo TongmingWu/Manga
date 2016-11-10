@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 
 import com.orhanobut.logger.Logger;
 import com.tongming.manga.mvp.bean.ComicInfo;
+import com.tongming.manga.mvp.bean.ComicPage;
 import com.tongming.manga.mvp.db.DBManager;
 import com.tongming.manga.mvp.presenter.DownloadPresenterImp;
 import com.tongming.manga.mvp.view.activity.IQueryDownloadView;
@@ -134,6 +135,11 @@ public class DownloadManager extends Service implements IDownloadManager, IQuery
         }
     }
 
+    @Override
+    public void onQueryDownloadInfo(ComicPage page) {
+
+    }
+
     public DownloadTaskQueue createQueue(String cid, List<DownloadInfo> infoList) {
         DownloadTaskQueue queue = new DownloadTaskQueue(this, cid, infoList);
         queueList.add(queue);
@@ -185,9 +191,15 @@ public class DownloadManager extends Service implements IDownloadManager, IQuery
 
     private List<DownloadInfo> convertToDownload(ComicInfo info, List<Integer> position) {
         List<DownloadInfo> infoList = new ArrayList<>();
+        List<ComicInfo.ChapterListBean> chapterList = info.getChapter_list();
+        int size = chapterList.size();
+        int next;
+        int prepare;
+        String nextUrl;
+        String preUrl;
         for (int pos : position) {
             DownloadInfo downloadInfo = new DownloadInfo();
-            ComicInfo.ChapterListBean bean = info.getChapter_list().get(pos);
+            ComicInfo.ChapterListBean bean = chapterList.get(pos);
             downloadInfo.setComic_id(info.getComic_id());
             downloadInfo.setChapter_name(bean.getChapter_title());
             downloadInfo.setChapter_url(bean.getChapter_url());
@@ -198,6 +210,14 @@ public class DownloadManager extends Service implements IDownloadManager, IQuery
             downloadInfo.setStatus(DownloadInfo.WAIT);
             long currentTimeMillis = System.currentTimeMillis();
             downloadInfo.setCreate_time((int) currentTimeMillis);
+            next = (pos > 0 && pos < size) ? 1 : (pos == 0 ? 1 : 0);
+            nextUrl = pos < size ? chapterList.get(pos - 1).getChapter_url() : "";
+            prepare = (pos > 0 && pos < size) ? 1 : (pos == size ? 1 : 0);
+            preUrl = pos > 0 ? chapterList.get(pos + 1).getChapter_url() : "";
+            downloadInfo.setNext(next);
+            downloadInfo.setPrepare(prepare);
+            downloadInfo.setNext_url(nextUrl);
+            downloadInfo.setPre_url(preUrl);
             infoList.add(downloadInfo);
         }
         return infoList;
@@ -219,7 +239,7 @@ public class DownloadManager extends Service implements IDownloadManager, IQuery
         }
         status = COMPLETE;
         Logger.d("已没有等待中的队列");
-//        stopSelf();
+        stopSelf();
     }
 
     @Override
@@ -227,7 +247,6 @@ public class DownloadManager extends Service implements IDownloadManager, IQuery
         if (onQueueListener != null) {
             onQueueListener.onQueueWait(cid);
         }
-
     }
 
     @Override

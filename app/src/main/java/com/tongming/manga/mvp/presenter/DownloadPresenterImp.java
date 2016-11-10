@@ -1,6 +1,7 @@
 package com.tongming.manga.mvp.presenter;
 
 import com.tongming.manga.mvp.base.BasePresenter;
+import com.tongming.manga.mvp.bean.ComicPage;
 import com.tongming.manga.mvp.modle.DownloadModel;
 import com.tongming.manga.mvp.view.activity.IQueryDownloadView;
 import com.tongming.manga.server.DownloadInfo;
@@ -27,8 +28,8 @@ public class DownloadPresenterImp extends BasePresenter implements IDownloadPres
     }
 
     @Override
-    public void queryDownloadInfo(DownloadInfo info) {
-        ((DownloadModel) baseModel).queryDownloadInfo(info);
+    public void queryDownloadInfoByUrl(String chapterUrl) {
+        ((DownloadModel) baseModel).queryDownloadInfoByUrl(chapterUrl);
     }
 
     @Override
@@ -51,6 +52,10 @@ public class DownloadPresenterImp extends BasePresenter implements IDownloadPres
         queryDownloadView.onQueryDownloadInfo(infoList);
     }
 
+    @Override
+    public void onQueryDownloadInfo(ComicPage page) {
+        queryDownloadView.onQueryDownloadInfo(page);
+    }
 
     @Override
     public void onFail(Throwable throwable) {

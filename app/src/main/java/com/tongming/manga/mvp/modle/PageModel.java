@@ -35,28 +35,6 @@ public class PageModel extends BaseModel implements IPageModel {
     @Override
     public Subscription getPage(String source, String chapterUrl) {
         this.source = source;
-        /*manager
-                .queryDownloadInfo(chapterUrl)
-                .subscribe(new Subscriber<List<DownloadInfo>>() {
-                    @Override
-                    public void onCompleted() {
-                        this.unsubscribe();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Logger.e(e.getMessage());
-                    }
-
-                    @Override
-                    public void onNext(List<DownloadInfo> infoList) {
-                        if (infoList.size() > 0 && infoList.get(0).getStatus() == DownloadInfo.COMPLETE) {
-
-                        } else {
-
-                        }
-                    }
-                });*/
         return ApiManager.getInstance().getComicPage(source, chapterUrl)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

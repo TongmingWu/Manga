@@ -1,6 +1,7 @@
 package com.tongming.manga.mvp.modle;
 
 import com.tongming.manga.mvp.base.BaseModel;
+import com.tongming.manga.mvp.bean.ComicPage;
 import com.tongming.manga.mvp.db.DBManager;
 import com.tongming.manga.server.DownloadInfo;
 
@@ -9,6 +10,7 @@ import java.util.List;
 
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -79,14 +81,52 @@ public class DownloadModel extends BaseModel implements IDownloadModel {
     }
 
     @Override
-    public void queryDownloadInfo(DownloadInfo info) {
+    public void queryDownloadInfoByUrl(String chapterUrl) {
+        manager.queryDownloadInfo(chapterUrl)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(new Func1<List<DownloadInfo>, ComicPage>() {
+                    @Override
+                    public ComicPage call(List<DownloadInfo> infoList) {
+                        if (infoList.size() > 0) {
+                            ComicPage page = new ComicPage();
+                            DownloadInfo info = infoList.get(0);
+                            page.setChapter_name(info.getChapter_name());
+                            page.setComic_source(info.getComic_source());
+                            page.setCurrent_chapter_url(info.getChapter_url());
+                            page.setNext(info.getNext() == 1);
+                            page.setPrepare(info.getPrepare() == 1);
+                            page.setNext_chapter_url(info.getNext_url());
+                            page.setPre_chapter_url(info.getPre_url());
+                            page.setComic_name(info.getComic_name());
+                            return page;
+                        }
+                        return null;
+                    }
+                })
+                .subscribe(new Subscriber<ComicPage>() {
+                    @Override
+                    public void onCompleted() {
+                        this.unsubscribe();
+                    }
 
+                    @Override
+                    public void onError(Throwable e) {
+                        onDownloadListener.onFail(e);
+                        this.unsubscribe();
+                    }
+
+                    @Override
+                    public void onNext(ComicPage page) {
+                        onDownloadListener.onQueryDownloadInfo(page);
+                        this.unsubscribe();
+                    }
+                });
     }
 
     @Override
     public void queryAllDownloadInfo() {
-        manager
-                .queryAllDownloadInfo()
+        manager.queryAllDownloadInfo()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<List<DownloadInfo>>() {
@@ -111,6 +151,8 @@ public class DownloadModel extends BaseModel implements IDownloadModel {
 
     public interface onDownloadListener {
         void onQueryDownloadInfo(List<DownloadInfo> infoList);
+
+        void onQueryDownloadInfo(ComicPage page);
 
         void onQueryAllDownloadInfo(List<DownloadInfo> infoList);
 

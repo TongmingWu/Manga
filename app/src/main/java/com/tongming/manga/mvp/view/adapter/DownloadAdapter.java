@@ -1,6 +1,7 @@
 package com.tongming.manga.mvp.view.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -97,6 +98,12 @@ public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.Downlo
                 holder.progressBar.setVisibility(View.GONE);
                 holder.tvAction.setVisibility(View.GONE);
                 holder.tvWatch.setVisibility(View.VISIBLE);
+                break;
+            case DownloadInfo.FAIL:
+                Drawable failDrawable = mContext.getDrawable(R.drawable.ic_download_failed);
+                failDrawable.setBounds(0, 0, (int) (failDrawable.getIntrinsicWidth() / 0.9f), (int) (failDrawable.getIntrinsicHeight() / 0.9f));
+                holder.tvAction.setText("下载失败");
+                holder.tvAction.setTextColor(Color.RED);
                 break;
         }
     }

@@ -23,6 +23,7 @@ import com.orhanobut.logger.Logger;
 import com.tongming.manga.R;
 import com.tongming.manga.mvp.base.SwipeBackActivity;
 import com.tongming.manga.mvp.bean.ComicInfo;
+import com.tongming.manga.mvp.bean.ComicPage;
 import com.tongming.manga.mvp.bean.User;
 import com.tongming.manga.mvp.bean.UserInfo;
 import com.tongming.manga.mvp.presenter.DetailPresenterImp;
@@ -162,7 +163,6 @@ public class ComicDetailActivity extends SwipeBackActivity implements IDetailVie
     @Override
     protected void onResume() {
         super.onResume();
-        Logger.d("pos = " + historyPos);
         if (historyPos >= 0) {
             tvRead.setText("继续观看");
         } else {
@@ -190,16 +190,14 @@ public class ComicDetailActivity extends SwipeBackActivity implements IDetailVie
                     //alpha值超过255的效果跟0一样
                     //426,640,853
                     int alpha = v.getScrollY() / (scrollPixel / 280);
-                    if (alpha <= 255) {
-                        appbar.setBackgroundColor(Color.argb(alpha, 255, 150, 12));
-                    }
+                    appbar.setBackgroundColor(Color.argb(alpha >= 255 ? 255 : alpha, 255, 150, 12));
                 }
             }
         });
     }
 
     @Override
-    public void onGetData(final ComicInfo info) {
+    public void onGetData(ComicInfo info) {
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -213,9 +211,7 @@ public class ComicDetailActivity extends SwipeBackActivity implements IDetailVie
                 return true;
             }
         });
-        if (this.comicInfo == null) {
-            this.comicInfo = info;
-        }
+        comicInfo = info;
         String cover = comicInfo.getCover();
         if (!isCover) {
             HeaderGlide.loadImage(this, cover, ivCover, info.getComic_source());
@@ -297,29 +293,6 @@ public class ComicDetailActivity extends SwipeBackActivity implements IDetailVie
                 }
             }
         });*/
-        //收藏
-        /*ivFav.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //判断是否有登录,如果没有登录的话,从本地数据库操作,有的话从服务器操作
-                ivFav.setClickable(false);
-                if (!sp.getBoolean("isLogin", false)) {
-                    //未登录
-                    if (isCollected) {
-                        ((DetailPresenterImp) presenter).deleteCollectByName(comicInfo.getComic_name());
-                    } else {
-                        ((DetailPresenterImp) presenter).collectComic(comicInfo);
-                    }
-                } else {
-                    //已登录
-                    if (isCollected) {
-                        ((DetailPresenterImp) presenter).deleteCollectOnNet(comicInfo);
-                    } else {
-                        ((DetailPresenterImp) presenter).collectComicOnNet(comicInfo);
-                    }
-                }
-            }
-        });*/
         tvCollection.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -355,16 +328,6 @@ public class ComicDetailActivity extends SwipeBackActivity implements IDetailVie
                 startActivityForResult(intent, REQUEST_CHAPTER_CODE);
             }
         });
-
-        //下载漫画
-        /*ivDownload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(ComicDetailActivity.this, SelectActivity.class);
-                intent.putExtra("info", comicInfo);
-                startActivityForResult(intent, REQUEST_DOWNLOAD_CODE);
-            }
-        });*/
 
         //分享链接
         /*ivShare.setOnClickListener(new View.OnClickListener() {
@@ -406,20 +369,22 @@ public class ComicDetailActivity extends SwipeBackActivity implements IDetailVie
             this.historyName = historyName;
             this.historyUrl = historyUrl;
         }
+        if (historyPos >= 0) {
+            tvRead.setText("继续观看");
+        } else {
+            tvRead.setText("开始阅读");
+        }
         //没有阅读记录时返回""
     }
 
     @Override
     public void onQueryCollectByName(boolean isCollected) {
         this.isCollected = isCollected;
-//            ivFav.setImageResource(R.drawable.ic_collected);
         changeCollection(isCollected);
     }
 
     @Override
     public void onAddCollect(long state) {
-//        ivFav.setImageResource(R.drawable.ic_collected);
-//        ivFav.setClickable(true);
         isCollected = true;
         changeCollection(isCollected);
         Toast.makeText(ComicDetailActivity.this, "收藏成功", Toast.LENGTH_SHORT).show();
@@ -428,8 +393,6 @@ public class ComicDetailActivity extends SwipeBackActivity implements IDetailVie
     @Override
     public void onDeleteCollectByName(int state) {
         isCollected = false;
-//        ivFav.setImageResource(R.drawable.select_collect);
-//        ivFav.setClickable(true);
         changeCollection(isCollected);
         Toast.makeText(ComicDetailActivity.this, "取消收藏", Toast.LENGTH_SHORT).show();
     }
@@ -438,15 +401,12 @@ public class ComicDetailActivity extends SwipeBackActivity implements IDetailVie
     public void onQueryCollectOnNet(boolean isCollected) {
         this.isCollected = isCollected;
         changeCollection(isCollected);
-//            ivFav.setImageResource(R.drawable.ic_collected);
     }
 
     @Override
     public void onAddCollectOnNet(UserInfo info) {
         isCollected = true;
         User.getInstance().saveUser(info);
-//        ivFav.setClickable(true);
-//        ivFav.setImageResource(R.drawable.ic_collected);
         changeCollection(isCollected);
         Toast.makeText(ComicDetailActivity.this, "收藏成功", Toast.LENGTH_SHORT).show();
     }
@@ -455,8 +415,6 @@ public class ComicDetailActivity extends SwipeBackActivity implements IDetailVie
     public void onDeleteCollectOnNet(UserInfo info) {
         isCollected = false;
         User.getInstance().saveUser(info);
-//        ivFav.setClickable(true);
-//        ivFav.setImageResource(R.drawable.select_collect);
         changeCollection(isCollected);
         Toast.makeText(ComicDetailActivity.this, "取消收藏", Toast.LENGTH_SHORT).show();
     }
@@ -520,6 +478,11 @@ public class ComicDetailActivity extends SwipeBackActivity implements IDetailVie
             return;
         }
         downloadInfoList = infoList;
+    }
+
+    @Override
+    public void onQueryDownloadInfo(ComicPage page) {
+
     }
 
     @Override

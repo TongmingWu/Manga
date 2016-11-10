@@ -22,22 +22,22 @@ public class HistoryPresenterImp extends BasePresenter implements IHistoryPresen
     }
 
     @Override
-    public void queryAllHistory(Context context) {
+    public void queryAllHistory() {
         addSubscription(((HistoryModel) baseModel).queryAllHistory());
     }
 
     @Override
-    public void deleteHistoryByName(Context context, String name) {
+    public void deleteHistoryByName(String name) {
         ((HistoryModel) baseModel).deleteHistoryByName(name);
     }
 
     @Override
-    public void restoreHistory(Context context, HistoryComic comic) {
+    public void restoreHistory(HistoryComic comic) {
         ((HistoryModel) baseModel).restoreHistory(comic);
     }
 
     @Override
-    public void deleteAllHistory(Context context) {
+    public void deleteAllHistory() {
         ((HistoryModel) baseModel).deleteAllHistory();
     }
 

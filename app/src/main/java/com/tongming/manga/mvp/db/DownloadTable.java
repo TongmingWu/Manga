@@ -27,6 +27,10 @@ class DownloadTable {
     static final String POSITION = "position";  //当前下载页
     static final String TOTAL = "total";    //总下载页数
     static final String CREATE_TIME = "create_time";
+    static final String NEXT = "next";
+    static final String PREPARE = "prepare";
+    static final String NEXT_URL = "next_url";
+    static final String PRE_URL = "pre_url";
 
     static final String CREATE = "CREATE TABLE " + TABLE_NAME + "("
             + ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -40,7 +44,11 @@ class DownloadTable {
             + STATUS + " INTEGER,"
             + POSITION + " INTEGER,"
             + TOTAL + " INTEGER,"
-            + CREATE_TIME + " INTEGER"
+            + CREATE_TIME + " INTEGER,"
+            + NEXT + " INTEGER,"
+            + PREPARE + " INTEGER,"
+            + NEXT_URL + " TEXT,"
+            + PRE_URL + " TEXT"
             + ")";
 
     static ContentValues toContentValues(DownloadInfo info) {
@@ -56,6 +64,10 @@ class DownloadTable {
         values.put(POSITION, info.getPosition());
         values.put(TOTAL, info.getTotal());
         values.put(CREATE_TIME, info.getCreate_time());
+        values.put(NEXT, info.getNext());
+        values.put(PREPARE, info.getPrepare());
+        values.put(NEXT_URL, info.getNext_url());
+        values.put(PRE_URL, info.getPre_url());
         return values;
     }
 
@@ -74,6 +86,10 @@ class DownloadTable {
             info.setPosition(cursor.getInt(cursor.getColumnIndex(POSITION)));
             info.setTotal(cursor.getInt(cursor.getColumnIndex(TOTAL)));
             info.setCreate_time(cursor.getInt(cursor.getColumnIndex(CREATE_TIME)));
+            info.setNext(cursor.getInt(cursor.getColumnIndex(NEXT)));
+            info.setPrepare(cursor.getInt(cursor.getColumnIndex(PREPARE)));
+            info.setPre_url(cursor.getString(cursor.getColumnIndex(PRE_URL)));
+            info.setNext_url(cursor.getString(cursor.getColumnIndex(NEXT_URL)));
             return info;
         }
     };

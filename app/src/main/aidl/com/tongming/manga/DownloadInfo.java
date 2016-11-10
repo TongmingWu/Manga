@@ -21,35 +21,44 @@ public class DownloadInfo implements Parcelable {
     private int position;
     private int total;
     private int create_time;
+    private int next;
+    private int prepare;
+    private String next_url;
+    private String pre_url;
 
-    public DownloadInfo(){}
 
-    protected DownloadInfo(Parcel in) {
-        _id = in.readInt();
-        comic_id = in.readInt();
-        comic_name = in.readString();
-        comic_url = in.readString();
-        chapter_name = in.readString();
-        chapter_url = in.readString();
-        cover = in.readString();
-        comic_source = in.readString();
-        status = in.readInt();
-        position = in.readInt();
-        total = in.readInt();
-        create_time = in.readInt();
+    public void setNext(int next) {
+        this.next = next;
     }
 
-    public static final Creator<DownloadInfo> CREATOR = new Creator<DownloadInfo>() {
-        @Override
-        public DownloadInfo createFromParcel(Parcel in) {
-            return new DownloadInfo(in);
-        }
+    public void setPrepare(int prepare) {
+        this.prepare = prepare;
+    }
 
-        @Override
-        public DownloadInfo[] newArray(int size) {
-            return new DownloadInfo[size];
-        }
-    };
+    public void setNext_url(String next_url) {
+        this.next_url = next_url;
+    }
+
+    public void setPre_url(String pre_url) {
+        this.pre_url = pre_url;
+    }
+
+    public int getNext() {
+
+        return next;
+    }
+
+    public int getPrepare() {
+        return prepare;
+    }
+
+    public String getNext_url() {
+        return next_url;
+    }
+
+    public String getPre_url() {
+        return pre_url;
+    }
 
     public int get_id() {
         return _id;
@@ -99,6 +108,7 @@ public class DownloadInfo implements Parcelable {
         return create_time;
     }
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -106,17 +116,55 @@ public class DownloadInfo implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(_id);
-        dest.writeInt(comic_id);
-        dest.writeString(comic_name);
-        dest.writeString(comic_url);
-        dest.writeString(chapter_name);
-        dest.writeString(chapter_url);
-        dest.writeString(cover);
-        dest.writeString(comic_source);
-        dest.writeInt(status);
-        dest.writeInt(position);
-        dest.writeInt(total);
-        dest.writeInt(create_time);
+        dest.writeInt(this._id);
+        dest.writeInt(this.comic_id);
+        dest.writeString(this.comic_name);
+        dest.writeString(this.comic_url);
+        dest.writeString(this.chapter_name);
+        dest.writeString(this.chapter_url);
+        dest.writeString(this.cover);
+        dest.writeString(this.comic_source);
+        dest.writeInt(this.status);
+        dest.writeInt(this.position);
+        dest.writeInt(this.total);
+        dest.writeInt(this.create_time);
+        dest.writeInt(this.next);
+        dest.writeInt(this.prepare);
+        dest.writeString(this.next_url);
+        dest.writeString(this.pre_url);
     }
+
+    public DownloadInfo() {
+    }
+
+    protected DownloadInfo(Parcel in) {
+        this._id = in.readInt();
+        this.comic_id = in.readInt();
+        this.comic_name = in.readString();
+        this.comic_url = in.readString();
+        this.chapter_name = in.readString();
+        this.chapter_url = in.readString();
+        this.cover = in.readString();
+        this.comic_source = in.readString();
+        this.status = in.readInt();
+        this.position = in.readInt();
+        this.total = in.readInt();
+        this.create_time = in.readInt();
+        this.next = in.readInt();
+        this.prepare = in.readInt();
+        this.next_url = in.readString();
+        this.pre_url = in.readString();
+    }
+
+    public static final Creator<DownloadInfo> CREATOR = new Creator<DownloadInfo>() {
+        @Override
+        public DownloadInfo createFromParcel(Parcel source) {
+            return new DownloadInfo(source);
+        }
+
+        @Override
+        public DownloadInfo[] newArray(int size) {
+            return new DownloadInfo[size];
+        }
+    };
 }

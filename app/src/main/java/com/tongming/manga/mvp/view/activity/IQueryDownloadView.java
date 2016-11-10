@@ -1,5 +1,6 @@
 package com.tongming.manga.mvp.view.activity;
 
+import com.tongming.manga.mvp.bean.ComicPage;
 import com.tongming.manga.server.DownloadInfo;
 
 import java.util.List;
@@ -11,6 +12,8 @@ import java.util.List;
 
 public interface IQueryDownloadView {
     void onQueryDownloadInfo(List<DownloadInfo> infoList);
+
+    void onQueryDownloadInfo(ComicPage page);
 
     void onFail(Throwable throwable);
 }

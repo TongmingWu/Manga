@@ -1,7 +1,5 @@
 package com.tongming.manga.mvp.presenter;
 
-import com.tongming.manga.server.DownloadInfo;
-
 /**
  * Author: Tongming
  * Date: 2016/9/7
@@ -16,8 +14,9 @@ public interface IDownloadPresenter {
 
     /**
      * 下载详情页面使用
+     * @param chapterUrl
      */
-    void queryDownloadInfo(DownloadInfo info);
+    void queryDownloadInfoByUrl(String chapterUrl);
 
     void queryDownloadInfo(String cid);
 

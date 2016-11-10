@@ -1,7 +1,5 @@
 package com.tongming.manga.mvp.modle;
 
-import com.tongming.manga.server.DownloadInfo;
-
 /**
  * Author: Tongming
  * Date: 2016/9/7
@@ -18,8 +16,9 @@ public interface IDownloadModel {
 
     /**
      * 下载详情页面使用
+     * @param chapterUrl
      */
-    void queryDownloadInfo(DownloadInfo info);
+    void queryDownloadInfoByUrl(String chapterUrl);
 
     /**
      * 下载管理页面使用

@@ -36,6 +36,7 @@ import com.tongming.manga.R;
 import com.tongming.manga.cusview.GlideGircleTransform;
 import com.tongming.manga.mvp.api.ApiManager;
 import com.tongming.manga.mvp.base.BaseActivity;
+import com.tongming.manga.mvp.base.BaseApplication;
 import com.tongming.manga.mvp.base.BaseFragment;
 import com.tongming.manga.mvp.bean.User;
 import com.tongming.manga.mvp.bean.UserInfo;
@@ -58,9 +59,6 @@ public class HomeActivity extends BaseActivity implements ISystemView, ICacheVie
     public static final int LOGIN_CODE = 0x77;
     private long exitTime = 0;
     private final int[] tabPics = {
-//            R.drawable.icon_tab_favor_us,
-//            R.drawable.icon_tab_recom_us,
-//            R.drawable.icon_tab_search_us
             R.drawable.bg_tab_fav,
             R.drawable.bg_tab_recom,
             R.drawable.bg_tab_search
@@ -411,7 +409,8 @@ public class HomeActivity extends BaseActivity implements ISystemView, ICacheVie
                 if (sp.getBoolean("isAutoClearCache", false)) {
                     clearCache();
                 } else {
-                    System.exit(0);
+//                    System.exit(0);
+                    BaseApplication.getActivityHelper().finishAllActivity();
                 }
             }
             return true;
@@ -430,13 +429,16 @@ public class HomeActivity extends BaseActivity implements ISystemView, ICacheVie
 
     @Override
     public void onFail(Throwable throwable) {
-        Logger.d(throwable.getMessage());
+        Logger.e("登录过期");
+        sp.edit().putBoolean("isLogin", false).apply();
+        User.getInstance().clearUser();
     }
 
     @Override
     public void onClearCacheComplete() {
         Logger.d("清除成功");
-        System.exit(0);
+//        System.exit(0);
+        BaseApplication.getActivityHelper().finishAllActivity();
     }
 
     @Override

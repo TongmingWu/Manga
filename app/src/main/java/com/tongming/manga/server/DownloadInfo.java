@@ -29,8 +29,45 @@ public class DownloadInfo implements Parcelable, Comparable {
     private int position;
     private int total;
     private int create_time;
+    private int next;
+    private int prepare;
+    private String next_url;
+    private String pre_url;
 
-    public DownloadInfo(){
+    public void setNext(int next) {
+        this.next = next;
+    }
+
+    public void setPrepare(int prepare) {
+        this.prepare = prepare;
+    }
+
+    public void setNext_url(String next_url) {
+        this.next_url = next_url;
+    }
+
+    public void setPre_url(String pre_url) {
+        this.pre_url = pre_url;
+    }
+
+    public int getNext() {
+
+        return next;
+    }
+
+    public int getPrepare() {
+        return prepare;
+    }
+
+    public String getNext_url() {
+        return next_url;
+    }
+
+    public String getPre_url() {
+        return pre_url;
+    }
+
+    public DownloadInfo() {
 
     }
 
@@ -130,33 +167,6 @@ public class DownloadInfo implements Parcelable, Comparable {
         return create_time;
     }
 
-    protected DownloadInfo(Parcel in) {
-        _id = in.readInt();
-        comic_id = in.readString();
-        comic_name = in.readString();
-        comic_url = in.readString();
-        chapter_name = in.readString();
-        chapter_url = in.readString();
-        comic_source = in.readString();
-        cover = in.readString();
-        status = in.readInt();
-        position = in.readInt();
-        total = in.readInt();
-        create_time = in.readInt();
-    }
-
-    public static final Creator<DownloadInfo> CREATOR = new Creator<DownloadInfo>() {
-        @Override
-        public DownloadInfo createFromParcel(Parcel in) {
-            return new DownloadInfo(in);
-        }
-
-        @Override
-        public DownloadInfo[] newArray(int size) {
-            return new DownloadInfo[size];
-        }
-    };
-
     @Override
     public int compareTo(Object o) {
         DownloadInfo info = (DownloadInfo) o;
@@ -180,6 +190,7 @@ public class DownloadInfo implements Parcelable, Comparable {
         return this.chapter_url.equals(info.chapter_url) && this.chapter_name.equals(info.chapter_name);
     }
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -187,17 +198,52 @@ public class DownloadInfo implements Parcelable, Comparable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(_id);
-        dest.writeString(comic_id);
-        dest.writeString(comic_name);
-        dest.writeString(comic_url);
-        dest.writeString(chapter_name);
-        dest.writeString(chapter_url);
-        dest.writeString(comic_source);
-        dest.writeString(cover);
-        dest.writeInt(status);
-        dest.writeInt(position);
-        dest.writeInt(total);
-        dest.writeInt(create_time);
+        dest.writeInt(this._id);
+        dest.writeString(this.comic_id);
+        dest.writeString(this.comic_name);
+        dest.writeString(this.comic_url);
+        dest.writeString(this.chapter_name);
+        dest.writeString(this.chapter_url);
+        dest.writeString(this.comic_source);
+        dest.writeString(this.cover);
+        dest.writeInt(this.status);
+        dest.writeInt(this.position);
+        dest.writeInt(this.total);
+        dest.writeInt(this.create_time);
+        dest.writeInt(this.next);
+        dest.writeInt(this.prepare);
+        dest.writeString(this.next_url);
+        dest.writeString(this.pre_url);
     }
+
+    protected DownloadInfo(Parcel in) {
+        this._id = in.readInt();
+        this.comic_id = in.readString();
+        this.comic_name = in.readString();
+        this.comic_url = in.readString();
+        this.chapter_name = in.readString();
+        this.chapter_url = in.readString();
+        this.comic_source = in.readString();
+        this.cover = in.readString();
+        this.status = in.readInt();
+        this.position = in.readInt();
+        this.total = in.readInt();
+        this.create_time = in.readInt();
+        this.next = in.readInt();
+        this.prepare = in.readInt();
+        this.next_url = in.readString();
+        this.pre_url = in.readString();
+    }
+
+    public static final Creator<DownloadInfo> CREATOR = new Creator<DownloadInfo>() {
+        @Override
+        public DownloadInfo createFromParcel(Parcel source) {
+            return new DownloadInfo(source);
+        }
+
+        @Override
+        public DownloadInfo[] newArray(int size) {
+            return new DownloadInfo[size];
+        }
+    };
 }

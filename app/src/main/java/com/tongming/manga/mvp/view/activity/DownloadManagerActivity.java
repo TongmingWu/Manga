@@ -13,6 +13,7 @@ import com.orhanobut.logger.Logger;
 import com.tongming.manga.R;
 import com.tongming.manga.cusview.SpaceItemDecoration;
 import com.tongming.manga.mvp.base.SwipeBackActivity;
+import com.tongming.manga.mvp.bean.ComicPage;
 import com.tongming.manga.mvp.bean.DownloadComic;
 import com.tongming.manga.mvp.download.DownloadManager;
 import com.tongming.manga.mvp.download.DownloadTaskQueue;
@@ -76,6 +77,11 @@ public class DownloadManagerActivity extends SwipeBackActivity implements IQuery
         calculateComic(this.infoList);
         Collections.sort(comicList);
         initRecyclerView();
+    }
+
+    @Override
+    public void onQueryDownloadInfo(ComicPage page) {
+
     }
 
     private void initRecyclerView() {

@@ -20,6 +20,7 @@ import com.tongming.manga.mvp.api.ApiManager;
 import com.tongming.manga.util.CommonUtil;
 import com.tongming.manga.util.HeaderGlide;
 
+import java.io.File;
 import java.util.List;
 
 import butterknife.BindView;
@@ -31,10 +32,13 @@ import butterknife.ButterKnife;
 public class PageAdapter extends RecyclerView.Adapter<PageAdapter.PageHolder> {
 
     private List<String> picList;
+    private File[] fileList;
     private Context mContext;
     private int height;
     private int width;
     private String SOURCE_URL;
+    public static final int NET_IMAGE_FLAG = 0xff;
+    public static final int LOCAL_IMAGE_FLAG = 0xee;
 
     public PageAdapter(List<String> picList, Context mContext, String source) {
         this.picList = picList;
@@ -44,10 +48,13 @@ public class PageAdapter extends RecyclerView.Adapter<PageAdapter.PageHolder> {
         } else if (source.equals(ApiManager.SOURCE_IKAN)) {
             SOURCE_URL = HeaderGlide.URL_IKAN;
         }
+        getWH();
+    }
+
+    private void getWH() {
         height = CommonUtil.getDeviceHeight((Activity) mContext);
         width = CommonUtil.getDeviceWidth((Activity) mContext);
     }
-
 
     @Override
     public PageAdapter.PageHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -58,12 +65,18 @@ public class PageAdapter extends RecyclerView.Adapter<PageAdapter.PageHolder> {
     @Override
     public void onBindViewHolder(final PageAdapter.PageHolder holder, final int position) {
         scaleImageView(1.78f, holder);
+        Object temp = null;
 
-        final GlideUrl glideUrl = new GlideUrl(picList.get(position), new LazyHeaders.Builder()
-                .addHeader("Referer", SOURCE_URL)
-                .build());
+        String url = picList.get(position);
+        if (url.contains("http")) {
+            temp = new GlideUrl(url, new LazyHeaders.Builder()
+                    .addHeader(HeaderGlide.REFERER, SOURCE_URL)
+                    .build());
+        } else {
+            temp = new File(url);
+        }
         Glide.with(mContext)
-                .load(glideUrl)
+                .load(temp)
                 .dontAnimate()
                 .placeholder(R.color.gray)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -89,6 +102,9 @@ public class PageAdapter extends RecyclerView.Adapter<PageAdapter.PageHolder> {
         return picList.size();
     }
 
+    /**
+     * 卷轴模式进行缩放,左右模式不缩放,并使用fitCenter
+     */
     private void scaleImageView(float scale, PageAdapter.PageHolder holder) {
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) holder.ivPage.getLayoutParams();
         params.height = (int) (width * scale);

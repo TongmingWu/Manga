@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.Environment;
 
 import com.oubowu.slideback.ActivityHelper;
-import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.File;
 
@@ -24,7 +23,7 @@ public class BaseApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mContext = this;
-        CrashReport.initCrashReport(getApplicationContext(), "900051193", false);
+//        CrashReport.initCrashReport(getApplicationContext(), "900051193", false);
 
         helper = new ActivityHelper();
         registerActivityLifecycleCallbacks(helper);

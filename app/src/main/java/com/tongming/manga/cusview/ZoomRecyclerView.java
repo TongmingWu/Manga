@@ -33,6 +33,7 @@ public class ZoomRecyclerView extends RecyclerView {
      * 缩放因子
      */
     private float mScaleFactor;
+    private float mLastScaleFactor;
     /**
      * 上次触摸点坐标
      */
@@ -192,12 +193,13 @@ public class ZoomRecyclerView extends RecyclerView {
                 centerY = detector.getFocusY();
 
                 /** 缩放 */
+                mLastScaleFactor = mScaleFactor;
                 mScaleFactor *= detector.getScaleFactor();
                 mScaleFactor = Math.max(mInitScaleFactor, Math.min(mScaleFactor, mMaxScaleFactor));
 
                 /** 缩放导致偏移 */
-//                mDeltaX += centerX * (mScaleFactor - lastScaleFactor);
-//                mDeltaY += centerY * (mScaleFactor - lastScaleFactor);
+//                mDeltaX += centerX * (mScaleFactor - mLastScaleFactor);
+//                mDeltaY += centerY * (mScaleFactor - mLastScaleFactor);
 //                checkBorder();//检查边界
                 ZoomRecyclerView.this.invalidate();
 
@@ -338,9 +340,11 @@ public class ZoomRecyclerView extends RecyclerView {
      * 检查边界
      */
     private void checkBorder() {
+        //TODO 左上角有问题
         /** 左边界 */
         if (mDeltaX > 0.0f)
             mDeltaX = 0.0f;
+//            mDeltaX = getWidth() * (mScaleFactor - 1.0f);
         /** 右边界 */
         if (-mDeltaX > getWidth() * (mScaleFactor - 1.0f))
             mDeltaX = -getWidth() * (mScaleFactor - 1.0f);
@@ -348,7 +352,7 @@ public class ZoomRecyclerView extends RecyclerView {
         if (mDeltaY > 0.0f)
             mDeltaY = 0.0f;
         /** 下边界 */
-        if (-mDeltaY > getHeight() * (mScaleFactor - 1.0F))
+        if (-mDeltaY > getHeight() * (mScaleFactor - 1.0f))
             mDeltaY = -getHeight() * (mScaleFactor - 1.0f);
     }
 

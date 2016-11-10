@@ -42,6 +42,7 @@ public class SystemModel implements ISystemModel {
                     @Override
                     public void onCompleted() {
 //                        Logger.d("在线获取用户成功");
+                        this.unsubscribe();
                     }
 
                     @Override

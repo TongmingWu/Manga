@@ -34,11 +34,15 @@ import com.tongming.manga.cusview.ScrollSpeedLinearLayoutManger;
 import com.tongming.manga.cusview.SpaceItemDecoration;
 import com.tongming.manga.cusview.ZoomRecyclerView;
 import com.tongming.manga.mvp.base.BaseActivity;
+import com.tongming.manga.mvp.base.BaseApplication;
 import com.tongming.manga.mvp.bean.ComicPage;
+import com.tongming.manga.mvp.presenter.DownloadPresenterImp;
 import com.tongming.manga.mvp.presenter.PagePresenterImp;
 import com.tongming.manga.mvp.view.adapter.PageAdapter;
+import com.tongming.manga.server.DownloadInfo;
 import com.tongming.manga.util.CommonUtil;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -50,9 +54,11 @@ import butterknife.OnClick;
 /**
  * Created by Tongming on 2016/8/11.
  */
-public class PageActivity extends BaseActivity implements IPageView {
+public class PageActivity extends BaseActivity implements IPageView, IQueryDownloadView {
     public static final int PAGE_REQUEST_CODE = 1;
     public static final int PAGE_RESULT_CODE = 10;
+    private static final int NET_PAGE = 0x3388;
+    private static final int LOCAL_PAGE = 0x3399;
     @BindView(R.id.rv_page)
     ZoomRecyclerView rvPage;
     //    RecyclerView rvPage;
@@ -80,6 +86,12 @@ public class PageActivity extends BaseActivity implements IPageView {
     ImageView ivBright;
     @BindView(R.id.iv_screen)
     ImageView ivScreen;
+    @BindView(R.id.rl_bright)
+    RelativeLayout rlBright;
+    @BindView(R.id.rl_screen)
+    RelativeLayout rlScreen;
+    @BindView(R.id.rl_setting)
+    RelativeLayout rlSetting;
     @BindView(R.id.tv_screen)
     TextView tvScreen;
     @BindView(R.id.iv_setting)
@@ -99,7 +111,6 @@ public class PageActivity extends BaseActivity implements IPageView {
     private ScrollSpeedLinearLayoutManger manager;
     private boolean isLoadNext;
     private boolean isLoadPre;
-    private boolean isFirstLoad;
     private List<String> nameList;
     private List<Integer> numList;
     private List<String> urlList;
@@ -130,6 +141,7 @@ public class PageActivity extends BaseActivity implements IPageView {
     private long downTime;
     private boolean isLoadNone;
     private String source;
+    private DownloadPresenterImp downloadPresenterImp;
 
     @Override
     protected int getLayoutId() {
@@ -160,15 +172,17 @@ public class PageActivity extends BaseActivity implements IPageView {
         handler.postDelayed(runnable, 1000 * 60);
         sp = getSharedPreferences("config", MODE_PRIVATE);
         isVertical = sp.getBoolean("isVertical", true);
-        source = getIntent().getStringExtra("source");
+        Intent intent = getIntent();
+        source = intent.getStringExtra("source");
         setOrientation();     //进来时初始化横竖屏
         setWindowBright();
         initNetTime();
-        if (!isFirstLoad) {
+        /*if (!isFirstLoad) {
             isFirstLoad = true;
             presenter = new PagePresenterImp(this);
-            ((PagePresenterImp) presenter).getPage(source, getIntent().getStringExtra("url"));
-        }
+            ((PagePresenterImp) presenter).getPage(source, intent.getStringExtra("url"));
+        }*/
+        queryDownloadInfo(intent.getStringExtra("url"));
         initRecycle();
         sbPage.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             int progress;
@@ -190,6 +204,16 @@ public class PageActivity extends BaseActivity implements IPageView {
                 rvPage.scrollToPosition(position);
             }
         });
+        if (presenter == null) {
+            presenter = new PagePresenterImp(this);
+        }
+    }
+
+    private void queryDownloadInfo(String url) {
+        if (downloadPresenterImp == null) {
+            downloadPresenterImp = new DownloadPresenterImp(this);
+        }
+        downloadPresenterImp.queryDownloadInfoByUrl(url);
     }
 
     private void initRecycle() {
@@ -296,7 +320,7 @@ public class PageActivity extends BaseActivity implements IPageView {
                 firstY = ev.getRawY();
                 isActionDown = true;
                 downTime = System.currentTimeMillis();
-                if (isFirstLoad) {
+                if (imgList == null) {
                     Logger.d("正在加载图片,不允许滑动");
                     return true;
                 }
@@ -354,28 +378,6 @@ public class PageActivity extends BaseActivity implements IPageView {
         return super.dispatchTouchEvent(ev);
     }
 
-    private void loadPre() {
-        if (!isLoadPre && !TextUtils.isEmpty(preUrl)) {
-            ((PagePresenterImp) presenter).getPage(source, preUrl);
-            isLoadPre = true;
-        } else if (TextUtils.isEmpty(preUrl)) {
-            Toast.makeText(PageActivity.this, "这是第一话哦", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void loadNext() {
-        if (!TextUtils.isEmpty(nextUrl) && !isLoadNext && !isFirstLoad) {
-            ((PagePresenterImp) presenter).getPage(source, nextUrl);
-            isLoadNext = true;
-        } else if (TextUtils.isEmpty(nextUrl)) {
-            //只显示一次
-            if (!isLoadNone) {
-                Toast.makeText(PageActivity.this, "下面没有咯", Toast.LENGTH_SHORT).show();
-                isLoadNone = true;
-            }
-        }
-    }
-
     private void showController() {
         ObjectAnimator.ofFloat(rlTopBar, "translationY", -rlTopBar.getHeight(), 0).start();
         ObjectAnimator.ofFloat(rlBottomBar, "translationY", rlBottomBar.getHeight(), 0).start();
@@ -402,6 +404,16 @@ public class PageActivity extends BaseActivity implements IPageView {
 
     @Override
     public void onSuccess(ComicPage page) {
+        parserPage(page, NET_PAGE);
+    }
+
+    @Override
+    public void onPageCompleted(List<String> imgList) {
+        pageComplete(imgList);
+    }
+
+    @Override
+    public void onQueryDownloadInfo(ComicPage page) {
         if (nameList == null) {
             nameList = new ArrayList<>();
         }
@@ -411,12 +423,30 @@ public class PageActivity extends BaseActivity implements IPageView {
         if (urlList == null) {
             urlList = new ArrayList<>();
         }
+        if (page == null) {
+            ((PagePresenterImp) presenter).getPage(source,
+                    imgList == null ? getIntent().getStringExtra("url") : (isLoadNext ? nextUrl : preUrl));
+            return;
+        }
+        int size = readPage(page.getComic_name(), page.getChapter_name()).size();
+        if (size > 0) {
+            List<String> imgList = readPage(page.getComic_name(), page.getChapter_name());
+            page.setImg_list(imgList);
+            page.setPage_count(imgList.size());
+            parserPage(page, LOCAL_PAGE);
+        } else {
+            ((PagePresenterImp) presenter).getPage(source,
+                    imgList == null ? getIntent().getStringExtra("url") : (isLoadNext ? nextUrl : preUrl));
+        }
+    }
+
+    private void parserPage(ComicPage page, int flag) {
         String chapterName = page.getChapter_name();
         Matcher matcher = Pattern.compile("第?\\d+[话卷集回]").matcher(chapterName);
         if (matcher.find()) {
             chapterName = matcher.group(0);
         }
-        if (isFirstLoad) {
+        if (imgList == null) {
             if (page.isPrepare()) {
                 preUrl = page.getPre_chapter_url();
             }
@@ -428,7 +458,6 @@ public class PageActivity extends BaseActivity implements IPageView {
             resultName = chapterName;
             urlList.add(page.getCurrent_chapter_url());
             resultUrl = page.getCurrent_chapter_url();
-            ((PagePresenterImp) presenter).cacheImg(this, page.getImg_list(), false);
             tvChapterName.setText(chapterName);
             tvTotalPage.setText(" / " + page.getImg_list().size());
             tvCurrent.setText("1");
@@ -439,23 +468,24 @@ public class PageActivity extends BaseActivity implements IPageView {
             numList.add(page.getPage_count());
             urlList.add(page.getCurrent_chapter_url());
             nextUrl = page.isNext() ? page.getNext_chapter_url() : null;
-            ((PagePresenterImp) presenter).cacheImg(this, page.getImg_list(), false);
         } else {
             nameList.add(0, chapterName);
             numList.add(0, page.getPage_count());
             urlList.add(0, page.getCurrent_chapter_url());
             preUrl = page.isPrepare() ? page.getPre_chapter_url() : null;
-            ((PagePresenterImp) presenter).cacheImg(this, page.getImg_list(), true);
+        }
+        if (flag == NET_PAGE) {
+            ((PagePresenterImp) presenter).cacheImg(this, page.getImg_list(), false);
+        } else if (flag == LOCAL_PAGE) {
+            pageComplete(page.getImg_list());
         }
     }
 
-    @Override
-    public void onPageCompleted(List<String> imgList) {
+    private void pageComplete(List<String> imgList) {
         if (this.imgList == null) {
             this.imgList = imgList;
             adapter = new PageAdapter(this.imgList, this, source);
             rvPage.setAdapter(adapter);
-            isFirstLoad = false;
         } else {
             int itemCount = imgList.size();
             int startPos = 0;
@@ -473,15 +503,53 @@ public class PageActivity extends BaseActivity implements IPageView {
         }
     }
 
+    private void loadPre() {
+        if (!isLoadPre && !TextUtils.isEmpty(preUrl)) {
+            queryDownloadInfo(preUrl);
+            isLoadPre = true;
+        } else if (TextUtils.isEmpty(preUrl)) {
+            Toast.makeText(PageActivity.this, "这是第一话哦", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void loadNext() {
+        if (!TextUtils.isEmpty(nextUrl) && !isLoadNext && imgList != null) {
+            queryDownloadInfo(nextUrl);
+            isLoadNext = true;
+        } else if (TextUtils.isEmpty(nextUrl)) {
+            //只显示一次
+            if (!isLoadNone) {
+                Toast.makeText(PageActivity.this, "下面没有咯", Toast.LENGTH_SHORT).show();
+                isLoadNone = true;
+            }
+        }
+    }
+
+    private List<String> readPage(String comicName, String chapterName) {
+        List<String> imgList = new ArrayList<>();
+        String chapterPath = BaseApplication.getExternalPath() + "/download/" + comicName + "/" + chapterName;
+        File file = new File(chapterPath);
+        if (file.exists() && file.isDirectory()) {
+            for (File f : file.listFiles()) {
+                imgList.add(f.getAbsolutePath());
+            }
+        }
+        return imgList;
+    }
+
     private void setResult(String resultName) {
         Intent intent = new Intent();
         setResult(PAGE_RESULT_CODE, intent.putExtra("name", resultName).putExtra("url", resultUrl));
     }
 
     @Override
+    public void onQueryDownloadInfo(List<DownloadInfo> infoList) {
+
+    }
+
+    @Override
     public void onFail(Throwable throwable) {
         Toast.makeText(PageActivity.this, "获取图片失败", Toast.LENGTH_SHORT).show();
-        isFirstLoad = false;
         rvPage.setVisibility(View.GONE);
         Logger.e(throwable.getMessage());
     }
@@ -550,12 +618,16 @@ public class PageActivity extends BaseActivity implements IPageView {
             }
             sp.edit().putBoolean("isPortrait", true).apply();
         }
-        if (adapter != null && imgList != null) {
+        if (imgList != null) {
             adapter = new PageAdapter(imgList, this, source);
             rvPage.setAdapter(adapter);
-            rvPage.addItemDecoration(new SpaceItemDecoration(30));
+//            rvPage.addItemDecoration(new SpaceItemDecoration(30));
             manager.scrollToPosition(currentPage);
         }
+        /*if (adapter != null && imgList != null) {
+            adapter.notifyDataSetChanged();
+            manager.scrollToPosition(currentPage);
+        }*/
     }
 
     @Override
@@ -567,6 +639,10 @@ public class PageActivity extends BaseActivity implements IPageView {
                 if (!isVertical) {
                     manager.setOrientation(LinearLayoutManager.HORIZONTAL);
                     manager.setSpeed(0.2f);
+                    if (imgList.size() != 0) {
+                        adapter = new PageAdapter(imgList, this, source);
+                        rvPage.setAdapter(adapter);
+                    }
                 } else {
                     manager.setOrientation(LinearLayoutManager.VERTICAL);
                 }
@@ -593,16 +669,12 @@ public class PageActivity extends BaseActivity implements IPageView {
         boolean isSystemBright = sp.getBoolean("isSystemBright", true);
         if (isSystemBright) {
             sbBright.setProgress(CommonUtil.getSystemScreenBrightness(getApplicationContext()) + 1);
-            if (!cbCheck.isChecked()) {
-                cbCheck.setChecked(true);
-            }
+            cbCheck.setChecked(true);
         } else {
             //从sp中获取保存的亮度
             int windowBright = sp.getInt("windowBright", 255 / 2);
             sbBright.setProgress(windowBright);
-            if (cbCheck.isChecked()) {
-                cbCheck.setChecked(false);
-            }
+            cbCheck.setChecked(false);
         }
         sbBright.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -636,27 +708,29 @@ public class PageActivity extends BaseActivity implements IPageView {
         cbCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                SharedPreferences.Editor edit = sp.edit();
                 if (isChecked) {
-                    sp.edit().putBoolean("isSystemBright", true).apply();
+                    edit.putBoolean("isSystemBright", true);
                     CommonUtil.setScreenBrightness(PageActivity.this, CommonUtil.getSystemScreenBrightness(getApplicationContext()));
                 } else {
-                    sp.edit().putBoolean("isSystemBright", false).apply();
+                    edit.putBoolean("isSystemBright", false);
                     CommonUtil.setScreenBrightness(PageActivity.this, sp.getInt("windowBright", 255 / 2));
                 }
+                edit.apply();
             }
         });
     }
 
-    @OnClick({R.id.rl_top_left, R.id.iv_bright, R.id.iv_screen, R.id.iv_setting})
+    @OnClick({R.id.rl_top_left, R.id.rl_bright, R.id.rl_screen, R.id.rl_setting})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.rl_top_left:
                 onBackPressed();
                 break;
-            case R.id.iv_bright:
+            case R.id.rl_bright:
                 showBrightDialog();
                 break;
-            case R.id.iv_screen:
+            case R.id.rl_screen:
                 boolean isPortrait = sp.getBoolean("isPortrait", true);
                 if (isPortrait) {
                     sp.edit().putBoolean("isPortrait", false).apply();
@@ -666,7 +740,7 @@ public class PageActivity extends BaseActivity implements IPageView {
                     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                 }
                 break;
-            case R.id.iv_setting:
+            case R.id.rl_setting:
                 Intent intent = new Intent(PageActivity.this, WatchSettingActivity.class);
                 startActivityForResult(intent, PAGE_REQUEST_CODE);
                 break;
