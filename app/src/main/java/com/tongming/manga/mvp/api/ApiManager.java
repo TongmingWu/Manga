@@ -66,7 +66,6 @@ public class ApiManager {
 
     private ApiManager() {
         initOkHttpClient();
-
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .client(mOkHttpClient)
@@ -83,7 +82,7 @@ public class ApiManager {
         if (instance == null) {
             synchronized (ApiManager.class) {
                 if (instance == null) {
-                    return new ApiManager();
+                    instance = new ApiManager();
                 }
             }
         }
@@ -93,8 +92,6 @@ public class ApiManager {
 
     // 云端响应头拦截器，用来配置缓存策略
     private Interceptor mRewriteCacheControlInterceptor = new Interceptor() {
-
-        private int versionCode;
 
         @Override
         public Response intercept(Chain chain) throws IOException {

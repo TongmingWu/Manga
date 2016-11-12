@@ -21,7 +21,9 @@ public class HeaderGlide {
 
     public static final String URL_DMZJ = "http://m.dmzj.com/";
     public static final String URL_IKAN = "http://m.ikanman.com/";
+    public static final String HOST_IKAN = "p.yogajx.com";
     public static final String REFERER = "Referer";
+    public static final String HOST = "Host";
 
     private static String getReferer(String source) {
         String referer_url = URL_DMZJ;
@@ -62,9 +64,13 @@ public class HeaderGlide {
     }
 
     public static void downloadImage(Context context, String url, String source) {
-        GlideUrl glideUrl = new GlideUrl(url, new LazyHeaders.Builder()
-                .addHeader(REFERER, getReferer(source))
-                .build());
+        String referer = getReferer(source);
+        LazyHeaders.Builder builder = new LazyHeaders.Builder();
+        builder.addHeader(REFERER, referer);
+        if (referer.equals(URL_IKAN)) {
+            builder.addHeader(HOST, HOST_IKAN);
+        }
+        GlideUrl glideUrl = new GlideUrl(url, builder.build());
         Glide.with(context)
                 .load(glideUrl)
                 .downloadOnly(720, 1280);

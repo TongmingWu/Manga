@@ -47,6 +47,7 @@ public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.Downlo
     public DownloadAdapter.DownloadHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View inflate = View.inflate(mContext, R.layout.item_download, null);
         inflate.setOnClickListener(this);
+        inflate.setOnLongClickListener(this);
         return new DownloadHolder(inflate);
     }
 
@@ -122,7 +123,7 @@ public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.Downlo
 
     @Override
     public boolean onLongClick(View v) {
-        return (onItemLongClickListener != null && onItemLongClickListener.onItemLongClick(v, (Integer) v.getTag()));
+        return onItemLongClickListener != null && onItemLongClickListener.onItemLongClick(v, (Integer) v.getTag());
     }
 
     public class DownloadHolder extends RecyclerView.ViewHolder {

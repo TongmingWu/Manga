@@ -1,5 +1,6 @@
 package com.tongming.manga.mvp.view.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.RemoteException;
 import android.support.v7.app.AlertDialog;
@@ -8,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.orhanobut.logger.Logger;
 import com.tongming.manga.R;
@@ -35,7 +37,7 @@ import butterknife.BindView;
  * Date: 2016/9/7
  */
 
-public class DownloadManagerActivity extends SwipeBackActivity implements IQueryDownloadView {
+public class DownloadManagerActivity extends SwipeBackActivity implements IDownloadView {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.rv_download)
@@ -47,6 +49,8 @@ public class DownloadManagerActivity extends SwipeBackActivity implements IQuery
     private boolean serviceStarted;
     private DownloadManager.DownloadBinder binder;
     private List<DownloadInfo> infoList;
+    private DownloadPresenterImp imp;
+    private int deletePos;
 
     @Override
     protected int getLayoutId() {
@@ -61,7 +65,10 @@ public class DownloadManagerActivity extends SwipeBackActivity implements IQuery
     @Override
     protected void onResume() {
         super.onResume();
-        new DownloadPresenterImp(this).queryAllDownloadInfo();
+        if (imp == null) {
+            imp = new DownloadPresenterImp(this);
+        }
+        imp.queryAllDownloadInfo();
         serviceStarted = CommonUtil.isServiceStarted(this, DownloadManager.class.getName());
         if (serviceStarted && conn == null) {
             //绑定Service
@@ -150,7 +157,7 @@ public class DownloadManagerActivity extends SwipeBackActivity implements IQuery
                                                 }
                                             }
                                             DownloadTaskQueue queue = manager.createQueue(cid, list);
-                                            if (manager.hasDownloadQueue()) {
+                                            if (manager.checkQueuedStatus()) {
                                                 queue.waitQueue();
                                             } else {
                                                 queue.startQueue();
@@ -182,7 +189,34 @@ public class DownloadManagerActivity extends SwipeBackActivity implements IQuery
                     tvDelete.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            //删除队列包括其中已下载的漫画
+                            //删除包括已下载的漫画和数据库的记录
+                            //1.service已启动并queue开始;2.service已启动但Queue未开始;
+                            //3.service未启动
+                            new AlertDialog.Builder(DownloadManagerActivity.this)
+                                    .setTitle("注意")
+                                    .setMessage("确定删除" + comicList.get(position).getName() + "?")
+                                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            String cid = comicList.get(position).getComic_id();
+                                            if (serviceStarted) {
+                                                //先暂停
+                                                DownloadTaskQueue queue = binder.getManager().checkQueue(cid);
+                                                if (queue != null) {
+                                                    queue.pauseQueue();
+                                                }
+                                            }
+                                            deletePos = position;
+                                            deleteComic(cid);
+                                        }
+                                    })
+                                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+
+                                        }
+                                    }).show();
+                            dialog.dismiss();
                         }
                     });
                     dialog = new AlertDialog.Builder(DownloadManagerActivity.this)
@@ -195,6 +229,22 @@ public class DownloadManagerActivity extends SwipeBackActivity implements IQuery
             });
         } else {
             adapter.notifyDataSetChanged();
+        }
+    }
+
+    /**
+     * 删除已下载的漫画
+     */
+    private void deleteComic(String cid) {
+        imp.deleteDownloadInfo(cid);
+    }
+
+    @Override
+    public void onDeleteDownloadInfo(int state) {
+        if (state > 0) {
+            Toast.makeText(this, "删除成功", Toast.LENGTH_SHORT).show();
+            comicList.remove(deletePos);
+            adapter.notifyItemRemoved(deletePos);
         }
     }
 

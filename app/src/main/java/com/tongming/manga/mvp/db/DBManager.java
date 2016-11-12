@@ -273,6 +273,14 @@ public class DBManager {
         return briteDatabase.delete(DownloadTable.TABLE_NAME, DownloadTable.CHAPTER_URL + " = ?", info.getChapter_url());
     }
 
+    public int deleteDownloadInfo(String cid) {
+        return briteDatabase.delete(DownloadTable.TABLE_NAME, DownloadTable.COMIC_ID + " = ?", cid);
+    }
+
+    public int deleteDownloadInfoByUrl(String url) {
+        return briteDatabase.delete(DownloadTable.TABLE_NAME, DownloadTable.CHAPTER_URL + " = ?", url);
+    }
+
     /**
      * 添加搜索记录
      *

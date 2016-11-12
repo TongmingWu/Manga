@@ -25,4 +25,8 @@ public interface IDownloadModel {
      */
     void queryAllDownloadInfo();
 
+    void deleteDownloadInfo(String cid);
+
+    void deleteDownloadInfoByUrl(String url);
+
 }

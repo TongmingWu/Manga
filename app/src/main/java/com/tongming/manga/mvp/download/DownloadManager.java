@@ -1,17 +1,24 @@
 package com.tongming.manga.mvp.download;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
+import android.widget.RemoteViews;
 
 import com.orhanobut.logger.Logger;
+import com.tongming.manga.R;
 import com.tongming.manga.mvp.bean.ComicInfo;
 import com.tongming.manga.mvp.bean.ComicPage;
 import com.tongming.manga.mvp.db.DBManager;
 import com.tongming.manga.mvp.presenter.DownloadPresenterImp;
-import com.tongming.manga.mvp.view.activity.IQueryDownloadView;
+import com.tongming.manga.mvp.view.activity.DownloadDetailActivity;
+import com.tongming.manga.mvp.view.activity.IDownloadView;
 import com.tongming.manga.server.DownloadInfo;
 import com.tongming.manga.server.IDownloadInterface;
 
@@ -26,7 +33,7 @@ import java.util.TreeSet;
  * Date: 2016/9/9
  */
 
-public class DownloadManager extends Service implements IDownloadManager, IQueryDownloadView {
+public class DownloadManager extends Service implements IDownloadManager, IDownloadView {
 
     public static final int WAIT_QUEUE = 0;
     public static final int START_QUEUE = 1;
@@ -51,6 +58,7 @@ public class DownloadManager extends Service implements IDownloadManager, IQuery
     private onTaskListener onTaskListener;
     private String cid;
     private DownloadPresenterImp downloadPresenterImp;
+    private NotificationManager notificationManager;
 
 
     @Nullable
@@ -110,7 +118,7 @@ public class DownloadManager extends Service implements IDownloadManager, IQuery
             queue = createQueue(cid, list);
         }
         //检测是否有下载中的队列,启动下载任务
-        if (!hasDownloadQueue()) {
+        if (!checkQueuedStatus()) {
             queue.startQueue();
             status = DOWNLOAD;
         } else {
@@ -137,6 +145,11 @@ public class DownloadManager extends Service implements IDownloadManager, IQuery
 
     @Override
     public void onQueryDownloadInfo(ComicPage page) {
+
+    }
+
+    @Override
+    public void onDeleteDownloadInfo(int state) {
 
     }
 
@@ -167,6 +180,11 @@ public class DownloadManager extends Service implements IDownloadManager, IQuery
         return null;
     }
 
+    /**
+     * 检查指定cid的队列是否在下载
+     *
+     * @param cid comic_id
+     */
     public boolean checkQueueStatus(String cid) {
         if (queueList != null) {
             for (DownloadTaskQueue queue : queueList) {
@@ -178,7 +196,10 @@ public class DownloadManager extends Service implements IDownloadManager, IQuery
         return false;
     }
 
-    public boolean hasDownloadQueue() {
+    /**
+     * 检查是否有队列在下载
+     */
+    public boolean checkQueuedStatus() {
         if (queueList != null) {
             for (DownloadTaskQueue queue : queueList) {
                 if (queue.getStatus() == DownloadTaskQueue.DOWNLOAD) {
@@ -189,6 +210,32 @@ public class DownloadManager extends Service implements IDownloadManager, IQuery
         return false;
     }
 
+    /**
+     * 在通知栏上显示下载信息
+     */
+    private void sendNotification(DownloadInfo info, int flag) {
+        if (notificationManager == null) {
+            notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        }
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        RemoteViews rv = new RemoteViews(getPackageName(), R.layout.notice_download);
+        rv.setProgressBar(R.id.pb_notice, info.getTotal(), info.getPosition(), false);
+        rv.setTextViewText(R.id.tv_notice_desc, "当前下载:" + info.getChapter_name());
+        rv.setTextColor(R.id.tv_notice_desc, getColor(R.color.normalText));
+        rv.setTextViewText(R.id.tv_progress, (int) (((float) info.getPosition() / (float) info.getTotal()) * 100) + "%");
+        rv.setTextColor(R.id.tv_progress, getColor(R.color.normalText));
+        Intent intent = new Intent(this, DownloadDetailActivity.class);
+        intent.putExtra("cid", info.getComic_id());
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(pendingIntent);
+        builder.setContent(rv);
+        builder.setSmallIcon(R.mipmap.ic_launcher);
+        notificationManager.notify(R.layout.notice_download, builder.build());
+    }
+
+    /**
+     * 转换DownloadInfo
+     */
     private List<DownloadInfo> convertToDownload(ComicInfo info, List<Integer> position) {
         List<DownloadInfo> infoList = new ArrayList<>();
         List<ComicInfo.ChapterListBean> chapterList = info.getChapter_list();
@@ -210,10 +257,10 @@ public class DownloadManager extends Service implements IDownloadManager, IQuery
             downloadInfo.setStatus(DownloadInfo.WAIT);
             long currentTimeMillis = System.currentTimeMillis();
             downloadInfo.setCreate_time((int) currentTimeMillis);
-            next = (pos > 0 && pos < size) ? 1 : (pos == 0 ? 1 : 0);
-            nextUrl = pos < size ? chapterList.get(pos - 1).getChapter_url() : "";
-            prepare = (pos > 0 && pos < size) ? 1 : (pos == size ? 1 : 0);
-            preUrl = pos > 0 ? chapterList.get(pos + 1).getChapter_url() : "";
+            next = (pos > 0 && pos < size - 1) ? 1 : (pos == 0 ? 0 : 1);
+            nextUrl = next > 0 ? chapterList.get(pos - 1).getChapter_url() : "";
+            prepare = (pos > 0 && pos < size - 1) ? 1 : (pos == size - 1 ? 0 : 1);
+            preUrl = prepare > 0 ? chapterList.get(pos + 1).getChapter_url() : "";
             downloadInfo.setNext(next);
             downloadInfo.setPrepare(prepare);
             downloadInfo.setNext_url(nextUrl);
@@ -239,6 +286,7 @@ public class DownloadManager extends Service implements IDownloadManager, IQuery
         }
         status = COMPLETE;
         Logger.d("已没有等待中的队列");
+        notificationManager.cancel(R.layout.notice_download);
         stopSelf();
     }
 
@@ -280,7 +328,8 @@ public class DownloadManager extends Service implements IDownloadManager, IQuery
         }
         if (pauseSize == queueList.size()) {
             status = PAUSE;
-            //所有未完成的队列已暂停,停止service
+            notificationManager.cancel(R.layout.notice_download);
+            stopSelf();
         }
     }
 
@@ -318,6 +367,7 @@ public class DownloadManager extends Service implements IDownloadManager, IQuery
         if (onTaskListener != null) {
             onTaskListener.onTaskStart(info);
         }
+        sendNotification(info, info.getStatus());
     }
 
     @Override
@@ -325,6 +375,7 @@ public class DownloadManager extends Service implements IDownloadManager, IQuery
         if (onTaskListener != null) {
             onTaskListener.onTaskPause(info);
         }
+        notificationManager.cancel(R.layout.notice_download);
     }
 
     @Override
@@ -332,6 +383,7 @@ public class DownloadManager extends Service implements IDownloadManager, IQuery
         if (onTaskListener != null) {
             onTaskListener.onTaskResume(info);
         }
+        sendNotification(info, info.getStatus());
     }
 
     @Override

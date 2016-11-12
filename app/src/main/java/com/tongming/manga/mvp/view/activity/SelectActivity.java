@@ -32,7 +32,7 @@ import butterknife.OnClick;
  * Date: 2016/9/7
  */
 
-public class SelectActivity extends SwipeBackActivity implements IQueryDownloadView {
+public class SelectActivity extends SwipeBackActivity implements IDownloadView {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.tv_chapter_num)
@@ -156,6 +156,11 @@ public class SelectActivity extends SwipeBackActivity implements IQueryDownloadV
 
     @Override
     public void onQueryDownloadInfo(ComicPage page) {
+
+    }
+
+    @Override
+    public void onDeleteDownloadInfo(int state) {
 
     }
 

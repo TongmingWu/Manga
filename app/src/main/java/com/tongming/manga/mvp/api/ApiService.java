@@ -86,7 +86,7 @@ interface ApiService {
     @GET
     Observable<ResponseBody> downloadImageByDMZJ(@Url String url);
 
-    @Headers("Referer:http://m.ikanman.com/")
+    @Headers({"Host:p.yogajx.com", "Referer:http://m.ikanman.com/"})
     @GET
     Observable<ResponseBody> downloadImageByIKAN(@Url String url);
 }

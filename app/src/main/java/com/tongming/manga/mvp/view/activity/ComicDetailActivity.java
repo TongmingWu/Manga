@@ -41,7 +41,7 @@ import butterknife.BindView;
 /**
  * Created by Tongming on 2016/8/10.
  */
-public class ComicDetailActivity extends SwipeBackActivity implements IDetailView, IQueryDownloadView {
+public class ComicDetailActivity extends SwipeBackActivity implements IDetailView, IDownloadView {
     public static final int REQUEST_CHAPTER_CODE = 0x15;
     public static final int REQUEST_DOWNLOAD_CODE = 0x8856;
     @BindView(R.id.toolbar)
@@ -250,6 +250,11 @@ public class ComicDetailActivity extends SwipeBackActivity implements IDetailVie
                 }*/
                 //得到历史记录的位置
                 historyPos = getHistoryPos(historyUrl);
+                if (historyPos >= 0) {
+                    tvRead.setText("继续观看");
+                } else {
+                    tvRead.setText("开始阅读");
+                }
                 adapter = new ChapterAdapter(chapterList, historyPos, this);
                 if (downloadPos == null) {
                     downloadPos = new ArrayList<>();
@@ -369,11 +374,6 @@ public class ComicDetailActivity extends SwipeBackActivity implements IDetailVie
             this.historyName = historyName;
             this.historyUrl = historyUrl;
         }
-        if (historyPos >= 0) {
-            tvRead.setText("继续观看");
-        } else {
-            tvRead.setText("开始阅读");
-        }
         //没有阅读记录时返回""
     }
 
@@ -482,6 +482,11 @@ public class ComicDetailActivity extends SwipeBackActivity implements IDetailVie
 
     @Override
     public void onQueryDownloadInfo(ComicPage page) {
+
+    }
+
+    @Override
+    public void onDeleteDownloadInfo(int state) {
 
     }
 

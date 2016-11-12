@@ -54,7 +54,7 @@ import butterknife.OnClick;
 /**
  * Created by Tongming on 2016/8/11.
  */
-public class PageActivity extends BaseActivity implements IPageView, IQueryDownloadView {
+public class PageActivity extends BaseActivity implements IPageView, IDownloadView {
     public static final int PAGE_REQUEST_CODE = 1;
     public static final int PAGE_RESULT_CODE = 10;
     private static final int NET_PAGE = 0x3388;
@@ -438,6 +438,11 @@ public class PageActivity extends BaseActivity implements IPageView, IQueryDownl
             ((PagePresenterImp) presenter).getPage(source,
                     imgList == null ? getIntent().getStringExtra("url") : (isLoadNext ? nextUrl : preUrl));
         }
+    }
+
+    @Override
+    public void onDeleteDownloadInfo(int state) {
+
     }
 
     private void parserPage(ComicPage page, int flag) {

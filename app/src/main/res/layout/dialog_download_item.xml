@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="25dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_watch"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:layout_marginTop="15dp"
+        android:gravity="center_vertical"
+        android:text="观看"
+        android:textColor="@color/normalText"
+        android:textSize="16sp"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tv_action"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:layout_marginTop="15dp"
+        android:gravity="center_vertical"
+        android:text="开始"
+        android:textColor="@color/normalText"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tv_delete"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:layout_marginTop="15dp"
+        android:gravity="center_vertical"
+        android:text="删除"
+        android:textColor="@color/normalText"
+        android:textSize="16sp" />
+
+
+</LinearLayout>

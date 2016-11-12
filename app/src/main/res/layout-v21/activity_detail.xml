@@ -110,33 +110,41 @@
                 android:textColor="@android:color/white"
                 tools:text="地区:  未知" />
 
-            <TextView
-                android:id="@+id/btn_read"
-                android:layout_width="100dp"
-                android:layout_height="36dp"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/iv_blur"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="10dp"
                 android:layout_toRightOf="@id/rl_cover"
-                android:background="@drawable/btn_primary_color_select"
-                android:clickable="true"
-                android:gravity="center"
-                android:text="开始阅读"
-                android:textColor="@android:color/white" />
+                android:orientation="horizontal"
+                android:padding="10dp">
 
-            <TextView
-                android:id="@+id/btn_collection"
-                android:layout_width="100dp"
-                android:layout_height="36dp"
-                android:layout_below="@id/iv_blur"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="10dp"
-                android:layout_toRightOf="@id/btn_read"
-                android:background="@drawable/btn_primary_color_select"
-                android:clickable="true"
-                android:gravity="center"
-                android:text="收藏"
-                android:textColor="@android:color/white" />
+                <TextView
+                    android:id="@+id/btn_read"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:background="@drawable/btn_primary_color_select"
+                    android:clickable="true"
+                    android:gravity="center"
+                    android:layout_weight="5"
+                    android:text="开始阅读"
+                    android:textColor="@android:color/white" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/btn_collection"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:background="@drawable/btn_primary_color_select"
+                    android:clickable="true"
+                    android:gravity="center"
+                    android:layout_weight="5"
+                    android:text="收藏"
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
 
             <!--<ImageView
                 android:id="@+id/iv_fav"

@@ -1,12 +1,15 @@
 package com.tongming.manga.mvp.view.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.RemoteException;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.orhanobut.logger.Logger;
 import com.tongming.manga.R;
@@ -29,7 +32,7 @@ import butterknife.BindView;
  * Date: 2016/9/7
  */
 
-public class DownloadDetailActivity extends SwipeBackActivity implements IQueryDownloadView {
+public class DownloadDetailActivity extends SwipeBackActivity implements IDownloadView {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.rv_download)
@@ -46,7 +49,8 @@ public class DownloadDetailActivity extends SwipeBackActivity implements IQueryD
     private boolean serviceStarted;
     private boolean isStart;
     private String cid;
-    private DownloadPresenterImp downloadPresenterImp;
+    private AlertDialog dialog;
+    private int deletePos;
 
     @Override
     protected int getLayoutId() {
@@ -69,10 +73,10 @@ public class DownloadDetailActivity extends SwipeBackActivity implements IQueryD
         super.onResume();
         Intent intent = getIntent();
         cid = intent.getStringExtra("cid");
-        if (downloadPresenterImp == null) {
-            downloadPresenterImp = new DownloadPresenterImp(this);
+        if (presenter == null) {
+            presenter = new DownloadPresenterImp(this);
         }
-        downloadPresenterImp.queryDownloadInfo(cid);
+        ((DownloadPresenterImp) presenter).queryDownloadInfo(cid);
         serviceStarted = CommonUtil.isServiceStarted(this, DownloadManager.class.getName());
         if (serviceStarted && conn == null) {
             //绑定Service
@@ -133,37 +137,11 @@ public class DownloadDetailActivity extends SwipeBackActivity implements IQueryD
                     int status = info.getStatus();
                     switch (status) {
                         case DownloadInfo.WAIT:
-                            break;
                         case DownloadInfo.DOWNLOAD:
-                            if (serviceStarted) {
-                                try {
-                                    Logger.d("暂停" + info.getChapter_name() + "的下载");
-                                    binder.pauseTask(info);
-                                } catch (RemoteException e) {
-                                    Logger.e(e.getMessage());
-                                }
-                            }
+                            pauseTask(info);
                             break;
                         case DownloadInfo.PAUSE:
-                            if (serviceStarted) {
-                                try {
-                                    //判断是否有队列在下载,有的话点击变为等待
-                                    Logger.d("继续" + info.getChapter_name() + "的下载");
-                                    binder.resumeTask(info);
-                                } catch (RemoteException e) {
-                                    Logger.e(e.getMessage());
-                                }
-                            } else {
-                                //启动Manager并绑定
-                                Intent intent = new Intent(DownloadDetailActivity.this, DownloadManager.class);
-                                intent.putExtra("download", info);
-                                startService(intent);
-                                serviceStarted = true;
-                                if (conn == null) {
-                                    conn = new DownloadConnection(DownloadDetailActivity.this, DownloadConnection.DOWNLOAD_TASK);
-                                    bindService(intent, conn, BIND_AUTO_CREATE);
-                                }
-                            }
+                            startTask(info);
                             break;
                         case DownloadInfo.COMPLETE:
                             //跳转到PageActivity
@@ -177,10 +155,77 @@ public class DownloadDetailActivity extends SwipeBackActivity implements IQueryD
             });
             adapter.setOnItemLongClickListener(new DownloadAdapter.OnItemLongClickListener() {
                 @Override
-                public boolean onItemLongClick(View view, int position) {
+                public boolean onItemLongClick(View view, final int position) {
                     //长按取消下载
-
-                    return false;
+                    final DownloadInfo info = infoList.get(position);
+                    final View inflate = View.inflate(DownloadDetailActivity.this, R.layout.dialog_download_item, null);
+                    TextView tvAction = (TextView) inflate.findViewById(R.id.tv_action);
+                    TextView tvDelete = (TextView) inflate.findViewById(R.id.tv_delete);
+                    TextView tvWatch = (TextView) inflate.findViewById(R.id.tv_watch);
+                    final int status = info.getStatus();
+                    switch (status) {
+                        case DownloadInfo.COMPLETE:
+                            tvWatch.setVisibility(View.VISIBLE);
+                            tvWatch.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(DownloadDetailActivity.this, PageActivity.class);
+                                    intent.putExtra("url", info.getChapter_url());
+                                    intent.putExtra("source", info.getComic_source());
+                                    startActivity(intent);
+                                }
+                            });
+                            break;
+                        case DownloadInfo.DOWNLOAD:
+                        case DownloadInfo.WAIT:
+                            tvAction.setText("暂停");
+                            tvAction.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    pauseTask(info);
+                                    dialog.dismiss();
+                                }
+                            });
+                            break;
+                        case DownloadInfo.PAUSE:
+                            tvAction.setText("开始");
+                            tvAction.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    startTask(info);
+                                    dialog.dismiss();
+                                }
+                            });
+                            break;
+                    }
+                    tvDelete.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            new AlertDialog.Builder(DownloadDetailActivity.this)
+                                    .setTitle("注意")
+                                    .setMessage("确定要删除" + info.getChapter_name() + "?")
+                                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            if (serviceStarted) {
+                                                //暂停任务
+                                                pauseTask(info);
+                                            }
+                                            deleteTask(info);
+                                            deletePos = position;
+                                        }
+                                    })
+                                    .setNegativeButton("取消", null)
+                                    .show();
+                            dialog.dismiss();
+                        }
+                    });
+                    dialog = new AlertDialog.Builder(DownloadDetailActivity.this)
+                            .setTitle(info.getChapter_name())
+                            .setView(inflate)
+                            .setNegativeButton("取消", null)
+                            .show();
+                    return true;
                 }
             });
             rvDownload.setAdapter(adapter);
@@ -204,9 +249,56 @@ public class DownloadDetailActivity extends SwipeBackActivity implements IQueryD
         initAction();
     }
 
+    private void pauseTask(DownloadInfo info) {
+        if (serviceStarted) {
+            try {
+                Logger.d("暂停" + info.getChapter_name() + "的下载");
+                binder.pauseTask(info);
+            } catch (RemoteException e) {
+                Logger.e(e.getMessage());
+            }
+        }
+    }
+
+    private void startTask(DownloadInfo info) {
+        if (serviceStarted) {
+            try {
+                //判断是否有队列在下载,有的话点击变为等待
+                Logger.d("继续" + info.getChapter_name() + "的下载");
+                binder.resumeTask(info);
+            } catch (RemoteException e) {
+                Logger.e(e.getMessage());
+            }
+        } else {
+            //启动Manager并绑定
+            Intent intent = new Intent(DownloadDetailActivity.this, DownloadManager.class);
+            intent.putExtra("download", info);
+            startService(intent);
+            serviceStarted = true;
+            if (conn == null) {
+                conn = new DownloadConnection(DownloadDetailActivity.this, DownloadConnection.DOWNLOAD_TASK);
+                bindService(intent, conn, BIND_AUTO_CREATE);
+            }
+        }
+    }
+
+    private void deleteTask(DownloadInfo info) {
+        ((DownloadPresenterImp) presenter).deleteDownloadInfoByUrl(info.getChapter_url());
+    }
+
     @Override
     public void onQueryDownloadInfo(ComicPage page) {
 
+    }
+
+    @Override
+    public void onDeleteDownloadInfo(int state) {
+        if (state > 0) {
+            Toast.makeText(this, "删除成功", Toast.LENGTH_SHORT).show();
+            infoList.remove(deletePos);
+            adapter.notifyItemRemoved(deletePos);
+            initAction();
+        }
     }
 
     public void setOnTaskListener() {
@@ -267,9 +359,6 @@ public class DownloadDetailActivity extends SwipeBackActivity implements IQueryD
         for (int index = 0; index < infoList.size(); index++) {
             DownloadInfo downloadInfo = infoList.get(index);
             if (info.getChapter_url().equals(downloadInfo.getChapter_url())) {
-                /*if (info.getStatus() == DownloadInfo.WAIT) {
-                    Logger.d(info.getChapter_name() + "进入等待");
-                }*/
                 downloadInfo.setStatus(info.getStatus());
                 downloadInfo.setPosition(info.getPosition());
                 downloadInfo.setTotal(info.getTotal());

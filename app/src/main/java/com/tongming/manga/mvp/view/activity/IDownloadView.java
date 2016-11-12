@@ -10,10 +10,13 @@ import java.util.List;
  * Date: 2016/9/8
  */
 
-public interface IQueryDownloadView {
+public interface IDownloadView {
     void onQueryDownloadInfo(List<DownloadInfo> infoList);
 
     void onQueryDownloadInfo(ComicPage page);
 
+    void onDeleteDownloadInfo(int state);
+
     void onFail(Throwable throwable);
 }
+

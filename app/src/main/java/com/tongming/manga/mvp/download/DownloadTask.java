@@ -108,6 +108,7 @@ public class DownloadTask implements IDownloadTask {
                     @Override
                     public void onError(Throwable e) {
                         Logger.e(e.getMessage());
+                        info.setStatus(DownloadInfo.FAIL);
                         queue.onTaskFail(info);
                     }
 

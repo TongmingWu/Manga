@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/iv_notice_icon"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"
+        android:src="@mipmap/ic_launcher" />
+
+    <TextView
+        android:id="@+id/tv_notice_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_toRightOf="@id/iv_notice_icon"
+        android:ellipsize="marquee"
+        android:maxLines="1"
+        android:text="当前下载:" />
+
+    <ProgressBar
+        android:id="@+id/pb_notice"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="280dp"
+        android:layout_height="5dp"
+        android:layout_below="@id/tv_notice_desc"
+        android:layout_margin="8dp"
+        android:layout_toRightOf="@id/iv_notice_icon" />
+
+    <TextView
+        android:id="@+id/tv_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/pb_notice"
+        android:layout_marginLeft="5dp"
+        android:layout_toRightOf="@id/pb_notice" />
+
+</RelativeLayout>

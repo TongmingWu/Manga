@@ -3,7 +3,7 @@ package com.tongming.manga.mvp.presenter;
 import com.tongming.manga.mvp.base.BasePresenter;
 import com.tongming.manga.mvp.bean.ComicPage;
 import com.tongming.manga.mvp.modle.DownloadModel;
-import com.tongming.manga.mvp.view.activity.IQueryDownloadView;
+import com.tongming.manga.mvp.view.activity.IDownloadView;
 import com.tongming.manga.server.DownloadInfo;
 
 import java.util.List;
@@ -15,9 +15,9 @@ import java.util.List;
 
 public class DownloadPresenterImp extends BasePresenter implements IDownloadPresenter, DownloadModel.onDownloadListener {
 
-    private IQueryDownloadView queryDownloadView;
+    private IDownloadView queryDownloadView;
 
-    public DownloadPresenterImp(IQueryDownloadView queryDownloadView) {
+    public DownloadPresenterImp(IDownloadView queryDownloadView) {
         this.queryDownloadView = queryDownloadView;
         baseModel = new DownloadModel(this);
     }
@@ -43,6 +43,16 @@ public class DownloadPresenterImp extends BasePresenter implements IDownloadPres
     }
 
     @Override
+    public void deleteDownloadInfo(String cid) {
+        ((DownloadModel) baseModel).deleteDownloadInfo(cid);
+    }
+
+    @Override
+    public void deleteDownloadInfoByUrl(String url) {
+        ((DownloadModel)baseModel).deleteDownloadInfoByUrl(url);
+    }
+
+    @Override
     public void onQueryDownloadInfo(List<DownloadInfo> infoList) {
         queryDownloadView.onQueryDownloadInfo(infoList);
     }
@@ -55,6 +65,11 @@ public class DownloadPresenterImp extends BasePresenter implements IDownloadPres
     @Override
     public void onQueryDownloadInfo(ComicPage page) {
         queryDownloadView.onQueryDownloadInfo(page);
+    }
+
+    @Override
+    public void onDeleteDownloadInfo(int state) {
+        queryDownloadView.onDeleteDownloadInfo(state);
     }
 
     @Override
