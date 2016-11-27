@@ -116,7 +116,6 @@ public class DownloadTask implements IDownloadTask {
                     public void onNext(List<String> list) {
                         if (status != DownloadInfo.WAIT || status != DownloadInfo.FAIL || status != DownloadInfo.PAUSE) {
                             info.setTotal(list.size());
-//                            setStatus(DownloadInfo.DOWNLOAD);
                             updateDownloadInfo();
                             imgs = list;
                             downloadImage();
@@ -156,7 +155,6 @@ public class DownloadTask implements IDownloadTask {
 
                     @Override
                     public void onNext(File file) {
-                        //保存图片
                         updateSchedule();
                     }
                 });
@@ -182,9 +180,12 @@ public class DownloadTask implements IDownloadTask {
                 if (is != null) {
                     is.close();
                 }
-                if (fos != null) {
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (fos != null)
                     fos.close();
-                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -209,7 +210,6 @@ public class DownloadTask implements IDownloadTask {
     }
 
     private void updateDownloadInfo() {
-        //TODO 出现内存抖动频繁的问题
         if (manager != null) {
             manager.updateDownloadInfo(info);
         }

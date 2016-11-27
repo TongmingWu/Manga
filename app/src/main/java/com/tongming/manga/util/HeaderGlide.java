@@ -58,7 +58,7 @@ public class HeaderGlide {
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                        view.setImageBitmap(FastBlur.doBlur(resource, 15, false));
+                        view.setImageBitmap(FastBlur.doBlur(resource, 100, false));
                     }
                 });
     }

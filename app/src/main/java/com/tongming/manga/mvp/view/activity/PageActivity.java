@@ -1,6 +1,7 @@
 package com.tongming.manga.mvp.view.activity;
 
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -17,7 +18,6 @@ import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
@@ -45,6 +45,8 @@ import com.tongming.manga.util.CommonUtil;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -119,13 +121,13 @@ public class PageActivity extends BaseActivity implements IPageView, IDownloadVi
     private String resultName;
     private String resultUrl;
 
+    private Timer timer = new Timer();
+    private TimerTask timerTask;
     private Handler handler = new Handler();
     private Runnable runnable = new Runnable() {
         @Override
         public void run() {
             this.update();
-            handler.postDelayed(runnable, 1000 * 60);
-            Logger.d("刷新完成");
         }
 
         void update() {
@@ -142,6 +144,7 @@ public class PageActivity extends BaseActivity implements IPageView, IDownloadVi
     private boolean isLoadNone;
     private String source;
     private DownloadPresenterImp downloadPresenterImp;
+    private ObjectAnimator animator;
 
     @Override
     protected int getLayoutId() {
@@ -169,7 +172,6 @@ public class PageActivity extends BaseActivity implements IPageView, IDownloadVi
     protected void initView() {
         Glide.get(this).clearMemory();
         CommonUtil.requireScreenOn(this);
-        handler.postDelayed(runnable, 1000 * 60);
         sp = getSharedPreferences("config", MODE_PRIVATE);
         isVertical = sp.getBoolean("isVertical", true);
         Intent intent = getIntent();
@@ -177,11 +179,13 @@ public class PageActivity extends BaseActivity implements IPageView, IDownloadVi
         setOrientation();     //进来时初始化横竖屏
         setWindowBright();
         initNetTime();
-        /*if (!isFirstLoad) {
-            isFirstLoad = true;
-            presenter = new PagePresenterImp(this);
-            ((PagePresenterImp) presenter).getPage(source, intent.getStringExtra("url"));
-        }*/
+        timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(runnable);
+            }
+        };
+        timer.schedule(timerTask, 1000 * 60, 1000 * 60);
         queryDownloadInfo(intent.getStringExtra("url"));
         initRecycle();
         sbPage.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -259,7 +263,6 @@ public class PageActivity extends BaseActivity implements IPageView, IDownloadVi
                                 rvPage.smoothScrollToPosition(manager.findLastVisibleItemPosition());
                             }
                             isSlide = false;
-//                            rvPage.scrollToPosition(manager.findFirstVisibleItemPosition());
                         }
                         calculatePos(position);
                         currentPage = position;
@@ -321,7 +324,7 @@ public class PageActivity extends BaseActivity implements IPageView, IDownloadVi
                 isActionDown = true;
                 downTime = System.currentTimeMillis();
                 if (imgList == null) {
-                    Logger.d("正在加载图片,不允许滑动");
+                    Toast.makeText(this, "正在加载", Toast.LENGTH_SHORT).show();
                     return true;
                 }
                 break;
@@ -530,6 +533,12 @@ public class PageActivity extends BaseActivity implements IPageView, IDownloadVi
         }
     }
 
+    /**
+     * 读取本地图片
+     *
+     * @param chapterName 章节名
+     * @param comicName   漫画名
+     */
     private List<String> readPage(String comicName, String chapterName) {
         List<String> imgList = new ArrayList<>();
         String chapterPath = BaseApplication.getExternalPath() + "/download/" + comicName + "/" + chapterName;
@@ -569,15 +578,18 @@ public class PageActivity extends BaseActivity implements IPageView, IDownloadVi
     @Override
     public void showProgress() {
         ivLoad.setVisibility(View.VISIBLE);
-        animation = AnimationUtils.loadAnimation(this, R.anim.anim_load_page);
-        ivLoad.startAnimation(animation);
+        animator = ObjectAnimator.ofFloat(ivLoad, "translationX", ivLoad.getX() - 30, 60);
+        animator.setRepeatCount(Integer.MAX_VALUE);
+        animator.setRepeatMode(ValueAnimator.REVERSE);
+        animator.setDuration(1000);
+        animator.start();
     }
 
     @Override
     public void hideProgress() {
         if (ivLoad.getVisibility() == View.VISIBLE) {
             ivLoad.setVisibility(View.GONE);
-            animation.cancel();
+            animator.cancel();
         }
     }
 
@@ -626,13 +638,8 @@ public class PageActivity extends BaseActivity implements IPageView, IDownloadVi
         if (imgList != null) {
             adapter = new PageAdapter(imgList, this, source);
             rvPage.setAdapter(adapter);
-//            rvPage.addItemDecoration(new SpaceItemDecoration(30));
             manager.scrollToPosition(currentPage);
         }
-        /*if (adapter != null && imgList != null) {
-            adapter.notifyDataSetChanged();
-            manager.scrollToPosition(currentPage);
-        }*/
     }
 
     @Override
@@ -659,6 +666,8 @@ public class PageActivity extends BaseActivity implements IPageView, IDownloadVi
     @Override
     protected void onDestroy() {
         handler.removeCallbacks(runnable);
+        timerTask.cancel();
+        timerTask = null;
         CommonUtil.releaseScreenOn(this);   //取消屏幕常亮
         super.onDestroy();
     }

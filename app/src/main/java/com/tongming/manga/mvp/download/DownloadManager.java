@@ -56,7 +56,6 @@ public class DownloadManager extends Service implements IDownloadManager, IDownl
     private DownloadBinder binder;
     private OnQueueListener onQueueListener;
     private onTaskListener onTaskListener;
-    private String cid;
     private DownloadPresenterImp downloadPresenterImp;
     private NotificationManager notificationManager;
 
@@ -285,7 +284,6 @@ public class DownloadManager extends Service implements IDownloadManager, IDownl
             }
         }
         status = COMPLETE;
-        Logger.d("已没有等待中的队列");
         notificationManager.cancel(R.layout.notice_download);
         stopSelf();
     }

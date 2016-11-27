@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import com.tongming.manga.util.CommonUtil;
 
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 /**
  * Author: Tongming
@@ -20,6 +21,7 @@ import butterknife.ButterKnife;
 public abstract class BaseActivity extends AppCompatActivity {
 
     protected BasePresenter presenter;
+    private Unbinder bind;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -28,7 +30,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         }
         setContentView(getLayoutId());
-        ButterKnife.bind(this);
+        bind = ButterKnife.bind(this);
         initView();
     }
 
@@ -56,6 +58,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        bind.unbind();
         if (presenter != null) {
             presenter.clearSubscription();
         }

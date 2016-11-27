@@ -92,17 +92,7 @@ public class DownloadModel extends BaseModel implements IDownloadModel {
                     @Override
                     public ComicPage call(List<DownloadInfo> infoList) {
                         if (infoList.size() > 0) {
-                            ComicPage page = new ComicPage();
-                            DownloadInfo info = infoList.get(0);
-                            page.setChapter_name(info.getChapter_name());
-                            page.setComic_source(info.getComic_source());
-                            page.setCurrent_chapter_url(info.getChapter_url());
-                            page.setNext(info.getNext() == 1);
-                            page.setPrepare(info.getPrepare() == 1);
-                            page.setNext_chapter_url(info.getNext_url());
-                            page.setPre_chapter_url(info.getPre_url());
-                            page.setComic_name(info.getComic_name());
-                            return page;
+                            return parserPage(infoList.get(0));
                         }
                         return null;
                     }
@@ -125,6 +115,19 @@ public class DownloadModel extends BaseModel implements IDownloadModel {
                         this.unsubscribe();
                     }
                 });
+    }
+
+    private ComicPage parserPage(DownloadInfo info) {
+        ComicPage page = new ComicPage();
+        page.setChapter_name(info.getChapter_name());
+        page.setComic_source(info.getComic_source());
+        page.setCurrent_chapter_url(info.getChapter_url());
+        page.setNext(info.getNext() == 1);
+        page.setPrepare(info.getPrepare() == 1);
+        page.setNext_chapter_url(info.getNext_url());
+        page.setPre_chapter_url(info.getPre_url());
+        page.setComic_name(info.getComic_name());
+        return page;
     }
 
     @Override
