@@ -86,8 +86,6 @@ public class ComicDetailActivity extends SwipeBackActivity implements IDetailVie
     NestedScrollView slContent;
     @BindView(R.id.rl_content)
     RelativeLayout rlContent;
-    @BindView(R.id.rl_cover)
-    RelativeLayout rlCover;
     @BindView(R.id.tv_comic_source)
     TextView tvSource;
     private ComicInfo comicInfo;
@@ -112,8 +110,6 @@ public class ComicDetailActivity extends SwipeBackActivity implements IDetailVie
 
     @Override
     protected void initView() {
-        sp = getSharedPreferences("config", MODE_PRIVATE);
-        presenter = new DetailPresenterImp(this);
         intent = getIntent();
         initToolbar(toolbar);
         toolbar.inflateMenu(R.menu.menu_detail);
@@ -126,7 +122,6 @@ public class ComicDetailActivity extends SwipeBackActivity implements IDetailVie
             getWindow().getSharedElementEnterTransition().addListener(new Transition.TransitionListener() {
                 @Override
                 public void onTransitionStart(Transition transition) {
-
                 }
 
                 @Override
@@ -172,6 +167,8 @@ public class ComicDetailActivity extends SwipeBackActivity implements IDetailVie
 
     private void getData() {
         //先从数据库读取阅读记录,如果有阅读过的话返回historyUrl,跟list进行匹配得到position,再设置item的背景
+        sp = getSharedPreferences("config", MODE_PRIVATE);
+        presenter = new DetailPresenterImp(this);
         String name = intent.getStringExtra("name");
         ((DetailPresenterImp) presenter).queryHistoryByName(name);
         if (!sp.getBoolean("isLogin", false)) {

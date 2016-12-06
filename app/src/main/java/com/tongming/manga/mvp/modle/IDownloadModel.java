@@ -16,6 +16,7 @@ public interface IDownloadModel {
 
     /**
      * 下载详情页面使用
+     *
      * @param chapterUrl
      */
     void queryDownloadInfoByUrl(String chapterUrl);
@@ -25,8 +26,14 @@ public interface IDownloadModel {
      */
     void queryAllDownloadInfo();
 
+    /**
+     * 刪除整部漫画
+     */
     void deleteDownloadInfo(String cid);
 
+    /**
+     * 删除一话
+     */
     void deleteDownloadInfoByUrl(String url);
 
 }

@@ -32,8 +32,7 @@ public class DownloadModel extends BaseModel implements IDownloadModel {
 
     @Override
     public void queryDownloadInfo(String cid) {
-        manager
-                .queryDownloadInfoByCid(cid)
+        manager.queryDownloadInfoByCid(cid)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<List<DownloadInfo>>() {
@@ -59,8 +58,7 @@ public class DownloadModel extends BaseModel implements IDownloadModel {
 
     @Override
     public void queryDownloadInfo(String name, int status) {
-        manager
-                .queryDownloadInfo(name, status)
+        manager.queryDownloadInfo(name, status)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<List<DownloadInfo>>() {

@@ -564,7 +564,9 @@ public class PageActivity extends BaseActivity implements IPageView, IDownloadVi
     @Override
     public void onFail(Throwable throwable) {
         Toast.makeText(PageActivity.this, "获取图片失败", Toast.LENGTH_SHORT).show();
-        rvPage.setVisibility(View.GONE);
+        if (imgList == null) {
+            rvPage.setVisibility(View.GONE);
+        }
         Logger.e(throwable.getMessage());
     }
 
@@ -578,7 +580,7 @@ public class PageActivity extends BaseActivity implements IPageView, IDownloadVi
     @Override
     public void showProgress() {
         ivLoad.setVisibility(View.VISIBLE);
-        animator = ObjectAnimator.ofFloat(ivLoad, "translationX", ivLoad.getX() - 30, 60);
+        animator = ObjectAnimator.ofFloat(ivLoad, "translationX", 20);
         animator.setRepeatCount(Integer.MAX_VALUE);
         animator.setRepeatMode(ValueAnimator.REVERSE);
         animator.setDuration(1000);

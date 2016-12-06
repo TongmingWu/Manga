@@ -450,5 +450,4 @@ public class HomeActivity extends BaseActivity implements ISystemView, ICacheVie
             System.exit(0);
         }*/
     }
-
 }

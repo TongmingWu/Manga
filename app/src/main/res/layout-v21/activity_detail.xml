@@ -50,32 +50,25 @@
                 android:layout_height="200dp"
                 android:scaleType="centerCrop" />
 
-            <RelativeLayout
-                android:id="@+id/rl_cover"
+            <ImageView
+                android:id="@+id/iv_cover"
                 android:layout_width="120dp"
                 android:layout_height="160dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="90dp"
                 android:background="@drawable/bg_cover"
-                android:padding="3dp">
-
-                <ImageView
-                    android:id="@+id/iv_cover"
-                    android:layout_width="120dp"
-                    android:layout_height="160dp"
-                    android:background="@drawable/bg_cover"
-                    android:scaleType="centerCrop"
-                    android:transitionName="@string/coverName" />
-            </RelativeLayout>
+                android:padding="3dp"
+                android:scaleType="centerCrop"
+                android:transitionName="@string/coverName" />
 
             <TextView
                 android:id="@+id/tv_comic_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@id/rl_cover"
+                android:layout_alignTop="@id/iv_cover"
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="10dp"
-                android:layout_toRightOf="@id/rl_cover"
+                android:layout_toRightOf="@id/iv_cover"
                 android:textColor="@android:color/white"
                 android:textSize="16sp"
                 android:textStyle="bold"
@@ -114,7 +107,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/iv_blur"
-                android:layout_toRightOf="@id/rl_cover"
+                android:layout_toRightOf="@id/iv_cover"
                 android:orientation="horizontal"
                 android:padding="10dp">
 
@@ -122,10 +115,10 @@
                     android:id="@+id/btn_read"
                     android:layout_width="0dp"
                     android:layout_height="36dp"
+                    android:layout_weight="5"
                     android:background="@drawable/btn_primary_color_select"
                     android:clickable="true"
                     android:gravity="center"
-                    android:layout_weight="5"
                     android:text="开始阅读"
                     android:textColor="@android:color/white" />
 
@@ -138,10 +131,10 @@
                     android:id="@+id/btn_collection"
                     android:layout_width="0dp"
                     android:layout_height="36dp"
+                    android:layout_weight="5"
                     android:background="@drawable/btn_primary_color_select"
                     android:clickable="true"
                     android:gravity="center"
-                    android:layout_weight="5"
                     android:text="收藏"
                     android:textColor="@android:color/white" />
             </LinearLayout>
@@ -153,7 +146,7 @@
                 android:layout_below="@id/iv_blur"
                 android:layout_marginLeft="30dp"
                 android:layout_marginTop="10dp"
-                android:layout_toRightOf="@id/rl_cover"
+                android:layout_toRightOf="@id/iv_cover"
                 android:clickable="true"
                 android:src="@drawable/select_collect" />
 
@@ -192,7 +185,7 @@
                 android:id="@+id/tv_comic_source"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/rl_cover"
+                android:layout_below="@id/iv_cover"
                 android:layout_marginLeft="12dp"
                 android:layout_marginTop="8dp"
                 android:textColor="@color/normalText"
