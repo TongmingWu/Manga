@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import retrofit2.Retrofit;
 
 /**
  * Created by Tongming on 2016/8/10.

@@ -29,7 +29,7 @@ import rx.Observable;
  * Date: 2016/8/9
  */
 interface ApiService {
-    @GET("/")
+    @GET("/hot")
     Observable<Hot> getHot(@Query("source") String source);
 
     @GET("/comic/detail")
