@@ -29,57 +29,57 @@ import rx.Observable;
  * Date: 2016/8/9
  */
 interface ApiService {
-    @GET("/hot")
+    @GET("/api/hot")
     Observable<Hot> getHot(@Query("source") String source);
 
-    @GET("/comic/detail")
+    @GET("/api/comic/detail")
     Observable<ComicInfo> getComicInfo(@Query("source") String source, @Query("comic_url") String comicUrl);
 
-    @GET("/comic/view")
+    @GET("/api/comic/view")
     Observable<ComicPage> getComicPage(@Query("source") String source, @Query("chapter_url") String chapterUrl);
 
-    @GET("/comic/category")
+    @GET("/api/comic/category")
     Observable<Search> getComicType(@Query("source") String source, @Query("type") int type, @Query("page") int page);
 
-    @GET("/comic/category")
+    @GET("/api/comic/category")
     Observable<Category> getCategory(@Query("source") String source);
 
-    @GET("/search")
+    @GET("/api/search")
     Observable<Search> doSearch(@Query("source") String source, @Query("word") String word, @Query("page") int page);
 
 
     @Headers("Content-Type:application/json")
-    @POST("/sms")
+    @POST("/api/sms")
     Observable<Result> requestSms(@Body RequestBody body);
 
     @Headers("Content-Type:application/json")
-    @POST("/login")
+    @POST("/api/login")
     Observable<MangaToken> login(@Body RequestBody body);
 
     @Headers("Content-Type:application/json")
     @POST("/logon")
     Observable<Result> logon(@Body RequestBody body);
 
-    @GET("/user")
+    @GET("/api/user")
     Observable<UserInfo> getUserInfo(@Query("token") String token);
 
-    @POST("/user/update")
+    @POST("/api/user/update")
     Observable<UserInfo> updateUser(@Body RequestBody body);
 
     @Multipart
-    @POST("/user/upload/{token}")
+    @POST("/api/user/upload/{token}")
     Observable<UserInfo> uploadAvatar(@Part MultipartBody.Part file, @Path("token") String token);
 
     @Headers("Content-Type:application/json")
-    @POST("/collection")
+    @POST("/api/collection")
     Observable<UserInfo> addCollection(@Body RequestBody body);
 
     @Headers("Content-Type:application/json")
-    @HTTP(method = "DELETE", path = "/collection", hasBody = true)
+    @HTTP(method = "DELETE", path = "/api/collection", hasBody = true)
     Observable<UserInfo> deleteCollection(@Body RequestBody body);
 
     @Headers("Cache-Control: max-age=0")
-    @GET("/collection")
+    @GET("/api/collection")
     Observable<Result> queryCollection(@Query("uid") int uid, @Query("name") String name);
 
     @Headers("Referer:http://m.dmzj.com/")
