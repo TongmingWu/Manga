@@ -25,6 +25,7 @@ android {
             applicationIdSuffix ".debug"
         }
     }
+    sourceSets { main { assets.srcDirs = ['src/main/assets', 'src/main/assets/'] } }
 }
 
 dependencies {

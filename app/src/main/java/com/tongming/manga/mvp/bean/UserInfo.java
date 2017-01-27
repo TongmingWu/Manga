@@ -139,5 +139,18 @@ public class UserInfo implements Serializable {
             this.collection = collection;
         }
 
+        @Override
+        public String toString() {
+            return "UserBean{" +
+                    "phone='" + phone + '\'' +
+                    ", name='" + name + '\'' +
+                    ", logon_date=" + logon_date +
+                    ", uid=" + uid +
+                    ", sex='" + sex + '\'' +
+                    ", avatar='" + avatar + '\'' +
+                    ", personality='" + personality + '\'' +
+                    ", collection=" + collection +
+                    '}';
+        }
     }
 }

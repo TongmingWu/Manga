@@ -57,9 +57,10 @@ interface ApiService {
     Observable<MangaToken> login(@Body RequestBody body);
 
     @Headers("Content-Type:application/json")
-    @POST("/logon")
+    @POST("/api/logon")
     Observable<Result> logon(@Body RequestBody body);
 
+    @Headers("Cache-Control:no-cache")
     @GET("/api/user")
     Observable<UserInfo> getUserInfo(@Query("token") String token);
 

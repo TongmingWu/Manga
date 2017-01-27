@@ -39,7 +39,7 @@ import rx.Observable;
  * Date: 2016/8/9
  */
 public class ApiManager {
-    //        private static final String BASE_URL = "http://192.168.191.1:5000";
+//            private static final String BASE_URL = "http://192.168.1.103:5000";
     private static final String BASE_URL = "http://119.29.57.187";
 
     public static final String APP_ID = "Rp2mOsDSVkDoN5E4hbJEhlig-gzGzoHsz";

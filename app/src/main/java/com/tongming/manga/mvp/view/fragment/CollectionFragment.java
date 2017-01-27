@@ -98,7 +98,7 @@ public class CollectionFragment extends BaseFragment implements ICollectView {
 
 
     private void initRecyclerView(List<CollectedComic> comicList) {
-        if (comics == null) {
+        if (comics == null && rvCollection != null) {
             comics = comicList;
             rvCollection.setLayoutManager(new GridLayoutManager(getContext(), 3));
             rvCollection.addItemDecoration(new SpaceItemDecoration(CommonUtil.dip2px(getContext(), 10), true));

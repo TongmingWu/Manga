@@ -18,9 +18,9 @@ import java.util.Map;
 
 import okhttp3.RequestBody;
 import rx.Observable;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -30,6 +30,7 @@ import rx.schedulers.Schedulers;
 public class LoginModel implements ILoginModel {
 
     private onLoginListener loginListener;
+    private boolean isSuccess = false;
 
 
     public LoginModel(onLoginListener loginListener) {
@@ -43,8 +44,14 @@ public class LoginModel implements ILoginModel {
         map.put("password", password);
         JSONObject object = new JSONObject(map);
         RequestBody body = RequestBody.create(ApiManager.JSON, object.toString());
-        return ApiManager.getInstance()
+        Subscription subscribe = ApiManager.getInstance()
                 .login(body)
+                .filter(new Func1<MangaToken, Boolean>() {
+                    @Override
+                    public Boolean call(MangaToken mangaToken) {
+                        return mangaToken.getCode() == 200;
+                    }
+                })
                 .flatMap(new Func1<MangaToken, Observable<UserInfo>>() {
                     @Override
                     public Observable<UserInfo> call(MangaToken token) {
@@ -56,20 +63,30 @@ public class LoginModel implements ILoginModel {
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<UserInfo>() {
+                .subscribe(new Subscriber<UserInfo>() {
                     @Override
-                    public void call(UserInfo info) {
+                    public void onCompleted() {
+                        if (!isSuccess) {
+                            loginListener.onFail(new Throwable("登录失败"));
+                        }
+                        Logger.d("onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Logger.d(e.getMessage());
+                        loginListener.onFail(e);
+                    }
+
+                    @Override
+                    public void onNext(UserInfo info) {
+                        isSuccess = true;
                         Logger.d("登录成功");
                         User.getInstance().setInfo(info);
                         loginListener.onLogin(info);
                     }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        Logger.d(throwable.getMessage());
-                        loginListener.onFail(throwable);
-                    }
                 });
+        return subscribe;
     }
 
     @Override
@@ -86,6 +103,7 @@ public class LoginModel implements ILoginModel {
                     objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
                     objectOutputStream.writeObject(user);
                     loginListener.onSaveUser(true);
+                    Logger.d("保存成功");
                 } catch (IOException e) {
                     e.printStackTrace();
                     loginListener.onSaveUser(false);
@@ -94,7 +112,6 @@ public class LoginModel implements ILoginModel {
                     try {
                         if (objectOutputStream != null) {
                             objectOutputStream.close();
-                            Logger.d("保存成功");
                         }
                     } catch (IOException e) {
                         e.printStackTrace();

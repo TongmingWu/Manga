@@ -6,11 +6,13 @@ import android.content.SharedPreferences;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.orhanobut.logger.Logger;
 import com.tongming.manga.R;
 import com.tongming.manga.mvp.base.SwipeBackActivity;
 import com.tongming.manga.mvp.bean.User;
@@ -18,6 +20,9 @@ import com.tongming.manga.mvp.bean.UserInfo;
 import com.tongming.manga.mvp.presenter.LoginPresenterImp;
 import com.tongming.manga.util.Base64Utils;
 import com.tongming.manga.util.RSA;
+
+import java.io.InputStream;
+import java.security.PublicKey;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -65,13 +70,21 @@ public class LoginActivity extends SwipeBackActivity implements ILoginView {
             return;
         }
         String password = etPw.getText().toString();
-        byte[] bytes = RSA.encryptData(password.getBytes());
-        if (bytes != null) {
-            password = Base64Utils.encode(bytes);
+        try {
+            InputStream inputStream = getAssets().open("rsa_public_key.pem");
+            PublicKey key = RSA.loadPublicKey(inputStream);
+            byte[] bytes = RSA.encryptData(password.getBytes(), key);
+            password = Base64.encodeToString(bytes, Base64.CRLF);
+            if (bytes != null) {
+                password = Base64Utils.encode(bytes);
+            }
+            Logger.d("pwd = " + password);
+            String phone = etPhone.getText().toString();
+            sp.edit().putString("phone", phone).apply();
+            ((LoginPresenterImp) presenter).login(phone, password);
+        } catch (Exception e) {
+            Logger.d(e.getMessage());
         }
-        String phone = etPhone.getText().toString();
-        sp.edit().putString("phone", phone).apply();
-        ((LoginPresenterImp) presenter).login(phone, password);
     }
 
     private boolean checkInput() {
@@ -121,9 +134,7 @@ public class LoginActivity extends SwipeBackActivity implements ILoginView {
 
     @Override
     public void showDialog() {
-        if (dialog == null) {
-            dialog = ProgressDialog.show(this, null, "加载中...");
-        }
+        dialog = ProgressDialog.show(this, null, "加载中...");
     }
 
     @Override
@@ -135,6 +146,7 @@ public class LoginActivity extends SwipeBackActivity implements ILoginView {
 
     @Override
     public void onFail(Throwable throwable) {
-
+        Logger.d(throwable.getMessage());
+        Toast.makeText(this, "登录失败", Toast.LENGTH_SHORT).show();
     }
 }

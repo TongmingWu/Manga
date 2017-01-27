@@ -47,6 +47,7 @@ public class User implements Serializable {
     }
 
     public void saveUser(UserInfo info) {
+        Logger.d(info.getUser().toString());
         //保存到本地
         instance.setInfo(info);
         new Thread(new Runnable() {
@@ -58,6 +59,7 @@ public class User implements Serializable {
                 try {
                     objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
                     objectOutputStream.writeObject(instance);
+                    Logger.d("保存成功");
                 } catch (IOException e) {
                     e.printStackTrace();
                     Logger.d("保存失败" + e.getMessage());
@@ -65,7 +67,6 @@ public class User implements Serializable {
                     try {
                         if (objectOutputStream != null) {
                             objectOutputStream.close();
-//                            Logger.d("保存成功");
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
