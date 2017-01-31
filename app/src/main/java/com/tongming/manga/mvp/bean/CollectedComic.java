@@ -7,49 +7,31 @@ import java.io.Serializable;
  */
 public class CollectedComic implements Serializable {
     private static final long serialVersionUID = -21455356667888L;
-    private String name;
-    private String author;
-    private String area;
-    private String type;
+    private String comic_name;
+    private String comic_author;
+    private String comic_area;
+    private String comic_category;
     private int status;
     private long lastTime;
     private String comic_source;
-    private String url;
+    private String comic_url;
     private String comic_id;
     private String cover;
 
-
-    public void setComic_source(String comic_source) {
-        this.comic_source = comic_source;
+    public void setComic_name(String comic_name) {
+        this.comic_name = comic_name;
     }
 
-    public String getComic_source() {
-        return comic_source;
+    public void setComic_author(String comic_author) {
+        this.comic_author = comic_author;
     }
 
-    public void setComic_id(String comic_id) {
-        this.comic_id = comic_id;
+    public void setComic_area(String comic_area) {
+        this.comic_area = comic_area;
     }
 
-    public String getComic_id() {
-
-        return comic_id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public void setArea(String area) {
-        this.area = area;
-    }
-
-    public void setType(String type) {
-        this.type = type;
+    public void setComic_category(String comic_category) {
+        this.comic_category = comic_category;
     }
 
     public void setStatus(int status) {
@@ -60,28 +42,36 @@ public class CollectedComic implements Serializable {
         this.lastTime = lastTime;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setComic_source(String comic_source) {
+        this.comic_source = comic_source;
+    }
+
+    public void setComic_url(String comic_url) {
+        this.comic_url = comic_url;
+    }
+
+    public void setComic_id(String comic_id) {
+        this.comic_id = comic_id;
     }
 
     public void setCover(String cover) {
         this.cover = cover;
     }
 
-    public String getName() {
-        return name;
+    public String getComic_name() {
+        return comic_name;
     }
 
-    public String getAuthor() {
-        return author;
+    public String getComic_author() {
+        return comic_author;
     }
 
-    public String getArea() {
-        return area;
+    public String getComic_area() {
+        return comic_area;
     }
 
-    public String getType() {
-        return type;
+    public String getComic_category() {
+        return comic_category;
     }
 
     public int getStatus() {
@@ -92,8 +82,16 @@ public class CollectedComic implements Serializable {
         return lastTime;
     }
 
-    public String getUrl() {
-        return url;
+    public String getComic_source() {
+        return comic_source;
+    }
+
+    public String getComic_url() {
+        return comic_url;
+    }
+
+    public String getComic_id() {
+        return comic_id;
     }
 
     public String getCover() {
@@ -103,13 +101,15 @@ public class CollectedComic implements Serializable {
     @Override
     public String toString() {
         return "CollectedComic{" +
-                ", name='" + name + '\'' +
-                ", author='" + author + '\'' +
-                ", area='" + area + '\'' +
-                ", type='" + type + '\'' +
+                "comic_name='" + comic_name + '\'' +
+                ", comic_author='" + comic_author + '\'' +
+                ", comic_area='" + comic_area + '\'' +
+                ", comic_category='" + comic_category + '\'' +
                 ", status=" + status +
                 ", lastTime=" + lastTime +
-                ", url='" + url + '\'' +
+                ", comic_source='" + comic_source + '\'' +
+                ", comic_url='" + comic_url + '\'' +
+                ", comic_id='" + comic_id + '\'' +
                 ", cover='" + cover + '\'' +
                 '}';
     }

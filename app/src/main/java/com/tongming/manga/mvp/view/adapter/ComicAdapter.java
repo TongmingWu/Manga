@@ -149,8 +149,8 @@ public class ComicAdapter extends BaseAdapter {
             if (!TextUtils.isEmpty(comic.getCover())) {
                 HeaderGlide.loadImage(mContext, comic.getCover(), holder.cover, comic.getComic_source());
             }
-            holder.comicName.setText(comic.getName());
-            holder.chapterName.setText(comic.getAuthor());
+            holder.comicName.setText(comic.getComic_name());
+            holder.chapterName.setText(comic.getComic_author());
         } else {
             DownloadComic comic = downloadComicList.get(position);
             if (!TextUtils.isEmpty(comic.getCover())) {

@@ -104,8 +104,8 @@ public class RVComicAdapter extends RecyclerView.Adapter<RVComicAdapter.ViewHold
                 if (!TextUtils.isEmpty(collectedComic.getCover())) {
                     HeaderGlide.loadImage(mContext, collectedComic.getCover(), holder.cover, collectedComic.getComic_source());
                 }
-                holder.comicName.setText(collectedComic.getName());
-                holder.chapterName.setText(collectedComic.getAuthor());
+                holder.comicName.setText(collectedComic.getComic_name());
+                holder.chapterName.setText(collectedComic.getComic_author());
                 break;
             case DOWNLOAD_COMIC:
                 DownloadComic downloadComic = downloadComicList.get(position);

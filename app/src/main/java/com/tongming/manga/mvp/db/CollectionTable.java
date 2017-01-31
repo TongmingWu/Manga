@@ -63,18 +63,18 @@ class CollectionTable {
         public CollectedComic call(Cursor cursor) {
             CollectedComic comic = new CollectedComic();
             String name = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
-            comic.setName(name);
+            comic.setComic_name(name);
             String comicId = cursor.getString(cursor.getColumnIndex(COMIC_ID));
             comic.setComic_id(comicId);
             String author = cursor.getString(cursor.getColumnIndex(COLUMN_AUTHOR));
-            comic.setAuthor(author);
+            comic.setComic_author(author);
             comic.setComic_source(cursor.getString(cursor.getColumnIndex(COLUMN_SOURCE)));
             String area = cursor.getString(cursor.getColumnIndex(COLUMN_AREA));
-            comic.setArea(area);
+            comic.setComic_area(area);
             String category = cursor.getString(cursor.getColumnIndex(COLUMN_TYPE));
-            comic.setType(category);
+            comic.setComic_category(category);
             String url = cursor.getString(cursor.getColumnIndex(COLUMN_URL));
-            comic.setUrl(url);
+            comic.setComic_url(url);
             int status = cursor.getInt(cursor.getColumnIndex(COLUMN_STATUS));
             comic.setStatus(status);
             String cover = cursor.getString(cursor.getColumnIndex(COLUMN_COVER));

@@ -110,8 +110,8 @@ public class CollectionFragment extends BaseFragment implements ICollectView {
                     public void onItemClick(View view, int position, Object object) {
                         Intent intent = new Intent(getActivity(), ComicDetailActivity.class);
                         CollectedComic comic = (CollectedComic) object;
-                        String name = comic.getName();
-                        intent.putExtra("url", comic.getUrl())
+                        String name = comic.getComic_name();
+                        intent.putExtra("url", comic.getComic_url())
                                 .putExtra("name", name.endsWith("漫画") ? name.replace("漫画", "") : name)
                                 .putExtra("source", comic.getComic_source())
                                 .putExtra("cover", comic.getCover());
@@ -130,15 +130,15 @@ public class CollectionFragment extends BaseFragment implements ICollectView {
                         final CollectedComic comic = (CollectedComic) object;
                         new AlertDialog.Builder(getActivity())
                                 .setTitle("注意")
-                                .setMessage("确定要取消收藏" + comic.getName() + "吗?")
+                                .setMessage("确定要取消收藏" + comic.getComic_name() + "吗?")
                                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         if (!isLogin) {
-                                            ((CollectPresenterImp) presenter).deleteCollectByName(comic.getName());
+                                            ((CollectPresenterImp) presenter).deleteCollectByName(comic.getComic_name());
                                         } else {
                                             //在线更新数据
-                                            ((CollectPresenterImp) presenter).deleteCollectOnNet(comic.getName());
+                                            ((CollectPresenterImp) presenter).deleteCollectOnNet(comic.getComic_name());
                                         }
                                         if (progressDialog == null) {
                                             progressDialog = ProgressDialog.show(getActivity(), null, "正在删除...");
@@ -155,7 +155,7 @@ public class CollectionFragment extends BaseFragment implements ICollectView {
                 if (comics.size() > comicList.size()) {
                     int position = 0;
                     while (position < comicList.size()) {
-                        if (!comics.get(position).getName().equals(comicList.get(position).getName())) {
+                        if (!comics.get(position).getComic_name().equals(comicList.get(position).getComic_name())) {
                             break;
                         }
                         position++;
