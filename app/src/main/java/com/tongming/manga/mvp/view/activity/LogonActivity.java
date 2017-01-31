@@ -105,27 +105,6 @@ public class LogonActivity extends SwipeBackActivity implements ILogonView {
         ((LogonPresenterImp) presenter).getCode(phone);
     }
 
-    private static final String RSA_PUBLIC_KEY =
-            "            MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDxI+LyiBHwTJmb8lFPKrI7etgn\\\n" +
-                    "            x4Hnyx0WnLLyWmOyJd1dqzxUgfIgM+oIlzYaiet4zcgByqNr5MmgEltgIOJMiU81\\\n" +
-                    "            fJD+Cmyu54evL9oP7UPULwlWyQZJMxtzGNEeXg92pwmkl399Dyw2dnvt6UA9pI+Y\\\n" +
-                    "            RYz+/hfNN23OGUUiNQIDAQAB\\\n";
-
-    private static final String RSA_PRIVATE_KEY =
-            "MIICXgIBAAKBgQDxI+LyiBHwTJmb8lFPKrI7etgnx4Hnyx0WnLLyWmOyJd1dqzxU\\\n" +
-                    "gfIgM+oIlzYaiet4zcgByqNr5MmgEltgIOJMiU81fJD+Cmyu54evL9oP7UPULwlW\\\n" +
-                    "yQZJMxtzGNEeXg92pwmkl399Dyw2dnvt6UA9pI+YRYz+/hfNN23OGUUiNQIDAQAB\\\n" +
-                    "AoGATGdfeBMPBAFxRk0P4DKaCGiS5n+7NFNR4yFBPbLQFdkTe6NO2UPXEMcCJziq\\\n" +
-                    "BtyeREeHULIA96WlENfgJeQlbxc4imLEjNi2UclBAPPWVKBP9Ciu0XKOAQE8I1PP\\\n" +
-                    "zuN/+B1kJjrpK+1XLa2UuCCtBN4BB9BXXlsIn2+B33L8p10CQQD7rKd+BJ6f/Fdo\\\n" +
-                    "7xct97x2fcpzXJXSeD0lhdtXaScSA5t59T3qkdo+SsBtWAE1FpAR8IzFDtKxtheW\\\n" +
-                    "SYqNBab3AkEA9Ujh6QLnL4Tpa0396or5LMVqcRzayV2W5JpVElQMBHHK3HLN+Yg/\\\n" +
-                    "udmSFftOVxGn0KjDEVmJYqv4X79xQ29ZMwJBAJOzikDc+TMvZyVAXDwwDj0EKhJ2\\\n" +
-                    "Hb99rXUeD9JG9hUOZOq4UPQfURQJztDdOygq67Z7lEH6JxEAqusakeOdk5UCQQCI\\\n" +
-                    "npKt7V8FWbuFeAhg1g1ZwY+69v5pwEYmiEuwDL4wz4zVYuCVBy2vf57dvX7yAjR9\\\n" +
-                    "hTI5fKyIGA8cjY4xqFh/AkEA9E8gJGrzoyDqBRNEcIMoxLUp4D7VNkT2XeyXiDhk\\\n" +
-                    "8C6h2K8ds1rGZ68Y4e78guorc3uGxYXIZ2aEYOCFHIHoVA==";
-
     private void logon() {
         if (!checkInput()) {
             return;
