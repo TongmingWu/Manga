@@ -64,7 +64,7 @@ public class PageAdapter extends RecyclerView.Adapter<PageAdapter.PageHolder> {
 
     @Override
     public void onBindViewHolder(final PageAdapter.PageHolder holder, final int position) {
-        scaleImageView(1.78f, holder);
+//         scaleImageView(1.78f, holder);
         Object temp = null;
 
         String url = picList.get(position);
@@ -81,19 +81,19 @@ public class PageAdapter extends RecyclerView.Adapter<PageAdapter.PageHolder> {
                 .placeholder(R.color.gray)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .fitCenter()
-                .bitmapTransform(new BitmapTransformation(mContext) {
-                    @Override
-                    protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
-                        float scale = (float) toTransform.getHeight() / (float) toTransform.getWidth();
-                        scaleImageView(scale, holder);
-                        return toTransform;
-                    }
+//                 .bitmapTransform(new BitmapTransformation(mContext) {
+//                     @Override
+//                     protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
+//                         float scale = (float) toTransform.getHeight() / (float) toTransform.getWidth();
+//                         scaleImageView(scale, holder);
+//                         return toTransform;
+//                     }
 
-                    @Override
-                    public String getId() {
-                        return PageAdapter.class.getSimpleName();
-                    }
-                })
+//                     @Override
+//                     public String getId() {
+//                         return PageAdapter.class.getSimpleName();
+//                     }
+//                 })
                 .into(holder.ivPage);
     }
 
